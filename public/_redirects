@@ -1,0 +1,3 @@
+# SPA-friendly fallback so any unknown path serves index.html
+# (allows deep-linking to /services, /knowledge, /contact, etc.)
+/*    /index.html   200
