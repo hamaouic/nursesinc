@@ -11,7 +11,7 @@ export const brand = {
   tagline: 'Expert Nursing Care, Rooted in Heart & Mind',
   location: 'New Brunswick, Canada',
   email: 'hello@nursesinc.ca',
-  phone: '+1 (506) 555-0142',
+  phone: '+1 (613) 315-5040',
   founded: 2016,
 };
 
@@ -170,9 +170,9 @@ export type TeamMember = {
 
 export const team: TeamMember[] = [
   {
-    name: 'Founder, LPN',
+    name: 'Catherine Hamaoui',
     role: 'Founding Nurse Practitioner',
-    initials: 'LP',
+    initials: 'CH',
     accent: 'blush',
     bio:
       'A New Brunswick LPN with over 10 years of trusted bedside and community experience specializing in geriatrics, dementia, and late-life mental health. Known for translating complex care plans into calm, family-friendly routines.',

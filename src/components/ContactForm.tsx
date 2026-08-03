@@ -24,6 +24,7 @@ const categories: { id: Category; label: string; sub: string; Icon: React.FC<{ c
 export default function ContactForm() {
   const [category, setCategory] = useState<Category>('family');
   const [status, setStatus] = useState<Status>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -40,13 +41,67 @@ export default function ContactForm() {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) return;
     setStatus('submitting');
-    // Simulated async — replace with real API call (e.g. fetch to /api/contact)
-    await new Promise((r) => setTimeout(r, 1100));
-    setStatus('success');
+
+    // Web3Forms — free, no backend, just an HTTPS POST.
+    // Access key is read from Vite env (VITE_WEB3FORMS_KEY) — set in
+    // Cloudflare Pages env vars when deploying.
+    const accessKey = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
+
+    if (!accessKey) {
+      // No key configured yet — keep the form working locally and surface a
+      // friendly hint so the deployment isn't blocked on having a key.
+      setStatus('error');
+      setErrorMessage(
+        'Form is not configured yet. Set VITE_WEB3FORMS_KEY in your environment and redeploy. (Your message was NOT sent.)',
+      );
+      return;
+    }
+
+    try {
+      const payload = {
+        access_key: accessKey,
+        subject: `New ${category === 'family' ? 'Family Care' : 'Facility Contracting'} inquiry — Nurses Inc.`,
+        from_name: 'Nurses Inc. Website',
+        name: form.name,
+        email: form.email,
+        phone: form.phone || 'Not provided',
+        category: category === 'family' ? 'Family Care' : 'Facility Contracting',
+        message: form.message,
+        // Honeypot field — Web3Forms recommends this for spam protection.
+        botcheck: '',
+      };
+
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = (await res.json()) as { success?: boolean; message?: string };
+
+      if (data.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+        setErrorMessage(
+          data.message ||
+            'We could not send your message. Please email us directly at hello@nursesinc.ca.',
+        );
+      }
+    } catch {
+      setStatus('error');
+      setErrorMessage(
+        'Network error — please email us directly at hello@nursesinc.ca.',
+      );
+    }
   };
 
   const reset = () => {
     setStatus('idle');
+    setErrorMessage('');
     setForm({ name: '', email: '', phone: '', message: '' });
   };
 
@@ -236,7 +291,7 @@ export default function ContactForm() {
                   Icon={Phone}
                   value={form.phone}
                   onChange={update('phone')}
-                  placeholder="(506) 555-0142"
+                  placeholder="(613) 315-5040"
                   autoComplete="tel"
                 />
               </div>
@@ -258,6 +313,38 @@ export default function ContactForm() {
                   className="mt-2 w-full resize-none rounded-2xl border border-white/60 bg-white/80 px-4 py-3 text-base text-ink-700 shadow-soft outline-none transition-all duration-300 placeholder:text-ink-300 focus:border-blush-300 focus:bg-white"
                 />
               </div>
+
+              {/* Honeypot — bots fill this, real users never see it. */}
+              <input
+                type="text"
+                name="botcheck"
+                value=""
+                onChange={() => {
+                  /* no-op; presence alone triggers spam filter */
+                }}
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
+              {/* Inline error banner */}
+              {status === 'error' && errorMessage && (
+                <div
+                  role="alert"
+                  className="mt-4 flex items-start gap-3 rounded-2xl border border-blush-300/60 bg-blush-100/70 px-4 py-3 text-sm text-ink-500"
+                >
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-blush-300 text-white">
+                    !
+                  </span>
+                  <div className="flex-1">
+                    <p className="font-medium text-ink-700">
+                      We could not send your message.
+                    </p>
+                    <p className="mt-0.5 text-xs">{errorMessage}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-6 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs text-ink-300">
