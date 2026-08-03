@@ -88,13 +88,13 @@ export default function ContactForm() {
         setStatus('error');
         setErrorMessage(
           data.message ||
-            'We could not send your message. Please email us directly at hello@nursesinc.ca.',
+            'We could not send your message. Please email us directly at cathamaoui@hotmail.com.',
         );
       }
     } catch {
       setStatus('error');
       setErrorMessage(
-        'Network error — please email us directly at hello@nursesinc.ca.',
+        'Network error — please email us directly at cathamaoui@hotmail.com.',
       );
     }
   };

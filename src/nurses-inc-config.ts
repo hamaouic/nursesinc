@@ -10,7 +10,7 @@ export const brand = {
   shortName: 'Nurses Inc.',
   tagline: 'Expert Nursing Care, Rooted in Heart & Mind',
   location: 'New Brunswick, Canada',
-  email: 'hello@nursesinc.ca',
+  email: 'cathamaoui@hotmail.com',
   phone: '+1 (613) 315-5040',
   founded: 2016,
 };
