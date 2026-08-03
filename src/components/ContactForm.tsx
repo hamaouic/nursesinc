@@ -21,6 +21,65 @@ const categories: { id: Category; label: string; sub: string; Icon: React.FC<{ c
   { id: 'facility', label: 'Facility Contracting', sub: 'Care home or LTC partnership', Icon: Building2, accent: 'mint' },
 ];
 
+/**
+ * Opens the visitor's default mail client pre-filled with a branded
+ * thank-you email addressed to themselves. Their own mail provider
+ * does the actual sending — no third-party API needed.
+ */
+function openBrandedMailto({
+  name,
+  email,
+  category,
+}: {
+  name: string;
+  email: string;
+  category: string;
+}) {
+  if (typeof window === 'undefined') return;
+  const cleanedName = (name || '').trim();
+  const firstName = cleanedName.split(/\s+/)[0] || 'there';
+
+  const subject = `✨ Thank you for reaching out, ${firstName}! — Nurses Inc.`;
+
+  const body = [
+    `Hi ${firstName},`,
+    '',
+    'Thank you so much for visiting Nurses Inc. and reaching out.',
+    '',
+    'We are committed to reaching out within 24 hours, Monday–Friday.',
+    '',
+    `Your message is in our hands and we read every ${category.toLowerCase()} personally.`,
+    "If it fits, we'll send a friendly Discovery Call invite — 15 minutes, free, no pressure.",
+    '',
+    'In the meantime, feel free to reach us directly:',
+    '  📞  613.315.5040',
+    '  ✉️   cathamaoui@hotmail.com',
+    '  🌐  nursesinc.pages.dev',
+    '',
+    'Warmly,',
+    'Catherine Hamaoui, LPN',
+    'Founder, Nurses Inc.',
+    '',
+    'PHIPAA-aligned · ANBLPN Collaborative Practice Regulations',
+    'Crafted with care in New Brunswick, Canada · © 2026 Nurses Inc.',
+  ].join('\n');
+
+  const params = new URLSearchParams({ subject, body });
+  // URL-encode spaces and line breaks so the body renders properly in
+  // both desktop mail clients (Outlook, Apple Mail, Thunderbird) and
+  // webmail fallback (Gmail web).
+  const href = `mailto:${encodeURIComponent(email)}?${params.toString()}`;
+
+  // Open in a new tab so the form's success state stays visible behind it.
+  // Some browsers may block the popup — if so, the user can click the
+  // "Email yourself a copy" link in the success card (added below).
+  const win = window.open(href, '_blank', 'noopener,noreferrer');
+  if (!win) {
+    // Popup blocked — fall back to same-tab navigation.
+    window.location.href = href;
+  }
+}
+
 export default function ContactForm() {
   const [category, setCategory] = useState<Category>('family');
   const [status, setStatus] = useState<Status>('idle');
@@ -31,6 +90,7 @@ export default function ContactForm() {
     phone: '',
     message: '',
   });
+  const [sendCopy, setSendCopy] = useState(true);
 
   const update =
     (key: keyof typeof form) =>
@@ -83,26 +143,15 @@ export default function ContactForm() {
       const data = (await res.json()) as { success?: boolean; message?: string };
 
       if (data.success) {
-        // Fire-and-forget auto-reply so the visitor gets a branded thank-you
-        // email. The Worker URL is set as VITE_AUTO_REPLY_URL in
-        // Cloudflare Pages env vars. If unset, we skip silently.
-        const autoReplyUrl = import.meta.env.VITE_AUTO_REPLY_URL as
-          | string
-          | undefined;
-        if (autoReplyUrl) {
-          try {
-            await fetch(autoReplyUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: form.name,
-                email: form.email,
-                category: category === 'family' ? 'Family Care' : 'Facility Contracting',
-              }),
-            });
-          } catch {
-            // Auto-reply is best-effort — never block the success UI on it.
-          }
+        // If the visitor opted in, open their mail client with a pre-filled
+        // branded thank-you email to themselves. No backend needed — their
+        // own mail provider guarantees delivery.
+        if (sendCopy) {
+          openBrandedMailto({
+            name: form.name,
+            email: form.email,
+            category: category === 'family' ? 'Family Care' : 'Facility Contracting',
+          });
         }
 
         setStatus('success');
@@ -189,6 +238,23 @@ export default function ContactForm() {
               reply within 24 hours with next steps — usually a friendly
               Discovery Call invite.
             </p>
+            {sendCopy && (
+              <button
+                type="button"
+                onClick={() =>
+                  openBrandedMailto({
+                    name: form.name,
+                    email: form.email,
+                    category:
+                      category === 'family' ? 'Family Care' : 'Facility Contracting',
+                  })
+                }
+                className="relative mt-5 inline-flex items-center gap-2 rounded-full border border-blush-300/70 bg-white/80 px-4 py-2 text-xs font-medium text-ink-500 shadow-soft transition-colors hover:bg-blush-100"
+              >
+                <Mail className="h-3.5 w-3.5 text-blush-500" />
+                Did the email not open? Tap to send yourself a copy
+              </button>
+            )}
             <div className="relative mt-8 flex justify-center gap-3">
               <button
                 type="button"
@@ -369,10 +435,37 @@ export default function ContactForm() {
               )}
 
               <div className="mt-6 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs text-ink-300">
-                  By submitting, you agree to our PHIPAA-aligned privacy
-                  practices. We never share your information.
-                </p>
+                <div className="flex flex-col gap-2">
+                  <label className="group inline-flex cursor-pointer items-start gap-2.5 text-left text-xs text-ink-500">
+                    <span className="relative mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center">
+                      <input
+                        type="checkbox"
+                        checked={sendCopy}
+                        onChange={(e) => setSendCopy(e.target.checked)}
+                        className="peer absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-md border border-blush-300/70 bg-white/80 shadow-soft outline-none transition-colors duration-200 checked:border-mint-400 checked:bg-mint-300 focus-visible:ring-2 focus-visible:ring-blush-300"
+                        aria-describedby="send-copy-help"
+                      />
+                      <Check
+                        className="pointer-events-none h-3 w-3 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100"
+                        strokeWidth={3}
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span>
+                      <span className="font-medium text-ink-700">
+                        Send me a confirmation email
+                      </span>
+                      <span id="send-copy-help" className="block text-[11px] text-ink-300">
+                        Opens your mail app with a branded thank-you note
+                        pre-addressed to you. No signup required.
+                      </span>
+                    </span>
+                  </label>
+                  <p className="text-xs text-ink-300">
+                    By submitting, you agree to our PHIPAA-aligned privacy
+                    practices. We never share your information.
+                  </p>
+                </div>
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
