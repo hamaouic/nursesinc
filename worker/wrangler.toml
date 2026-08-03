@@ -1,0 +1,15 @@
+name = "nursesinc-auto-reply"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# Add CORS allowed origins as needed.
+[vars]
+ALLOWED_ORIGIN = "https://nursesinc.pages.dev"
+# Sender address (must be a verified domain on Resend).
+# For now we use Resend's onboarding sender while you verify a domain.
+SENDER_EMAIL = "Nurses Inc. <onboarding@resend.dev>"
+SENDER_REPLY_TO = "cathamaoui@hotmail.com"
+
+# Secrets — set with:
+#   wrangler secret put RESEND_API_KEY
+#   wrangler secret put NOTIFY_FALLBACK_EMAIL   (optional — where YOU receive copies for debugging)

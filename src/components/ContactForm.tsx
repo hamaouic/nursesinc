@@ -83,6 +83,28 @@ export default function ContactForm() {
       const data = (await res.json()) as { success?: boolean; message?: string };
 
       if (data.success) {
+        // Fire-and-forget auto-reply so the visitor gets a branded thank-you
+        // email. The Worker URL is set as VITE_AUTO_REPLY_URL in
+        // Cloudflare Pages env vars. If unset, we skip silently.
+        const autoReplyUrl = import.meta.env.VITE_AUTO_REPLY_URL as
+          | string
+          | undefined;
+        if (autoReplyUrl) {
+          try {
+            await fetch(autoReplyUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: form.name,
+                email: form.email,
+                category: category === 'family' ? 'Family Care' : 'Facility Contracting',
+              }),
+            });
+          } catch {
+            // Auto-reply is best-effort — never block the success UI on it.
+          }
+        }
+
         setStatus('success');
       } else {
         setStatus('error');

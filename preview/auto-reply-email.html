@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Auto-Reply Email Preview · Nurses Inc.</title>
+<style>
+  /* === Reset + page chrome === */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 16px;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(255,209,220,0.35), transparent 35%),
+      radial-gradient(circle at 88% 82%, rgba(232,245,233,0.45), transparent 38%),
+      #f6f3ef;
+    color: rgb(44,62,80);
+  }
+
+  /* === Viewer chrome === */
+  .preview-shell {
+    max-width: 720px;
+    margin: 0 auto 24px auto;
+  }
+  .preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 14px 20px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(44,62,80,0.08);
+    margin-bottom: 18px;
+    font-size: 13px;
+  }
+  .preview-bar .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+  .dot.red { background: #ff5f57; }
+  .dot.yellow { background: #febc2e; }
+  .dot.green { background: #28c840; }
+  .preview-bar input {
+    flex: 1;
+    border: 1px solid #e6e3df;
+    background: #f8f6f2;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font: inherit;
+    color: rgb(44,62,80);
+  }
+  .swatches { display:flex; gap:8px; margin-bottom:18px; }
+  .swatch {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 12px rgba(44,62,80,0.06);
+    font-size: 12px;
+  }
+  .swatch .chip {
+    width: 18px; height: 18px; border-radius: 6px;
+    display: inline-block; margin-right: 8px; vertical-align: middle;
+    border: 1px solid rgba(44,62,80,0.1);
+  }
+  .swatch strong { display:block; font-family: Georgia, serif; font-size: 13px; margin-bottom: 2px; }
+  .swatch code { color: #6c7a89; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div class="preview-shell">
+
+  <div class="preview-bar">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+    <input value="✨ Thank you for reaching out, Catherine! · Nurses Inc." readonly />
+  </div>
+
+  <div class="swatches">
+    <div class="swatch"><strong>Blush</strong><span class="chip" style="background:#FFD1DC"></span><code>#FFD1DC</code></div>
+    <div class="swatch"><strong>Mint</strong><span class="chip" style="background:#E8F5E9"></span><code>#E8F5E9</code></div>
+    <div class="swatch"><strong>Ink</strong><span class="chip" style="background:#2C3E50"></span><code>#2C3E50</code></div>
+    <div class="swatch"><strong>Cream</strong><span class="chip" style="background:#FFFEFC"></span><code>#FFFEFC</code></div>
+  </div>
+
+  <!-- === EMAIL START === -->
+  <div style="margin:0;padding:0;background:#FFF7FA;font-family:Inter,Arial,sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td align="center" style="padding:0;">
+
+          <!-- outer wrapper -->
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+                 style="max-width:600px;background:#ffffff;border-radius:24px;overflow:hidden;
+                        box-shadow:0 8px 32px rgba(44,62,80,0.08);">
+
+            <!-- HEADER: blush gradient -->
+            <tr>
+              <td style="background:linear-gradient(135deg,#FFD1DC 0%,#FFE5EC 100%);
+                         padding:40px 40px 32px 40px;text-align:center;">
+                <div style="display:inline-block;background:#ffffff;border-radius:18px;
+                            padding:12px 22px;margin-bottom:14px;
+                            box-shadow:0 4px 14px rgba(44,62,80,0.08);">
+                  <span style="font-family:Georgia,serif;font-size:22px;color:#2C3E50;font-weight:600;letter-spacing:0.3px;">
+                    Nurses Inc.
+                  </span>
+                </div>
+                <div style="font-family:Georgia,serif;font-size:13px;color:#2C3E50;opacity:0.75;
+                            letter-spacing:1.6px;text-transform:uppercase;margin-top:2px;">
+                  Rooted in Heart &amp; Mind
+                </div>
+              </td>
+            </tr>
+
+            <!-- BODY -->
+            <tr>
+              <td style="padding:40px;color:#2C3E50;font-family:Inter,Arial,sans-serif;font-size:16px;line-height:1.65;">
+
+                <h1 style="font-family:Georgia,serif;font-size:30px;margin:0 0 18px 0;color:#2C3E50;font-weight:600;">
+                  Hi Catherine 👋
+                </h1>
+
+                <p style="margin:0 0 18px 0;font-size:16.5px;">
+                  <strong>Thank you so much for visiting Nurses Inc. and reaching out.</strong>
+                </p>
+
+                <p style="margin:0 0 18px 0;">
+                  We are committed to reaching out <strong>within 24 hours, Monday–Friday</strong>.
+                </p>
+
+                <p style="margin:0 0 22px 0;">
+                  Your message is in our hands and we read every inquiry personally.
+                  If it fits, we'll send a friendly Discovery Call invite — 15 minutes, free, no pressure.
+                </p>
+
+                <p style="margin:0 0 4px 0;">In the meantime, feel free to reach us directly:</p>
+
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                       style="margin:14px 0 22px 0;background:#E8F5E9;border-radius:14px;">
+                  <tr>
+                    <td style="padding:18px 22px;color:#2C3E50;font-size:15px;line-height:1.95;">
+                      📞 &nbsp;<a href="tel:+16133155040"
+                                  style="color:#2C3E50;text-decoration:none;font-weight:600;">613.315.5040</a><br/>
+                      ✉️ &nbsp;<a href="mailto:cathamaoui@hotmail.com"
+                                  style="color:#2C3E50;text-decoration:none;font-weight:600;">cathamaoui@hotmail.com</a><br/>
+                      🌐 &nbsp;<a href="https://nursesinc.pages.dev"
+                                  style="color:#2C3E50;text-decoration:none;font-weight:600;">nursesinc.pages.dev</a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:24px 0 4px 0;">Warmly,</p>
+                <p style="margin:0;font-family:Georgia,serif;font-size:19px;color:#2C3E50;">
+                  <strong>Catherine Hamaoui, LPN</strong>
+                </p>
+                <p style="margin:2px 0 0 0;color:#2C3E50;opacity:0.7;font-size:14px;">
+                  Founder, Nurses Inc.
+                </p>
+              </td>
+            </tr>
+
+            <!-- COMPLIANCE STRIP -->
+            <tr>
+              <td style="padding:0 40px 28px 40px;">
+                <div style="border-top:1px solid rgba(44,62,80,0.08);padding-top:16px;
+                            font-size:12px;color:#2C3E50;opacity:0.55;text-align:center;
+                            letter-spacing:0.6px;">
+                  PHIPAA-aligned · ANBLPN Collaborative Practice Regulations
+                </div>
+              </td>
+            </tr>
+
+            <!-- FOOTER: mint strip -->
+            <tr>
+              <td style="background:#E8F5E9;padding:18px 40px;text-align:center;
+                         color:#2C3E50;font-size:13px;opacity:0.85;">
+                Crafted with care in New Brunswick, Canada · © 2026 Nurses Inc.
+              </td>
+            </tr>
+
+          </table>
+          <!-- /outer wrapper -->
+
+          <div style="height:24px;"></div>
+
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- === EMAIL END === -->
+
+</div>
+
+</body>
+</html>

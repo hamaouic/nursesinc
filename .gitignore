@@ -9,6 +9,11 @@ dist-ssr
 build
 *.local
 
+# Wrangler / Cloudflare Worker
+.wrangler
+.dev.vars
+worker/.dev.vars
+
 # Editor / OS
 .vscode/*
 !.vscode/extensions.json
