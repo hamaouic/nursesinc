@@ -177,81 +177,52 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         {/* BACK */}
         <div
           className={cn(
-            'flip-card-face back flex flex-col gap-3 overflow-y-auto border border-ink-100/80 p-6 shadow-glow backdrop-blur',
-            service.process ? 'bg-white' : service.accent === 'blush' ? 'bg-ink-500' : 'bg-ink-700',
+            'flip-card-face back flex flex-col gap-3 overflow-y-auto border border-white/10 p-6 shadow-glow backdrop-blur',
+            service.accent === 'blush' ? 'bg-ink-500' : 'bg-ink-700',
           )}
         >
           {service.process ? (
             <>
               <div className="flex items-center gap-2">
-                <span
-                  className={cn(
-                    'grid h-9 w-9 place-items-center rounded-xl text-white',
-                    service.accent === 'blush' ? 'bg-blush-400' : 'bg-mint-400',
-                  )}
-                >
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-white">
                   <Icon className="h-4 w-4" />
                 </span>
-                <span className="text-[10px] font-medium uppercase tracking-widest text-ink-300">
+                <span className="text-[10px] font-medium uppercase tracking-widest text-white/60">
                   {service.id.split('-')[0]}
                 </span>
               </div>
-              <h3 className="font-display text-lg font-semibold leading-snug text-ink-700">
+              <h3 className="font-display text-lg font-semibold leading-snug text-white">
                 {service.title}
               </h3>
-              <div className="flex items-center gap-2">
-                <span
-                  className={cn(
-                    'h-px flex-1',
-                    service.accent === 'blush' ? 'bg-blush-300' : 'bg-mint-300',
-                  )}
-                />
-                <span
-                  className={cn(
-                    'font-display text-xs font-semibold uppercase tracking-[0.18em]',
-                    service.accent === 'blush' ? 'text-blush-400' : 'text-mint-400',
-                  )}
-                >
-                  The 3 Step Process
-                </span>
-                <span
-                  className={cn(
-                    'h-px flex-1',
-                    service.accent === 'blush' ? 'bg-blush-300' : 'bg-mint-300',
-                  )}
-                />
-              </div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/70">
+                The 3 Step Process
+              </p>
 
-              <div className="mt-1 space-y-2.5">
-                {service.process.map((p, idx) => (
-                  <div key={p.step} className="flex items-start gap-2.5">
-                    <span className="flex shrink-0 items-center gap-1">
-                      <span
-                        className={cn(
-                          'grid h-6 w-6 shrink-0 place-items-center rounded-full font-display text-xs font-semibold text-white shadow-soft',
-                          service.accent === 'blush' ? 'bg-blush-400' : 'bg-mint-400',
-                        )}
-                      >
-                        {p.step}
-                      </span>
-                      {idx < (service.process?.length ?? 0) - 1 && (
-                        <span className="block h-0.5 w-3 bg-ink-100" />
+              <ul className="mt-1 space-y-3">
+                {service.process.map((p) => (
+                  <li key={p.step} className="flex items-start gap-3">
+                    <span
+                      className={cn(
+                        'grid h-6 w-6 shrink-0 place-items-center rounded-full font-display text-xs font-semibold text-ink-700 shadow-soft',
+                        service.accent === 'blush' ? 'bg-blush-300' : 'bg-mint-300',
                       )}
+                    >
+                      {p.step}
                     </span>
                     <div className="flex-1">
-                      <p className="font-display text-sm font-semibold leading-tight text-ink-700">
+                      <p className="font-display text-sm font-semibold leading-tight text-white">
                         {p.title}
                       </p>
-                      <ul className="mt-0.5 space-y-0.5">
+                      <ul className="mt-1 space-y-1">
                         {p.bullets.map((b) => (
                           <li
                             key={b}
-                            className="flex items-start gap-1.5 text-[11px] leading-tight text-ink-400"
+                            className="flex items-start gap-2 text-[12px] leading-snug text-white/75"
                           >
                             <span
                               className={cn(
-                                'mt-1 inline-block h-1 w-1 shrink-0 rounded-full',
-                                service.accent === 'blush' ? 'bg-blush-400' : 'bg-mint-400',
+                                'mt-1.5 inline-block h-1 w-1 shrink-0 rounded-full',
+                                service.accent === 'blush' ? 'bg-blush-300' : 'bg-mint-300',
                               )}
                             />
                             {b}
@@ -259,9 +230,9 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
                         ))}
                       </ul>
                     </div>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </>
           ) : (
             <>
