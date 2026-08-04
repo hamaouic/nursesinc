@@ -15,6 +15,17 @@ import {
   empowerIntro,
   adherenceSubsections,
   fridgeColumns,
+  welcomePrepIntro,
+  welcomePrepSections,
+  welcomePrepScopeNote,
+  feedbackIntro,
+  feedbackInfoFields,
+  feedbackQuestions,
+  feedbackOpenQuestions,
+  feedbackRecommendOptions,
+  feedbackMarketingNote,
+  feedbackMarketingConsent,
+  feedbackClosingNote,
   medFormReferences,
   type MedFormId,
 } from '@/med-form-forms';
@@ -131,7 +142,81 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
   };
 
   // ===== Per-form dispatch =====
-  if (id === 'inventory') {
+  if (id === 'welcome-prep') {
+    // Branded hero band
+    if (safeSpace(48)) {
+      doc.setFillColor(255, 233, 238); // blush-100
+      doc.roundedRect(marginX, y, contentW, 36, 6, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(141, 207, 168); // mint accent
+      doc.text('NURSES INC.  ·  MEDICATION COMPLIANCE AUDIT', marginX + 8, y + 14);
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 117, 138);
+      doc.text('PHIPAA-aligned  ·  Under physician oversight', marginX + 8, y + 26);
+      y += 44;
+    }
+
+    drawIntro(welcomePrepIntro);
+
+    welcomePrepSections.forEach((section) => {
+      if (!safeSpace(60)) return;
+
+      // Section banner
+      doc.setFillColor(232, 245, 233);
+      doc.roundedRect(marginX, y, contentW, 18, 3, 3, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.setTextColor(44, 62, 80);
+      const headingLabel = section.intro
+        ? `${section.number}  ·  ${section.heading}  —  ${section.intro}`
+        : `${section.number}  ·  ${section.heading}`;
+      doc.text(headingLabel, marginX + 6, y + 12);
+      y += 22;
+
+      section.items.forEach((item) => {
+        if (!safeSpace(36)) return;
+
+        // Checkbox
+        doc.setDrawColor(141, 207, 168);
+        doc.setLineWidth(0.8);
+        doc.rect(marginX, y, 10, 10);
+
+        // Bold heading
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.setTextColor(44, 62, 80);
+        const boldLabel = item.bold + ' ';
+        const fullText = boldLabel + item.text;
+        const wrapped = doc.splitTextToSize(fullText, contentW - 16);
+        doc.text(wrapped, marginX + 14, y + 8);
+        // Tint the bold prefix by re-rendering it on line 1 only in ink accent
+        doc.setFont('helvetica', 'normal');
+        y += Math.max(12, wrapped.length * 9 + 4);
+      });
+      y += 4;
+    });
+
+    // Scope-of-practice note callout
+    if (safeSpace(40)) {
+      doc.setFillColor(244, 251, 246);
+      doc.setDrawColor(141, 207, 168);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(marginX, y, contentW, 36, 4, 4, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(44, 62, 80);
+      doc.text('SCOPE OF PRACTICE', marginX + 6, y + 11);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.setTextColor(60, 72, 84);
+      const scopeLines = doc.splitTextToSize(welcomePrepScopeNote, contentW - 12);
+      doc.text(scopeLines, marginX + 6, y + 22);
+      y += 44;
+    }
+  }
+
+  else if (id === 'inventory') {
     drawIntro(
       'Bring every bottle, blister pack, inhaler, eye drop, cream, patch, and supplement. List one medication per row. Continue on additional sheets if needed.',
     );
@@ -349,6 +434,167 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
     if (safeSpace(28)) {
       doc.text('EMERGENCY CONTACT', marginX, y + 8);
       doc.line(marginX, y + 16, marginX + contentW, y + 16);
+    }
+  }
+
+  else if (id === 'feedback-survey') {
+    // Branded intro
+    drawIntro(feedbackIntro);
+
+    // ---- Section 1: General Information ----
+    if (drawSectionTitle('1. General Information (Optional)')) {
+      feedbackInfoFields.forEach((label) => {
+        if (!safeSpace(20)) return;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 117, 138);
+        doc.text(label.toUpperCase(), marginX, y + 8);
+        doc.setDrawColor(180, 188, 200);
+        doc.setLineWidth(0.4);
+        doc.line(marginX, y + 14, marginX + contentW, y + 14);
+        y += 18;
+      });
+      y += 4;
+    }
+
+    // ---- Section 2: Experience ratings ----
+    if (drawSectionTitle('2. Your Experience')) {
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7);
+      doc.setTextColor(100, 117, 138);
+      doc.text('Please circle or check your response.', marginX, y + 4);
+      y += 12;
+
+      feedbackQuestions.forEach((q, qi) => {
+        if (!safeSpace(40)) return;
+        // Question text
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(44, 62, 80);
+        const qLines = doc.splitTextToSize(`${qi + 1}. ${q.prompt}`, contentW);
+        doc.text(qLines, marginX, y + 8);
+        y += qLines.length * 9 + 2;
+
+        // Option checkboxes in a row
+        const optionGap = 6;
+        let optionX = marginX + 4;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(60, 72, 84);
+        q.options.forEach((opt) => {
+          // Approximate text width via character count * charW
+          const textW = opt.length * 3.2 + 12; // checkbox + gap + padding
+          doc.setDrawColor(141, 207, 168);
+          doc.setLineWidth(0.6);
+          doc.rect(optionX, y, 8, 8);
+          doc.text(opt, optionX + 11, y + 6);
+          optionX += textW + optionGap;
+        });
+        y += 14;
+      });
+      y += 4;
+    }
+
+    // ---- Section 3: Open feedback ----
+    if (drawSectionTitle('3. Open Feedback & Comments')) {
+      feedbackOpenQuestions.forEach((q) => {
+        if (!safeSpace(36)) return;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(44, 62, 80);
+        const qLines = doc.splitTextToSize(q, contentW);
+        doc.text(qLines, marginX, y + 8);
+        y += qLines.length * 9 + 4;
+        // Writing lines
+        for (let i = 0; i < 2; i++) {
+          if (!safeSpace(14)) return;
+          doc.setDrawColor(180, 188, 200);
+          doc.setLineWidth(0.3);
+          doc.line(marginX, y + 8, marginX + contentW, y + 8);
+          y += 12;
+        }
+        y += 4;
+      });
+
+      // Recommendation row
+      if (safeSpace(28)) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(44, 62, 80);
+        const recPrompt =
+          'Would you recommend our Independent Nursing Services to other families navigating senior care?';
+        const recLines = doc.splitTextToSize(recPrompt, contentW);
+        doc.text(recLines, marginX, y + 8);
+        y += recLines.length * 9 + 4;
+
+        let optionX = marginX + 4;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(60, 72, 84);
+        feedbackRecommendOptions.forEach((opt) => {
+          doc.setDrawColor(141, 207, 168);
+          doc.setLineWidth(0.6);
+          doc.rect(optionX, y, 8, 8);
+          doc.text(opt, optionX + 11, y + 6);
+          optionX += opt.length * 3.2 + 18;
+        });
+        y += 14;
+      }
+    }
+
+    // ---- Section 4: Marketing authorization ----
+    if (drawSectionTitle('4. Direct Authorization for Marketing (Optional)')) {
+      if (safeSpace(48)) {
+        // Mint callout for note
+        doc.setFillColor(244, 251, 246);
+        doc.setDrawColor(141, 207, 168);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(marginX, y, contentW, 30, 3, 3, 'FD');
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(6.5);
+        doc.setTextColor(60, 72, 84);
+        const noteLines = doc.splitTextToSize(feedbackMarketingNote, contentW - 12);
+        doc.text(noteLines, marginX + 6, y + 10);
+        y += 36;
+      }
+
+      // Consent checkbox + label
+      if (safeSpace(24)) {
+        doc.setDrawColor(141, 207, 168);
+        doc.setLineWidth(0.8);
+        doc.rect(marginX, y, 9, 9);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        doc.setTextColor(44, 62, 80);
+        const consentLines = doc.splitTextToSize(
+          feedbackMarketingConsent,
+          contentW - 16,
+        );
+        doc.text(consentLines, marginX + 14, y + 6);
+        y += Math.max(12, consentLines.length * 9 + 4);
+      }
+
+      // Signature + date underline fields
+      ['Signature of Caregiver / Client', 'Date'].forEach((label) => {
+        if (!safeSpace(20)) return;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 117, 138);
+        doc.text(label.toUpperCase(), marginX, y + 8);
+        doc.setDrawColor(180, 188, 200);
+        doc.setLineWidth(0.4);
+        doc.line(marginX, y + 14, marginX + contentW, y + 14);
+        y += 18;
+      });
+
+      // Closing note
+      if (safeSpace(20)) {
+        y += 4;
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(7);
+        doc.setTextColor(120, 130, 140);
+        doc.text(feedbackClosingNote, marginX, y + 8);
+      }
     }
   }
 

@@ -13,6 +13,7 @@
  */
 
 export type MedFormId =
+  | 'welcome-prep'
   | 'inventory'
   | 'beers'
   | 'stopp-start'
@@ -22,7 +23,8 @@ export type MedFormId =
   | 'deprescribing-conversation'
   | 'empower-brochures'
   | 'adherence-safety'
-  | 'fridge-list';
+  | 'fridge-list'
+  | 'feedback-survey';
 
 export type MedFormMeta = {
   id: MedFormId;
@@ -37,13 +39,27 @@ export type MedFormMeta = {
 };
 
 export const medForms: Record<MedFormId, MedFormMeta> = {
+  'welcome-prep': {
+    id: 'welcome-prep',
+    number: '1',
+    title: 'Welcome to Your Home Medication Compliance Audit',
+    shortTitle: 'How to Prepare for Your Nurse\u2019s Visit',
+    audience: 'Form · Families',
+    filename: 'Nurses-Inc-Form-1-Welcome-Preparation.pdf',
+    icon: 'Sparkles',
+    accent: 'blush',
+    summary: [
+      '4-step pre-visit checklist',
+      'What to gather · What we\u2019ll do together',
+    ],
+  },
   inventory: {
     id: 'inventory',
-    number: '1',
+    number: '2',
     title: 'Medication Inventory',
     shortTitle: 'List of current medications',
     audience: 'Form · Families',
-    filename: 'Nurses-Inc-Form-1-Medication-Inventory.pdf',
+    filename: 'Nurses-Inc-Form-2-Medication-Inventory.pdf',
     icon: 'Pill',
     accent: 'blush',
     summary: [
@@ -53,11 +69,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   beers: {
     id: 'beers',
-    number: '2',
+    number: '3',
     title: 'Beers Criteria® 2023 — Quick Reference',
     shortTitle: 'Potentially inappropriate medications for adults 65+',
     audience: 'Reference · Nurses',
-    filename: 'Nurses-Inc-Form-2-Beers-Criteria-Reference.pdf',
+    filename: 'Nurses-Inc-Form-3-Beers-Criteria-Reference.pdf',
     icon: 'BookOpen',
     accent: 'mint',
     summary: [
@@ -67,11 +83,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'stopp-start': {
     id: 'stopp-start',
-    number: '3',
+    number: '4',
     title: 'STOPP/START Version 3 — Quick Reference',
     shortTitle: 'STOPP / START prescribing screens',
     audience: 'Reference · Nurses',
-    filename: 'Nurses-Inc-Form-3-STOPP-START-Reference.pdf',
+    filename: 'Nurses-Inc-Form-4-STOPP-START-Reference.pdf',
     icon: 'BookOpen',
     accent: 'mint',
     summary: [
@@ -81,11 +97,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   polypharmacy: {
     id: 'polypharmacy',
-    number: '4',
+    number: '5',
     title: 'Polypharmacy & Deprescribing',
     shortTitle: 'Clinical reference',
     audience: 'Reference · Nurses',
-    filename: 'Nurses-Inc-Form-4-Polypharmacy-Deprescribing.pdf',
+    filename: 'Nurses-Inc-Form-5-Polypharmacy-Deprescribing.pdf',
     icon: 'BookOpen',
     accent: 'cream',
     summary: [
@@ -95,11 +111,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'symptom-cause': {
     id: 'symptom-cause',
-    number: '5',
+    number: '6',
     title: 'New Symptom → Medication Cause?',
     shortTitle: 'Symptom causation form',
     audience: 'Form · Nurses',
-    filename: 'Nurses-Inc-Form-5-Symptom-Cause.pdf',
+    filename: 'Nurses-Inc-Form-6-Symptom-Cause.pdf',
     icon: 'FileText',
     accent: 'blush',
     summary: [
@@ -109,11 +125,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'deprescribing-algorithms': {
     id: 'deprescribing-algorithms',
-    number: '6',
+    number: '7',
     title: 'Deprescribing Algorithms (Bruyère / Deprescribing.org)',
     shortTitle: '4 drug-class deprescribing steps',
     audience: 'Reference · Nurses',
-    filename: 'Nurses-Inc-Form-6-Deprescribing-Algorithms.pdf',
+    filename: 'Nurses-Inc-Form-7-Deprescribing-Algorithms.pdf',
     icon: 'BookOpen',
     accent: 'cream',
     summary: [
@@ -123,11 +139,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'deprescribing-conversation': {
     id: 'deprescribing-conversation',
-    number: '7',
+    number: '8',
     title: 'Schedule a Deprescribing Conversation',
     shortTitle: 'Conversation scheduler',
     audience: 'Form · Families',
-    filename: 'Nurses-Inc-Form-7-Deprescribing-Conversation.pdf',
+    filename: 'Nurses-Inc-Form-8-Deprescribing-Conversation.pdf',
     icon: 'FileText',
     accent: 'blush',
     summary: [
@@ -137,11 +153,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'empower-brochures': {
     id: 'empower-brochures',
-    number: '8',
+    number: '9',
     title: 'EMPOWER Brochure Series',
     shortTitle: 'Patient handouts for safe deprescribing',
     audience: 'Reference · Nurses',
-    filename: 'Nurses-Inc-Form-8-EMPOWER-Brochures.pdf',
+    filename: 'Nurses-Inc-Form-9-EMPOWER-Brochures.pdf',
     icon: 'BookOpen',
     accent: 'cream',
     summary: [
@@ -151,11 +167,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'adherence-safety': {
     id: 'adherence-safety',
-    number: '9',
+    number: '10',
     title: 'Adherence & Safety Audit',
     shortTitle: 'Chain of administration · Storage · Expiry',
     audience: 'Form · Nurses',
-    filename: 'Nurses-Inc-Form-9-Adherence-Safety.pdf',
+    filename: 'Nurses-Inc-Form-10-Adherence-Safety.pdf',
     icon: 'FileText',
     accent: 'mint',
     summary: [
@@ -165,11 +181,11 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'fridge-list': {
     id: 'fridge-list',
-    number: '10',
+    number: '11',
     title: 'Fridge Medication List',
     shortTitle: 'Quick-reference emergency list',
     audience: 'Form · Families',
-    filename: 'Nurses-Inc-Form-10-Fridge-List.pdf',
+    filename: 'Nurses-Inc-Form-11-Fridge-List.pdf',
     icon: 'BookOpen',
     accent: 'blush',
     summary: [
@@ -177,9 +193,24 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
       'Allergies + emergency contact strip',
     ],
   },
+  'feedback-survey': {
+    id: 'feedback-survey',
+    number: '12',
+    title: 'Client & Family Feedback',
+    shortTitle: 'Post-Visit Evaluation',
+    audience: 'Form · Families',
+    filename: 'Nurses-Inc-Form-12-Client-Family-Feedback.pdf',
+    icon: 'Quote',
+    accent: 'mint',
+    summary: [
+      'Likert-scale experience ratings',
+      'Optional marketing authorization',
+    ],
+  },
 };
 
 export const medFormList: MedFormMeta[] = [
+  medForms['welcome-prep'],
   medForms.inventory,
   medForms.beers,
   medForms['stopp-start'],
@@ -190,6 +221,7 @@ export const medFormList: MedFormMeta[] = [
   medForms['empower-brochures'],
   medForms['adherence-safety'],
   medForms['fridge-list'],
+  medForms['feedback-survey'],
 ];
 
 // ---------------------------------------------------------------------------
@@ -396,6 +428,89 @@ export const adherenceSubsections: { heading: string; items: string[] }[] = [
   },
 ];
 
+// Welcome / Pre-Visit prep form payload
+export const welcomePrepIntro =
+  'Managing medications can be overwhelming. This specialized nursing audit is designed to bring you peace of mind, simplify your daily routine, and ensure you are taking your medications safely. Please review this checklist before your nurse arrives so we can make the most of our time together.';
+
+export const welcomePrepSections: {
+  number: string;
+  heading: string;
+  intro?: string;
+  items: { bold: string; text: string }[];
+}[] = [
+  {
+    number: '1',
+    heading: 'Before Your Nurse Arrives',
+    intro: 'Pre-Visit Prep',
+    items: [
+      {
+        bold: 'Call Your Pharmacy.',
+        text: 'Contact your primary pharmacy and ask them to print a "Master Medication Profile" for you. Please have this paper copy ready on the table for the nurse.',
+      },
+      {
+        bold: 'Sign the Consent Form.',
+        text: 'You or your Substitute Decision Maker (SDM) must sign and return the Informed Consent Form using our secure online link before the scheduled home visit.',
+      },
+    ],
+  },
+  {
+    number: '2',
+    heading: 'What We Will Do Together',
+    intro: 'In Your Home',
+    items: [
+      {
+        bold: 'The Reconciliation.',
+        text: 'Please gather absolutely everything you take and lay it out on the table. This includes all current prescription bottles, blister packs, inhalers, over-the-counter (OTC) vitamins, creams, and herbal supplements.',
+      },
+      {
+        bold: 'The Count.',
+        text: 'The nurse will carefully check your remaining pills or blister slots against the dates on your labels. This helps us quietly discover if any doses are accidentally being missed or doubled up.',
+      },
+      {
+        bold: 'Storage & Expiry Check.',
+        text: 'We will review where your medications are kept. The nurse will help you flag potential safety issues, such as expired liquids, medications that accidentally missed being refrigerated, or pills that need safer storage.',
+      },
+    ],
+  },
+  {
+    number: '3',
+    heading: 'Talking About Your Routine',
+    intro: 'Health Screening',
+    items: [
+      {
+        bold: 'Physical Ease.',
+        text: 'We will look at whether you can comfortably read the print on the labels, physically pop the pills out of the plastic slots, or easily open the bottles.',
+      },
+      {
+        bold: 'Your Understanding.',
+        text: 'We will gently review your pills to make sure you remember exactly why you are taking each one.',
+      },
+      {
+        bold: 'Side Effects.',
+        text: 'We will talk about how you feel after taking your medication. We want to check for annoying side effects like dizziness, nausea, or a very dry mouth that might be causing you to want to skip a dose.',
+      },
+    ],
+  },
+  {
+    number: '4',
+    heading: 'Closing the Loop',
+    intro: 'Your Custom Report',
+    items: [
+      {
+        bold: 'The Clinical Review.',
+        text: 'After the visit, your nurse will compile all of the pill counts and notes into a private, secure health report.',
+      },
+      {
+        bold: 'Doctor Notification.',
+        text: 'If the nurse finds any concerning discrepancies — such as accidentally skipping a vital blood thinner or doubling up on a blood pressure pill — we will encrypt the report and send it directly to your primary doctor or our partner physician for immediate, safe guidance.',
+      },
+    ],
+  },
+];
+
+export const welcomePrepScopeNote =
+  'A Quick Reminder on Our Scope of Practice: Your independent nurse is an expert evaluator and educator. Nurses do not change your doses or write new prescriptions. Any adjustments or corrections discovered during this audit will be sent directly to your doctor, who holds the final authority over your treatment plan. We look forward to working alongside you to keep your health safe and structured.';
+
 export const fridgeColumns = [
   'Medication',
   'Strength',
@@ -403,6 +518,65 @@ export const fridgeColumns = [
   'When to take it',
   'Special notes',
 ];
+
+// Client & Family Feedback form payload (post-visit)
+export const feedbackIntro =
+  'Thank you for choosing Nurses Inc. to support your family\u2019s care journey. Your feedback helps us maintain the highest quality of nursing care and service in New Brunswick. Please take a few moments to share your experience with us.';
+
+export const feedbackInfoFields = [
+  'Client or Family Representative Name',
+  'Date of Visit',
+  'Name of Visiting Nurse',
+];
+
+export type FeedbackQuestion = {
+  prompt: string;
+  options: string[];
+};
+
+export const feedbackQuestions: FeedbackQuestion[] = [
+  {
+    prompt:
+      'The pre-visit preparation instructions were clear, and I knew exactly what to have ready.',
+    options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree'],
+  },
+  {
+    prompt:
+      'The nurse was respectful, polite, and made us feel comfortable while sorting through our medications.',
+    options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree'],
+  },
+  {
+    prompt:
+      'The nurse explained things in simple, easy-to-understand language without confusing medical jargon.',
+    options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree'],
+  },
+  {
+    prompt:
+      'This visit increased our peace of mind regarding managing dementia, behaviors, or mental health routines at home.',
+    options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Not Applicable'],
+  },
+  {
+    prompt:
+      'I feel more confident now about our daily medication routine, physical storage, and safety.',
+    options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree'],
+  },
+];
+
+export const feedbackOpenQuestions = [
+  'What was the most helpful part of the nurse\u2019s visit today?',
+  'Is there anything we could improve to make this process easier or more comfortable for seniors and caregivers?',
+];
+
+export const feedbackRecommendOptions = ['Yes', 'No', 'Undecided'];
+
+export const feedbackMarketingNote =
+  'We love sharing success stories to help other families find us. If you are comfortable with us using your positive comments anonymously on our website, please check the box below.';
+
+export const feedbackMarketingConsent =
+  'Yes, Nurses Inc. has permission to share my written comments anonymously on their professional website or informational materials.';
+
+export const feedbackClosingNote =
+  'Thank you for your valuable feedback. Please return this completed form to your nurse or submit it via your secure online client portal.';
 
 // Common APA references shared by every form (condensed)
 export const medFormReferences: string[] = [
