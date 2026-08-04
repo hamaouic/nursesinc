@@ -21,6 +21,12 @@ export const legal = {
   regulatoryBadge: 'Physician-Backed, Fully Regulated Practice',
 };
 
+export type ProcessStep = {
+  step: string;
+  title: string;
+  bullets: string[];
+};
+
 export type Service = {
   id: string;
   title: string;
@@ -28,6 +34,7 @@ export type Service = {
   unit: string;
   description: string;
   bullets?: string[];
+  process?: ProcessStep[];
   icon: string; // lucide-react icon name
   accent: 'blush' | 'mint';
 };
@@ -71,6 +78,23 @@ export const services: { b2c: Service[]; b2b: Service[] } = {
       unit: '/ hour',
       description:
         'Hands-on blister pack and counting evaluations, completed under physician oversight for safety and accuracy.',
+      process: [
+        {
+          step: '1',
+          title: 'Pre-Visit Intake',
+          bullets: ['Gather master lists', 'Get pharmacy consent'],
+        },
+        {
+          step: '2',
+          title: 'Physical Count & Audit',
+          bullets: ['Count blister packs', 'Check expiry dates'],
+        },
+        {
+          step: '3',
+          title: 'Divergence Screen',
+          bullets: ['Check side effects', 'Assess cognitive load'],
+        },
+      ],
       icon: 'Pill',
       accent: 'blush',
     },

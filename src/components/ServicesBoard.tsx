@@ -178,30 +178,107 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         {/* BACK */}
         <div
           className={cn(
-            'flip-card-face flex flex-col gap-3 border border-white/60 p-6 shadow-glow backdrop-blur',
-            service.accent === 'blush' ? 'bg-ink-500' : 'bg-ink-700',
+            'flip-card-face flex flex-col gap-3 overflow-y-auto border border-white/60 p-6 shadow-glow backdrop-blur',
+            service.process
+              ? 'bg-white'
+              : service.accent === 'blush'
+                ? 'bg-ink-500'
+                : 'bg-ink-700',
           )}
         >
-          <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-white">
-              <Icon className="h-4 w-4" />
-            </span>
-            <span className="text-[10px] font-medium uppercase tracking-widest text-white/60">
-              {service.id.split('-')[0]}
-            </span>
-          </div>
-          <h3 className="font-display text-lg font-semibold leading-snug text-white">
-            {service.title}
-          </h3>
-          <p className="text-sm leading-relaxed text-white/80">
-            {service.description}
-          </p>
-          <div className="mt-auto flex items-baseline gap-1.5 rounded-xl bg-white/10 px-3 py-2 text-white">
-            <span className="font-display text-xl font-semibold">
-              {service.rate}
-            </span>
-            <span className="text-[10px] text-white/70">{service.unit}</span>
-          </div>
+          {service.process ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-blush-100 text-blush-500">
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-ink-300">
+                  {service.id.split('-')[0]}
+                </span>
+              </div>
+              <h3 className="font-display text-lg font-semibold leading-snug text-ink-700">
+                {service.title}
+              </h3>
+              <p className="text-xs leading-relaxed text-ink-400">
+                {service.description}
+              </p>
+
+              <div className="mt-2 space-y-2.5">
+                {service.process.map((p, idx) => (
+                  <div key={p.step} className="flex items-start gap-2.5">
+                    <span className="flex shrink-0 items-center gap-1">
+                      <span
+                        className={cn(
+                          'grid h-6 w-6 shrink-0 place-items-center rounded-full font-display text-xs font-semibold text-white shadow-soft',
+                          service.accent === 'blush'
+                            ? 'bg-blush-400'
+                            : 'bg-mint-400',
+                        )}
+                      >
+                        {p.step}
+                      </span>
+                      {idx < (service.process?.length ?? 0) - 1 && (
+                        <span className="block h-0.5 w-3 bg-ink-100" />
+                      )}
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-display text-sm font-semibold leading-tight text-ink-700">
+                        {p.title}
+                      </p>
+                      <ul className="mt-0.5 space-y-0.5">
+                        {p.bullets.map((b) => (
+                          <li
+                            key={b}
+                            className="flex items-start gap-1.5 text-[11px] leading-tight text-ink-400"
+                          >
+                            <span
+                              className={cn(
+                                'mt-1 inline-block h-1 w-1 shrink-0 rounded-full',
+                                service.accent === 'blush'
+                                  ? 'bg-blush-400'
+                                  : 'bg-mint-400',
+                              )}
+                            />
+                            {b}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-auto flex items-baseline gap-1.5 rounded-xl bg-blush-50 px-3 py-2 text-ink-700">
+                <span className="font-display text-xl font-semibold">
+                  {service.rate}
+                </span>
+                <span className="text-[10px] text-ink-400">{service.unit}</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/10 text-white">
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-white/60">
+                  {service.id.split('-')[0]}
+                </span>
+              </div>
+              <h3 className="font-display text-lg font-semibold leading-snug text-white">
+                {service.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-white/80">
+                {service.description}
+              </p>
+              <div className="mt-auto flex items-baseline gap-1.5 rounded-xl bg-white/10 px-3 py-2 text-white">
+                <span className="font-display text-xl font-semibold">
+                  {service.rate}
+                </span>
+                <span className="text-[10px] text-white/70">{service.unit}</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </motion.div>
