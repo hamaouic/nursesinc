@@ -462,18 +462,23 @@ export default function ContactForm() {
                         aria-hidden
                         className={cn(
                           'pointer-events-none absolute inset-0 rounded-md border-2 transition-colors duration-200',
-                          'border-blush-300 bg-white shadow-soft',
-                          'peer-checked:border-mint-500 peer-checked:bg-mint-300',
+                          // Unchecked: light blush border on white
+                          sendCopy
+                            ? 'border-mint-500 bg-mint-300'
+                            : 'border-blush-300 bg-white',
+                          'shadow-soft',
                           'peer-focus-visible:ring-2 peer-focus-visible:ring-blush-300 peer-focus-visible:ring-offset-1',
                         )}
                       />
                       <Check
                         aria-hidden
                         className={cn(
-                          'pointer-events-none relative z-0 h-3.5 w-3.5 text-white transition-opacity duration-200',
-                          sendCopy ? 'opacity-100' : 'opacity-0',
+                          'pointer-events-none relative z-0 h-3.5 w-3.5 transition-opacity duration-200',
+                          sendCopy
+                            ? 'opacity-100 text-ink-700'
+                            : 'opacity-0 text-ink-700',
                         )}
-                        strokeWidth={4}
+                        strokeWidth={5}
                       />
                     </span>
                     <span>
