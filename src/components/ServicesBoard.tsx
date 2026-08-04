@@ -200,6 +200,28 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
               <h3 className="font-display text-lg font-semibold leading-snug text-ink-700">
                 {service.title}
               </h3>
+              <div className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'h-px flex-1',
+                    service.accent === 'blush' ? 'bg-blush-300' : 'bg-mint-300',
+                  )}
+                />
+                <span
+                  className={cn(
+                    'font-display text-xs font-semibold uppercase tracking-[0.18em]',
+                    service.accent === 'blush' ? 'text-blush-400' : 'text-mint-400',
+                  )}
+                >
+                  The 3 Step Process
+                </span>
+                <span
+                  className={cn(
+                    'h-px flex-1',
+                    service.accent === 'blush' ? 'bg-blush-300' : 'bg-mint-300',
+                  )}
+                />
+              </div>
 
               <div className="mt-1 space-y-2.5">
                 {service.process.map((p, idx) => (
