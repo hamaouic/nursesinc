@@ -158,8 +158,8 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
               <h3 className="font-display text-lg font-semibold leading-snug text-ink-700">
                 {service.title}
               </h3>
-              <p className="mt-1 text-xs uppercase tracking-widest text-ink-300">
-                Hover or tap to learn more
+              <p className="mt-2 text-sm leading-relaxed text-ink-500">
+                {service.description}
               </p>
             </div>
 
