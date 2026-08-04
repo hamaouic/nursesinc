@@ -263,13 +263,6 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
                   </div>
                 ))}
               </div>
-
-              <div className="mt-auto flex items-baseline gap-1.5 rounded-xl bg-blush-50 px-3 py-2 text-ink-700">
-                <span className="font-display text-xl font-semibold">
-                  {service.rate}
-                </span>
-                <span className="text-[10px] text-ink-400">{service.unit}</span>
-              </div>
             </>
           ) : (
             <>
