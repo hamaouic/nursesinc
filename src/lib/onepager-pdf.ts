@@ -18,7 +18,26 @@ import {
 export function generateOnePagerPdf(id: OnePagerId) {
   const meta = onePagers[id];
   const data = onePagerContent[id];
+  const doc = buildOnePagerDoc(meta, data);
+  doc.save(meta.filename);
+}
 
+/**
+ * Generate the one-pager as a Blob URL for in-browser preview.
+ * Caller is responsible for revoking the URL when done.
+ */
+export function previewOnePagerPdf(id: OnePagerId): string {
+  const meta = onePagers[id];
+  const data = onePagerContent[id];
+  const doc = buildOnePagerDoc(meta, data);
+  const blob = doc.output('blob');
+  return URL.createObjectURL(blob);
+}
+
+function buildOnePagerDoc(
+  meta: (typeof onePagers)[OnePagerId],
+  data: (typeof onePagerContent)[OnePagerId],
+) {
   const doc = new jsPDF({ unit: 'pt', format: 'letter' });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -108,7 +127,7 @@ export function generateOnePagerPdf(id: OnePagerId) {
 
   // NB context callout
   newPageIfNeeded(120);
-  doc.setFillColor(232, 245, 233); // mint-100
+  doc.setFillColor(232, 245, 233);
   doc.roundedRect(marginX, y, contentW, 100, 12, 12, 'F');
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
@@ -123,7 +142,7 @@ export function generateOnePagerPdf(id: OnePagerId) {
   // Body blocks
   data.blocks.forEach((block, idx) => {
     newPageIfNeeded(140);
-    doc.setFillColor(255, 233, 238); // blush-100
+    doc.setFillColor(255, 233, 238);
     doc.roundedRect(marginX - 4, y - 14, contentW + 8, 24, 6, 6, 'F');
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
@@ -153,7 +172,7 @@ export function generateOnePagerPdf(id: OnePagerId) {
   data.checklist.forEach((line) => {
     newPageIfNeeded(24);
     const lines = doc.splitTextToSize(line, contentW - 16);
-    doc.setTextColor(141, 207, 168); // mint-400
+    doc.setTextColor(141, 207, 168);
     doc.text('☐', marginX, y + 8);
     doc.setTextColor(60, 72, 84);
     doc.text(lines, marginX + 18, y + 8);
@@ -204,11 +223,8 @@ export function generateOnePagerPdf(id: OnePagerId) {
   for (let p = 1; p <= total; p++) {
     doc.setPage(p);
     pageNum = p;
-    if (p === 1) {
-      // footer is already drawn above? no — only on overflows. Draw for page 1 too.
-    }
     drawFooter();
   }
 
-  doc.save(meta.filename);
+  return doc;
 }

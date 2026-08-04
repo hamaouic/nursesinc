@@ -1,10 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Brain, Heart, ShieldPlus, Download, FileText } from 'lucide-react';
+import {
+  Brain,
+  Heart,
+  ShieldPlus,
+  Download,
+  FileText,
+  Eye,
+} from 'lucide-react';
 import { knowledgePaths, type KnowledgePath } from '@/nurses-inc-config';
-import { generateOnePagerPdf } from '@/lib/onepager-pdf';
+import {
+  generateOnePagerPdf,
+  previewOnePagerPdf,
+} from '@/lib/onepager-pdf';
 import { cn } from '@/lib/utils';
 import MouseCard from './MouseCard';
+import DocumentPreviewModal, {
+  type DocumentPreview,
+} from './DocumentPreviewModal';
 
 const pathIcons = {
   dementia: Brain,
@@ -20,7 +33,51 @@ const pathGradients: Record<KnowledgePath['theme'], string> = {
 
 export default function KnowledgeExplorer() {
   const [active, setActive] = useState<KnowledgePath['id']>('dementia');
+  const [preview, setPreview] = useState<DocumentPreview | null>(null);
   const current = knowledgePaths.find((p) => p.id === active)!;
+
+  // Revoke preview blob URL on unmount or path change
+  useEffect(() => {
+    return () => {
+      if (preview?.url) URL.revokeObjectURL(preview.url);
+    };
+  }, [preview]);
+
+  const startPreview = async (id: KnowledgePath['id']) => {
+    setPreview({
+      title: knowledgePaths.find((p) => p.id === id)!.label,
+      meta: 'One-Pager · Knowledge Pathway · Read-only preview',
+      url: null,
+      loading: true,
+    });
+    try {
+      // Run preview generation off the synchronous render path
+      await new Promise((r) => setTimeout(r, 30));
+      const url = previewOnePagerPdf(id);
+      setPreview({
+        title: knowledgePaths.find((p) => p.id === id)!.label,
+        meta: 'One-Pager · Knowledge Pathway · Read-only preview',
+        url,
+        loading: false,
+        onDownload: () => generateOnePagerPdf(id),
+      });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Could not open preview.';
+      setPreview({
+        title: knowledgePaths.find((p) => p.id === id)!.label,
+        url: null,
+        loading: false,
+        error: message,
+        onDownload: () => generateOnePagerPdf(id),
+      });
+    }
+  };
+
+  const closePreview = () => {
+    if (preview?.url) URL.revokeObjectURL(preview.url);
+    setPreview(null);
+  };
 
   return (
     <div>
@@ -88,25 +145,36 @@ export default function KnowledgeExplorer() {
             pathGradients[current.theme],
           )}
         >
-          <div className="mb-8 flex max-w-3xl flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex-1">
+          <div className="mb-8 flex flex-col gap-4">
+            <div>
               <h3 className="font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
                 {current.label}
               </h3>
-              <p className="mt-2 text-base text-ink-400">
+              <p className="mt-2 max-w-3xl text-base text-ink-400">
                 {current.description}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => generateOnePagerPdf(current.id)}
-              className="group inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
-              aria-label={`Download ${current.label} one-pager PDF`}
-            >
-              <FileText className="h-4 w-4" />
-              <span>One-Pager PDF</span>
-              <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" />
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => startPreview(current.id)}
+                aria-label={`View ${current.label} one-pager PDF`}
+                className="group inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
+              >
+                <Eye className="h-4 w-4" />
+                <span>View</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => generateOnePagerPdf(current.id)}
+                aria-label={`Download ${current.label} one-pager PDF`}
+                className="group inline-flex items-center gap-2 rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
+              >
+                <FileText className="h-4 w-4" />
+                <span>One-Pager PDF</span>
+                <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" />
+              </button>
+            </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -139,6 +207,13 @@ export default function KnowledgeExplorer() {
             ))}
           </div>
         </motion.div>
+      </AnimatePresence>
+
+      {/* Preview modal */}
+      <AnimatePresence>
+        {preview && (
+          <DocumentPreviewModal preview={preview} onClose={closePreview} />
+        )}
       </AnimatePresence>
     </div>
   );
