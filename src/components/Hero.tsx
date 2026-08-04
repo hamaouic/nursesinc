@@ -111,10 +111,10 @@ export default function Hero() {
             transition={{ duration: 0.9, delay: 0.15 }}
             className="mt-6 max-w-xl text-lg leading-relaxed text-ink-400"
           >
-            Geriatrics. Dementia. Late-life mental health. We deliver
-            physician-backed, fully-regulated nursing care that feels less
-            like a clinic and more like a trusted friend who happens to know
-            the system inside-out.
+            Aging well. Dementia. Late-life mental health. Spiritual care.
+            We deliver physician-backed, fully-regulated nursing care that
+            feels less like a clinic and more like a trusted friend who
+            happens to know the system inside-out.
           </motion.p>
 
           <motion.div
