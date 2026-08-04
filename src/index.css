@@ -103,8 +103,11 @@ body {
   border-radius: 999px;
 }
 
-/* Card flip — used for service cards */
+/* Card flip — used for service cards.
+   Uses 3D transforms + preserve-3d; MouseCard's transform on a child
+   of the FRONT is fine because the front is hidden after the flip. */
 .flip-card {
+  position: relative;
   perspective: 1200px;
 }
 .flip-card-inner {
@@ -114,9 +117,7 @@ body {
   transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform-style: preserve-3d;
 }
-.flip-card:hover .flip-card-inner,
-.flip-card:focus-within .flip-card-inner,
-.flip-card-inner.is-flipped {
+.flip-card:hover .flip-card-inner {
   transform: rotateY(180deg);
 }
 .flip-card-face {
@@ -128,12 +129,17 @@ body {
   overflow: hidden;
   pointer-events: auto;
 }
-/* Hide front face when card is flipped so its MouseCard layer cannot
-   intercept hover/pointer events on the back face. */
-.flip-card:hover .flip-card-inner > .flip-card-face.front,
-.flip-card:focus-within .flip-card-inner > .flip-card-face.front {
+.flip-card-face.front {
+  transform: rotateY(0deg);
+}
+.flip-card-face.back {
+  transform: rotateY(180deg);
+}
+/* Hide front face AFTER flip animation completes so its MouseCard
+   layer cannot intercept hover/pointer events on the back. */
+.flip-card:hover .flip-card-face.front {
   visibility: hidden;
-  transition: visibility 0s linear 0.35s;
+  transition: visibility 0s linear 0.7s;
 }
 
 /* Reduced motion */

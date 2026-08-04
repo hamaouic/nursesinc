@@ -123,7 +123,6 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         ease: [0.2, 0.8, 0.2, 1],
       }}
       className="flip-card h-[360px]"
-      tabIndex={0}
       role="group"
       aria-label={service.title}
     >
