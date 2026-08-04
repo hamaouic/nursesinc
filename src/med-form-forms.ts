@@ -24,7 +24,10 @@ export type MedFormId =
   | 'empower-brochures'
   | 'adherence-safety'
   | 'fridge-list'
-  | 'feedback-survey';
+  | 'feedback-survey'
+  | 'emergency-card'
+  | 'side-effect-tracker'
+  | 'doctor-visit-prep';
 
 export type MedFormMeta = {
   id: MedFormId;
@@ -207,6 +210,48 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
       'Optional marketing authorization',
     ],
   },
+  'emergency-card': {
+    id: 'emergency-card',
+    number: '13',
+    title: 'Caregiver Emergency Contact Card',
+    shortTitle: 'Wallet & fridge-ready contact card',
+    audience: 'Form · Families',
+    filename: 'Nurses-Inc-Form-13-Emergency-Contact-Card.pdf',
+    icon: 'Phone',
+    accent: 'blush',
+    summary: [
+      'Patient + Substitute Decision Maker details',
+      'Pharmacy, doctor, ER & emergency contacts',
+    ],
+  },
+  'side-effect-tracker': {
+    id: 'side-effect-tracker',
+    number: '14',
+    title: 'Medication Side-Effect Tracker',
+    shortTitle: 'Daily reaction log',
+    audience: 'Form · Families',
+    filename: 'Nurses-Inc-Form-14-Side-Effect-Tracker.pdf',
+    icon: 'Activity',
+    accent: 'mint',
+    summary: [
+      '7-day symptom + medication log',
+      'Severity scale 1–5 for caregiver reporting',
+    ],
+  },
+  'doctor-visit-prep': {
+    id: 'doctor-visit-prep',
+    number: '15',
+    title: 'Doctor Visit Preparation Sheet',
+    shortTitle: 'Bring this to your next appointment',
+    audience: 'Form · Families',
+    filename: 'Nurses-Inc-Form-15-Doctor-Visit-Prep.pdf',
+    icon: 'Stethoscope',
+    accent: 'cream',
+    summary: [
+      'Top 3 concerns + questions',
+      'Recent changes, medications, vitals',
+    ],
+  },
 };
 
 export const medFormList: MedFormMeta[] = [
@@ -222,6 +267,9 @@ export const medFormList: MedFormMeta[] = [
   medForms['adherence-safety'],
   medForms['fridge-list'],
   medForms['feedback-survey'],
+  medForms['emergency-card'],
+  medForms['side-effect-tracker'],
+  medForms['doctor-visit-prep'],
 ];
 
 // ---------------------------------------------------------------------------
@@ -577,6 +625,115 @@ export const feedbackMarketingConsent =
 
 export const feedbackClosingNote =
   'Thank you for your valuable feedback. Please return this completed form to your nurse or submit it via your secure online client portal.';
+
+// Emergency Contact Card payload
+export const emergencyCardIntro =
+  'Print this card and keep one in the wallet, one on the fridge, and one in the medication bag. In an emergency, first responders need to know who to call and what conditions the person has — in seconds, not minutes.';
+
+export const emergencyCardFields: { label: string; placeholder: string }[] = [
+  { label: 'Patient Full Name', placeholder: '' },
+  { label: 'Date of Birth', placeholder: 'YYYY-MM-DD' },
+  { label: 'PHN / Medicare Card Number', placeholder: '' },
+  { label: 'Primary Diagnosis / Reason for Care', placeholder: '' },
+  { label: 'Allergies (medication + food)', placeholder: '' },
+  { label: 'Blood Type', placeholder: '' },
+  { label: 'DNR / Goals of Care Designation', placeholder: '' },
+];
+
+export const emergencyCardContacts: { label: string; sublabel: string }[] = [
+  { label: 'Substitute Decision Maker (Primary)', sublabel: 'Name · Relationship · Phone · Alt. Phone' },
+  { label: 'Substitute Decision Maker (Backup)', sublabel: 'Name · Relationship · Phone · Alt. Phone' },
+  { label: 'Family Doctor / Primary Care Provider', sublabel: 'Clinic Name · Doctor · Phone · Address' },
+  { label: 'Pharmacy', sublabel: 'Name · Phone · Address' },
+  { label: 'Specialist(s)', sublabel: 'e.g. Cardiology, Geriatrics, Psychiatry' },
+  { label: 'Home-Care Agency / Visiting Nurse', sublabel: 'Agency · Nurse · Phone' },
+  { label: 'Nearest Hospital Emergency Department', sublabel: 'Name · Address · Phone' },
+  { label: 'Power of Attorney for Care', sublabel: 'Name · Phone' },
+];
+
+export const emergencyCardFooter =
+  'Carry this card with you at all times. Update it whenever medications, doctors, or emergency contacts change.';
+
+// Side-Effect Tracker payload
+export const sideEffectTrackerIntro =
+  'Use this log to track how the person you care for feels after taking new medications, after dose changes, or whenever something seems off. Bring the completed log to your next appointment or to your visiting nurse.';
+
+export const sideEffectTrackerHeaders = [
+  'Date / Time',
+  'Medication + Dose',
+  'Symptom or Reaction',
+  'Severity (1–5)',
+  'Action Taken',
+];
+
+export const sideEffectTrackerSeverityLabels = [
+  '1 — Mild (noticed, no impact)',
+  '2 — Moderate (some discomfort)',
+  '3 — Concerning (affects daily life)',
+  '4 — Severe (needs prescriber call)',
+  '5 — Emergency (call 911 / go to ER)',
+];
+
+export const sideEffectTrackerPrompt = 'Common things to watch for:';
+export const sideEffectTrackerWatchlist = [
+  'Dizziness or unsteadiness on standing',
+  'Confusion, fogginess, or memory changes',
+  'Nausea, vomiting, or appetite loss',
+  'Dry mouth, constipation, or urinary changes',
+  'New falls, near-falls, or weakness',
+  'Mood changes — sadness, anxiety, agitation',
+  'Skin rash, swelling, or breathing changes',
+  'Sleep changes — insomnia or excessive drowsiness',
+];
+
+// Doctor Visit Preparation Sheet payload
+export const doctorVisitPrepIntro =
+  'A 10-minute appointment goes a long way when you bring the right information. Fill this out the night before, bring two copies — one for you, one for the doctor.';
+
+export const doctorVisitPrepSections = [
+  {
+    number: '1',
+    heading: 'About This Visit',
+    fields: ['Date & time of appointment', 'Doctor / clinic name', 'Reason for this visit'],
+  },
+  {
+    number: '2',
+    heading: 'Top 3 Concerns (in your own words)',
+    fields: ['1. Most important concern today', '2. Second concern', '3. Third concern'],
+  },
+  {
+    number: '3',
+    heading: 'Questions for the Doctor',
+    fields: ['1.', '2.', '3.', '4.', '5.'],
+  },
+  {
+    number: '4',
+    heading: 'Changes Since Last Visit',
+    fields: [
+      'New symptoms or behaviours',
+      'Recent falls or near-falls',
+      'Changes in weight, appetite, or sleep',
+      'Hospital / ER visits since last visit',
+      'New medications or dose changes',
+      'New allergies or side effects',
+    ],
+  },
+  {
+    number: '5',
+    heading: 'Current Medications',
+    fields: ['Attach the Medication Inventory (Form 2) or write changes here'],
+  },
+  {
+    number: '6',
+    heading: 'Recent Vitals (if measured at home)',
+    fields: ['Blood pressure', 'Heart rate', 'Weight', 'Blood sugar (if applicable)'],
+  },
+  {
+    number: '7',
+    heading: 'What I Want From This Visit',
+    fields: ['My goal for today is…'],
+  },
+];
 
 // Common APA references shared by every form (condensed)
 export const medFormReferences: string[] = [

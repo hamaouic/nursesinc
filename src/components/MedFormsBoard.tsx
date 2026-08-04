@@ -203,7 +203,7 @@ function FormPreviewModal({
           </span>
           <div className="min-w-0">
             <div className="truncate text-[11px] uppercase tracking-widest text-white/60">
-              Form {meta.number} of 12 · {meta.audience} · Read-only preview
+              Form {meta.number} of 15 · {meta.audience} · Read-only preview
             </div>
             <h2
               id="form-preview-title"

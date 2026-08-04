@@ -26,6 +26,17 @@ import {
   feedbackMarketingNote,
   feedbackMarketingConsent,
   feedbackClosingNote,
+  emergencyCardIntro,
+  emergencyCardFields,
+  emergencyCardContacts,
+  emergencyCardFooter,
+  sideEffectTrackerIntro,
+  sideEffectTrackerHeaders,
+  sideEffectTrackerSeverityLabels,
+  sideEffectTrackerPrompt,
+  sideEffectTrackerWatchlist,
+  doctorVisitPrepIntro,
+  doctorVisitPrepSections,
   medFormReferences,
   type MedFormId,
 } from '@/med-form-forms';
@@ -596,6 +607,186 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
         doc.text(feedbackClosingNote, marginX, y + 8);
       }
     }
+  }
+
+  else if (id === 'emergency-card') {
+    // Branded mint hero band
+    if (safeSpace(48)) {
+      doc.setFillColor(232, 245, 233);
+      doc.roundedRect(marginX, y, contentW, 36, 6, 6, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(141, 207, 168);
+      doc.text('NURSES INC.  ·  EMERGENCY CONTACT CARD', marginX + 8, y + 14);
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 117, 138);
+      doc.text('Wallet · Fridge · Medication Bag  ·  Updated: ___________', marginX + 8, y + 26);
+      y += 44;
+    }
+
+    drawIntro(emergencyCardIntro);
+
+    if (drawSectionTitle('Patient Details')) {
+      emergencyCardFields.forEach((f) => {
+        if (!safeSpace(20)) return;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 117, 138);
+        doc.text(f.label.toUpperCase(), marginX, y + 8);
+        doc.setDrawColor(180, 188, 200);
+        doc.setLineWidth(0.4);
+        doc.line(marginX, y + 14, marginX + contentW, y + 14);
+        y += 18;
+      });
+      y += 2;
+    }
+
+    if (drawSectionTitle('Emergency Contacts')) {
+      emergencyCardContacts.forEach((c) => {
+        if (!safeSpace(22)) return;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(44, 62, 80);
+        doc.text(c.label, marginX, y + 8);
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(6.5);
+        doc.setTextColor(120, 130, 140);
+        doc.text(c.sublabel, marginX, y + 16);
+        doc.setDrawColor(180, 188, 200);
+        doc.setLineWidth(0.4);
+        doc.line(marginX, y + 22, marginX + contentW, y + 22);
+        y += 24;
+      });
+    }
+
+    if (safeSpace(24)) {
+      y += 4;
+      doc.setFillColor(244, 251, 246);
+      doc.setDrawColor(141, 207, 168);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(marginX, y, contentW, 18, 3, 3, 'FD');
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(6.5);
+      doc.setTextColor(60, 72, 84);
+      const footerLines = doc.splitTextToSize(emergencyCardFooter, contentW - 12);
+      doc.text(footerLines, marginX + 6, y + 8);
+      y += 22;
+    }
+  }
+
+  else if (id === 'side-effect-tracker') {
+    drawIntro(sideEffectTrackerIntro);
+
+    if (drawSectionTitle('Daily Symptom Log — 7 Days')) {
+      // Build a table: 5 columns, 8 rows (1 header + 7 days)
+      const weights = [1.2, 1.8, 2.4, 0.8, 1.4];
+      const totalW = weights.reduce((a, b) => a + b, 0);
+      const colW = weights.map((w) => (w / totalW) * contentW);
+      const headerH = 22;
+      const rowH = 26;
+
+      if (safeSpace(headerH + rowH * 7 + 50)) {
+        // Header row
+        doc.setFillColor(232, 245, 233);
+        doc.setDrawColor(180, 188, 200);
+        doc.rect(marginX, y, contentW, headerH, 'FD');
+        let xc = marginX;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(44, 62, 80);
+        sideEffectTrackerHeaders.forEach((label, i) => {
+          const w = colW[i];
+          if (i > 0) doc.line(xc, y, xc, y + headerH);
+          const wrapped = doc.splitTextToSize(label, w - 4);
+          doc.text(wrapped, xc + 2, y + 8);
+          xc += w;
+        });
+        y += headerH;
+        // Body rows
+        doc.setDrawColor(200, 208, 218);
+        doc.setLineWidth(0.3);
+        for (let i = 0; i < 7; i++) {
+          doc.rect(marginX, y, contentW, rowH);
+          xc = marginX;
+          for (let j = 0; j < colW.length; j++) {
+            if (j > 0) doc.line(xc, y, xc, y + rowH);
+            xc += colW[j];
+          }
+          y += rowH;
+        }
+        y += 8;
+      }
+    }
+
+    if (drawSectionTitle('Severity Scale (1–5)')) {
+      sideEffectTrackerSeverityLabels.forEach((label) => {
+        if (!safeSpace(10)) return;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(60, 72, 84);
+        doc.text('•  ' + label, marginX + 4, y + 4);
+        y += 9;
+      });
+    }
+
+    if (drawSectionTitle(sideEffectTrackerPrompt)) {
+      sideEffectTrackerWatchlist.forEach((item) => {
+        if (!safeSpace(10)) return;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(60, 72, 84);
+        doc.text('•  ' + item, marginX + 4, y + 4);
+        y += 9;
+      });
+    }
+  }
+
+  else if (id === 'doctor-visit-prep') {
+    drawIntro(doctorVisitPrepIntro);
+
+    doctorVisitPrepSections.forEach((section) => {
+      if (!drawSectionTitle(`${section.number}. ${section.heading}`)) return;
+
+      if (section.number === '5') {
+        // Note row
+        if (safeSpace(16)) {
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(7);
+          doc.setTextColor(100, 117, 138);
+          doc.text('(Tip: Form 2 — Medication Inventory — is a great attachable reference.)', marginX, y + 8);
+          y += 14;
+        }
+      }
+
+      section.fields.forEach((label) => {
+        if (!safeSpace(20)) return;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 117, 138);
+        doc.text(label.toUpperCase(), marginX, y + 8);
+        doc.setDrawColor(180, 188, 200);
+        doc.setLineWidth(0.4);
+        if (section.number === '4' && label === 'Recent falls or near-falls') {
+          // Make this row a checkbox row
+          doc.rect(marginX + contentW - 30, y + 2, 8, 8);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.5);
+          doc.setTextColor(120, 130, 140);
+          doc.text('Yes', marginX + contentW - 19, y + 8);
+          doc.rect(marginX + contentW - 12, y + 2, 8, 8);
+          doc.text('No', marginX + contentW - 1, y + 8);
+        } else if (section.number === '7') {
+          // Larger writing area for the goal
+          doc.setDrawColor(180, 188, 200);
+          doc.rect(marginX, y + 12, contentW, 28);
+          y += 32;
+          return;
+        }
+        doc.line(marginX, y + 14, marginX + contentW, y + 14);
+        y += 18;
+      });
+      y += 4;
+    });
   }
 
   // ===== References (condensed APA) =====
