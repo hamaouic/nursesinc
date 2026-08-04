@@ -105,7 +105,10 @@ export default function ContactForm() {
     // Web3Forms — free, no backend, just an HTTPS POST.
     // Access key is read from Vite env (VITE_WEB3FORMS_KEY) — set in
     // Cloudflare Pages env vars when deploying.
-    const accessKey = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
+    // Trim defensively so stray newlines/whitespace from a copy-paste in
+    // the dashboard don't poison the request.
+    const rawAccessKey = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
+    const accessKey = rawAccessKey?.trim();
 
     if (!accessKey) {
       // No key configured yet — keep the form working locally and surface a
