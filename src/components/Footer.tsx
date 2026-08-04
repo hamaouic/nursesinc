@@ -49,6 +49,7 @@ export default function Footer() {
               { to: '/', label: 'Home' },
               { to: '/services', label: 'Services & Pricing' },
               { to: '/knowledge', label: 'Knowledge Hub' },
+              { to: '/forms', label: 'Caregiver Forms' },
               { to: '/contact', label: 'Contact & Booking' },
             ].map((l) => (
               <li key={l.to}>

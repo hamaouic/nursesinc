@@ -7,6 +7,7 @@ const links = [
   { to: '/', label: 'Home' },
   { to: '/services', label: 'Services' },
   { to: '/knowledge', label: 'Knowledge Hub' },
+  { to: '/forms', label: 'Forms' },
   { to: '/contact', label: 'Contact' },
 ];
 
