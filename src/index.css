@@ -115,7 +115,8 @@ body {
   transform-style: preserve-3d;
 }
 .flip-card:hover .flip-card-inner,
-.flip-card:focus-within .flip-card-inner {
+.flip-card:focus-within .flip-card-inner,
+.flip-card-inner.is-flipped {
   transform: rotateY(180deg);
 }
 .flip-card-face {
@@ -125,9 +126,14 @@ body {
   backface-visibility: hidden;
   border-radius: 24px;
   overflow: hidden;
+  pointer-events: auto;
 }
-.flip-card-back {
-  transform: rotateY(180deg);
+/* Hide front face when card is flipped so its MouseCard layer cannot
+   intercept hover/pointer events on the back face. */
+.flip-card:hover .flip-card-inner > .flip-card-face.front,
+.flip-card:focus-within .flip-card-inner > .flip-card-face.front {
+  visibility: hidden;
+  transition: visibility 0s linear 0.35s;
 }
 
 /* Reduced motion */

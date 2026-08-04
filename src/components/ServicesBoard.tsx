@@ -131,7 +131,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         {/* FRONT */}
         <div
           className={cn(
-            'flip-card-face flex flex-col gap-4 border border-white/60 p-6 shadow-soft backdrop-blur',
+            'flip-card-face front flex flex-col gap-4 border border-white/60 p-6 shadow-soft backdrop-blur',
             accentBg,
           )}
         >
@@ -178,7 +178,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
         {/* BACK */}
         <div
           className={cn(
-            'flip-card-face flex flex-col gap-3 overflow-y-auto border border-ink-100/80 p-6 shadow-glow backdrop-blur',
+            'flip-card-face back flex flex-col gap-3 overflow-y-auto border border-ink-100/80 p-6 shadow-glow backdrop-blur',
             service.process ? 'bg-white' : service.accent === 'blush' ? 'bg-ink-500' : 'bg-ink-700',
           )}
         >
