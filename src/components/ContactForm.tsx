@@ -64,11 +64,21 @@ function openBrandedMailto({
     'Crafted with care in New Brunswick, Canada · © 2026 Nurses Inc.',
   ].join('\n');
 
-  const params = new URLSearchParams({ subject, body });
-  // URL-encode spaces and line breaks so the body renders properly in
-  // both desktop mail clients (Outlook, Apple Mail, Thunderbird) and
-  // webmail fallback (Gmail web).
-  const href = `mailto:${encodeURIComponent(email)}?${params.toString()}`;
+  // Mail clients (especially Outlook on Windows) interpret mailto URLs with
+  // their own quirks. URLSearchParams encodes spaces as '+' which most
+  // mail clients render as literal '+' instead of a space. Build the URL
+  // by hand with proper percent-encoding so spaces and line breaks render
+  // correctly across Outlook, Apple Mail, Thunderbird, and Gmail web.
+  const encodeMailtoParam = (s: string) =>
+    encodeURIComponent(s)
+      // encodeURIComponent leaves these alone; convert to %20/%0A/%0D for
+      // best Outlook compatibility.
+      .replace(/%20/g, '%20')
+      .replace(/\n/g, '%0A')
+      .replace(/\r/g, '%0D');
+
+  const params = `subject=${encodeMailtoParam(subject)}&body=${encodeMailtoParam(body)}`;
+  const href = `mailto:${encodeURIComponent(email)}?${params}`;
 
   // Open in a new tab so the form's success state stays visible behind it.
   // Some browsers may block the popup — if so, the user can click the
@@ -439,19 +449,31 @@ export default function ContactForm() {
 
               <div className="mt-6 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col gap-2">
-                  <label className="group inline-flex cursor-pointer items-start gap-2.5 text-left text-xs text-ink-500">
-                    <span className="relative mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center">
+                  <label className="group inline-flex cursor-pointer items-start gap-3 text-left text-xs text-ink-500 select-none">
+                    <span className="relative mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center">
                       <input
                         type="checkbox"
                         checked={sendCopy}
                         onChange={(e) => setSendCopy(e.target.checked)}
-                        className="peer absolute inset-0 h-full w-full cursor-pointer appearance-none rounded-md border border-blush-300/70 bg-white/80 shadow-soft outline-none transition-colors duration-200 checked:border-mint-400 checked:bg-mint-300 focus-visible:ring-2 focus-visible:ring-blush-300"
+                        className="peer absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                         aria-describedby="send-copy-help"
                       />
+                      <span
+                        aria-hidden
+                        className={cn(
+                          'pointer-events-none absolute inset-0 rounded-md border-2 transition-colors duration-200',
+                          'border-blush-300 bg-white shadow-soft',
+                          'peer-checked:border-mint-500 peer-checked:bg-mint-300',
+                          'peer-focus-visible:ring-2 peer-focus-visible:ring-blush-300 peer-focus-visible:ring-offset-1',
+                        )}
+                      />
                       <Check
-                        className="pointer-events-none h-3 w-3 text-white opacity-0 transition-opacity duration-200 peer-checked:opacity-100"
-                        strokeWidth={3}
-                        aria-hidden="true"
+                        aria-hidden
+                        className={cn(
+                          'pointer-events-none relative z-0 h-3.5 w-3.5 text-white transition-opacity duration-200',
+                          sendCopy ? 'opacity-100' : 'opacity-0',
+                        )}
+                        strokeWidth={4}
                       />
                     </span>
                     <span>
