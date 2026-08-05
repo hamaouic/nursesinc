@@ -5,7 +5,6 @@ import {
   BookMarked,
   ArrowRight,
   Sparkles,
-  Wrench,
 } from 'lucide-react';
 import Section from '@/components/Section';
 import MedFormsBoard from '@/components/MedFormsBoard';
@@ -33,7 +32,12 @@ export default function Forms() {
         }
         description="Single-page PDFs you can print, fill out, and keep on the fridge."
       >
-        {/* Internal Tools showcase — sits above the printable grid */}
+        {/* Internal Tools — heading sits above the showcase box */}
+        <h3 className="mb-6 font-display text-3xl font-semibold tracking-tight text-ink-700 sm:text-4xl md:text-5xl">
+          Internal{' '}
+          <span className="text-ink-400">Tools.</span>
+        </h3>
+
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -41,17 +45,6 @@ export default function Forms() {
           transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
           className="mb-8 overflow-hidden rounded-3xl border border-white/60 bg-gradient-to-br from-blush-100 via-white to-mint-100 p-6 shadow-glow backdrop-blur md:p-8"
         >
-          <div className="mb-5 flex items-center gap-2">
-            <span className="grid h-7 w-7 place-items-center rounded-lg bg-ink-500 text-white">
-              <Wrench className="h-3.5 w-3.5" />
-            </span>
-            <h3 className="font-display text-lg font-semibold text-ink-700">
-              Internal Tools
-            </h3>
-            <span className="rounded-full bg-mint-200 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-ink-700">
-              Nurses Only
-            </span>
-          </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <Link
