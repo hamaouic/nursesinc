@@ -14,10 +14,10 @@ import HighAlertTriggers from '@/components/HighAlertTriggers';
 export default function Forms() {
   return (
     <>
-      <div className="pt-28" />
+      <div className="pt-16" />
 
       {/* High-Alert Immediate Intervention Triggers — first thing on the page */}
-      <div className="mx-auto w-full max-w-6xl px-6 pt-20 sm:pt-28">
+      <div className="mx-auto w-full max-w-6xl px-6 pt-16 sm:pt-20">
         <HighAlertTriggers />
       </div>
 
