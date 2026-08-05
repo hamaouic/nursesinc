@@ -4,13 +4,14 @@ import Section from '@/components/Section';
 import ReconciliationDashboard from '@/components/ReconciliationDashboard';
 import SbarEscalation from '@/components/SbarEscalation';
 import ToolsDashboard from './ClinicalTools';
+import HighAlertTriggers from '@/components/HighAlertTriggers';
 
 export default function Reconciliation() {
   return (
     <>
       <div className="pt-28" />
       <Section
-        eyebrow="Internal Tool"
+        eyebrow="Internal Tools"
         title={
           <>
             Medication Reconciliation{' '}
@@ -19,6 +20,10 @@ export default function Reconciliation() {
         }
         description="An in-browser clinical dashboard for our nurses. Fill in each section during the home visit — counts, barriers, and escalations update live. Lock the audit to generate a clean JSON summary you can paste into the secure client record."
       >
+        <div className="mt-6">
+          <HighAlertTriggers />
+        </div>
+
         <ToolsDashboard>
           <ReconciliationDashboard />
 
