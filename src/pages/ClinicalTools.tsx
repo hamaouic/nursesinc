@@ -15,8 +15,8 @@ const TOOLS = [
   },
   {
     id: 'clinical-matrix',
-    label: 'Clinical Reference Matrix',
-    sub: 'Bedside geriatric quick-reference by topic',
+    label: 'Geriatric Reference Matrix',
+    sub: 'Bedside medication + behavioural cheat-sheet',
     Icon: BookMarked,
     to: '/forms/clinical-tools',
     accent: 'blush',

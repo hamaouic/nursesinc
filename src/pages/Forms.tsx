@@ -78,7 +78,7 @@ export default function Forms() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-display text-sm font-semibold text-ink-700">
-                    Clinical Reference Matrix
+                    Geriatric Reference Matrix
                   </span>
                   <span className="inline-flex items-center gap-1 rounded-full bg-blush-200 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-ink-700">
                     <Sparkles className="h-2.5 w-2.5" />
@@ -86,8 +86,8 @@ export default function Forms() {
                   </span>
                 </div>
                 <p className="mt-1 text-[11px] leading-relaxed text-ink-400">
-                  Bedside geriatric reference by topic — symptoms, screens,
-                  red flags, interventions, NB resources.
+                  Searchable medication + behavioural cheat-sheet for home
+                  visits — with caregiver-interview prompts.
                 </p>
               </div>
               <ArrowRight className="mt-1 h-4 w-4 text-ink-300 transition-transform group-hover:translate-x-1 group-hover:text-ink-700" />
