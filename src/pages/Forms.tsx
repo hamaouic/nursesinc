@@ -20,18 +20,8 @@ export default function Forms() {
         <HighAlertTriggers />
       </div>
 
-      {/* Printable Forms section header + body */}
-      <Section
-        className="!pt-8"
-        eyebrow="Free Downloads"
-        title={
-          <>
-            Printable{' '}
-            <span className="text-ink-400">Forms.</span>
-          </>
-        }
-        description="Single-page PDFs you can print, fill out, and keep on the fridge."
-      >
+      {/* Internal Tools section — no header, just the heading + showcase box */}
+      <Section className="!pt-8">
         {/* Internal Tools — heading sits above the showcase box */}
         <h3 className="mb-6 font-display text-3xl font-semibold tracking-tight text-ink-700 sm:text-4xl md:text-5xl">
           Internal{' '}
