@@ -96,7 +96,20 @@ export default function Forms() {
             </Link>
           </div>
         </motion.div>
+      </Section>
 
+      {/* Printable Forms section header + body */}
+      <Section
+        className="!pt-8"
+        eyebrow="Free Downloads"
+        title={
+          <>
+            Printable{' '}
+            <span className="text-ink-400">Forms.</span>
+          </>
+        }
+        description="Single-page PDFs you can print, fill out, and keep on the fridge."
+      >
         <MedFormsBoard />
       </Section>
     </>
