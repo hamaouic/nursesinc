@@ -1,7 +1,7 @@
 import Section from '@/components/Section';
 import ClinicalReferenceMatrix from '@/components/ClinicalReferenceMatrix';
-import ToolsDashboard from './ClinicalTools';
 import HighAlertTriggers from '@/components/HighAlertTriggers';
+import ToolSwitcher from '@/components/ToolSwitcher';
 
 export default function ClinicalMatrixPage() {
   return (
@@ -9,6 +9,7 @@ export default function ClinicalMatrixPage() {
       <div className="pt-28" />
       <Section
         eyebrow="Internal Tools · Geriatric Clinical Guide"
+        eyebrowAction={<ToolSwitcher />}
         title={
           <>
             Geriatric Medication &amp; Behavioral{' '}
@@ -20,9 +21,7 @@ export default function ClinicalMatrixPage() {
         <div className="mt-6">
           <HighAlertTriggers />
         </div>
-        <ToolsDashboard>
-          <ClinicalReferenceMatrix />
-        </ToolsDashboard>
+        <ClinicalReferenceMatrix />
       </Section>
     </>
   );
