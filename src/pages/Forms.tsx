@@ -7,7 +7,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import Section from '@/components/Section';
-import MedFormsBoard from '@/components/MedFormsBoard';
+import FormsCanvas from '@/components/FormsCanvas';
 import HighAlertTriggers from '@/components/HighAlertTriggers';
 
 export default function Forms() {
@@ -100,7 +100,7 @@ export default function Forms() {
         }
         description="Single-page PDFs you can print, fill out, and keep on the fridge."
       >
-        <MedFormsBoard />
+        <FormsCanvas />
       </Section>
     </>
   );

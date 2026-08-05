@@ -38,6 +38,8 @@ export type MedFormMeta = {
   filename: string;
   icon: string;
   accent: 'blush' | 'mint' | 'cream';
+  /** Filter group for the Forms Canvas: family-facing or clinical/nurse-facing. */
+  category: 'family' | 'clinical';
   summary: string[];
 };
 
@@ -51,6 +53,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-1-Welcome-Preparation.pdf',
     icon: 'Sparkles',
     accent: 'blush',
+    category: 'family',
     summary: [
       '4-step pre-visit checklist',
       'What to gather · What we\u2019ll do together',
@@ -65,6 +68,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-2-Medication-Inventory.pdf',
     icon: 'Pill',
     accent: 'blush',
+    category: 'family',
     summary: [
       '10-column table: name, route, dose, time, prescriber, expiry',
       '16 blank rows — one medication per row',
@@ -79,6 +83,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-3-Beers-Criteria-Reference.pdf',
     icon: 'BookOpen',
     accent: 'mint',
+    category: 'clinical',
     summary: [
       '12 high-yield Beers flag categories',
       'Designed for use during medication review',
@@ -93,6 +98,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-4-STOPP-START-Reference.pdf',
     icon: 'BookOpen',
     accent: 'mint',
+    category: 'clinical',
     summary: [
       '8 STOPP criteria + 6 START criteria',
       'European Geriatric Medicine v3 evidence',
@@ -107,6 +113,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-5-Polypharmacy-Deprescribing.pdf',
     icon: 'BookOpen',
     accent: 'cream',
+    category: 'clinical',
     summary: [
       'CIHI ≥10-class polypharmacy threshold',
       'Bruyère 3-question deprescribing framework',
@@ -121,6 +128,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-6-Symptom-Cause.pdf',
     icon: 'FileText',
     accent: 'blush',
+    category: 'clinical',
     summary: [
       '4 symptom-entry cards per page',
       'Date, description, suspected med, action, outcome',
@@ -135,6 +143,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-7-Deprescribing-Algorithms.pdf',
     icon: 'BookOpen',
     accent: 'cream',
+    category: 'clinical',
     summary: [
       'PPI · Benzodiazepines & Z-drugs',
       'Antipsychotics · Statins',
@@ -149,6 +158,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-8-Deprescribing-Conversation.pdf',
     icon: 'FileText',
     accent: 'blush',
+    category: 'family',
     summary: [
       'Patient & prescriber details',
       'Top 3 medications + questions + action items',
@@ -163,6 +173,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-9-EMPOWER-Brochures.pdf',
     icon: 'BookOpen',
     accent: 'cream',
+    category: 'clinical',
     summary: [
       'PPI · Benzodiazepines · Antipsychotics · Statins',
       'Sulfonylureas · Cholinesterase inhibitors',
@@ -177,6 +188,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-10-Adherence-Safety.pdf',
     icon: 'FileText',
     accent: 'mint',
+    category: 'clinical',
     summary: [
       'Chain of administration',
       'Storage rules · Expiry audit · Reference lists',
@@ -191,6 +203,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-11-Fridge-List.pdf',
     icon: 'BookOpen',
     accent: 'blush',
+    category: 'family',
     summary: [
       '5-column quick-reference table',
       'Allergies + emergency contact strip',
@@ -205,6 +218,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-12-Client-Family-Feedback.pdf',
     icon: 'Quote',
     accent: 'mint',
+    category: 'family',
     summary: [
       'Likert-scale experience ratings',
       'Optional marketing authorization',
@@ -219,6 +233,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-13-Emergency-Contact-Card.pdf',
     icon: 'Phone',
     accent: 'blush',
+    category: 'family',
     summary: [
       'Patient + Substitute Decision Maker details',
       'Pharmacy, doctor, ER & emergency contacts',
@@ -233,6 +248,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-14-Side-Effect-Tracker.pdf',
     icon: 'Activity',
     accent: 'mint',
+    category: 'family',
     summary: [
       '7-day symptom + medication log',
       'Severity scale 1–5 for caregiver reporting',
@@ -247,6 +263,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
     filename: 'Nurses-Inc-Form-15-Doctor-Visit-Prep.pdf',
     icon: 'Stethoscope',
     accent: 'cream',
+    category: 'family',
     summary: [
       'Top 3 concerns + questions',
       'Recent changes, medications, vitals',
