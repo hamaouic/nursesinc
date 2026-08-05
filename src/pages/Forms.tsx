@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Section from '@/components/Section';
 import MedFormsBoard from '@/components/MedFormsBoard';
+import HighAlertTriggers from '@/components/HighAlertTriggers';
 
 export default function Forms() {
   return (
@@ -24,6 +25,11 @@ export default function Forms() {
         }
         description="Single-page PDFs you can print, fill out, and keep on the fridge. Each form is grounded in the same framework we use in independent practice — designed for families, caregivers, and care-home staff who need to spot problems before they become crises."
       >
+        {/* High-Alert Immediate Intervention Triggers — top of page */}
+        <div className="mb-8">
+          <HighAlertTriggers />
+        </div>
+
         {/* Internal Tools showcase — sits above the printable grid */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
