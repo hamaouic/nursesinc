@@ -8,6 +8,7 @@ import Services from './pages/Services';
 import Knowledge from './pages/Knowledge';
 import Forms from './pages/Forms';
 import Reconciliation from './pages/Reconciliation';
+import ClinicalMatrixPage from './pages/ClinicalMatrixPage';
 import Contact from './pages/Contact';
 
 export default function App() {
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/knowledge" element={<Knowledge />} />
             <Route path="/forms" element={<Forms />} />
             <Route path="/forms/reconciliation" element={<Reconciliation />} />
+            <Route path="/forms/clinical-tools" element={<ClinicalMatrixPage />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<Home />} />
           </Routes>
