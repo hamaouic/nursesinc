@@ -34,7 +34,13 @@ type CategoryKey =
   | 'interventions'
   | 'nbResources';
 
-type FilterKey = 'all' | 'cardio' | 'neuro' | 'mental' | 'diabetes';
+type FilterKey =
+  | 'all'
+  | 'cardio'
+  | 'neuro'
+  | 'mental'
+  | 'diabetes'
+  | 'pharmacy';
 
 type Medication = {
   name: string;
@@ -47,7 +53,8 @@ type EntryKey =
   | 'mentalHealth'
   | 'cardiovascular'
   | 'stroke'
-  | 'diabetes';
+  | 'diabetes'
+  | 'polypharmacy';
 
 type Entry = {
   key: EntryKey;
@@ -383,6 +390,108 @@ const ENTRIES: Entry[] = [
       'Foot-care nurse referrals for neuropathy monitoring.',
     ],
   },
+  {
+    key: 'polypharmacy',
+    label: 'Polypharmacy & Deprescribing',
+    sub: '≥10 medications · Beers/STOPP-START · Stewardship',
+    Icon: Pill,
+    accent: 'cream',
+    filter: 'pharmacy',
+    highAlert: true,
+    medications: [
+      {
+        name: 'Proton Pump Inhibitors (PPIs)',
+        examples: 'Pantoprazole (Pantoloc), Omeprazole (Losec), Esomeprazole (Nexium)',
+        caregiverQuestions: [
+          'Is the dose taken daily, or only when symptoms appear?',
+          'Is there a documented indication and review date for ongoing use?',
+          'Has the person been on this medication longer than 8 weeks without a trial off?',
+          'Any new bone pain, recurrent C. diff diarrhea, or unexplained low magnesium?',
+        ],
+      },
+      {
+        name: 'NSAIDs (Non-Steroidal Anti-Inflammatory Drugs)',
+        examples: 'Ibuprofen, Naproxen, Diclofenac, ASA >325 mg, Celecoxib',
+        caregiverQuestions: [
+          'Is this OTC or prescription, and how often is it actually taken?',
+          'Is it combined with a daily aspirin, anticoagulant, ACE inhibitor, or diuretic?',
+          'Any new ankle swelling, dark stools, or stomach pain since starting?',
+          'Has the prescriber approved continued use, or is it self-medicated?',
+        ],
+      },
+      {
+        name: 'ACE Inhibitors / ARBs',
+        examples: 'Ramipril, Lisinopril, Perindopril, Losartan, Valsartan',
+        caregiverQuestions: [
+          'Has the prescriber reviewed the dose in the past 12 months?',
+          'Any new dry cough, lip/tongue swelling, or sudden weight gain with swelling?',
+          'Combined with a diuretic or NSAID — has kidney function been checked?',
+        ],
+      },
+      {
+        name: 'Diuretics',
+        examples: 'Furosemide (Lasix), Hydrochlorothiazide, Spironolactone, Indapamide',
+        caregiverQuestions: [
+          'What time of day is the dose taken — morning dosing reduces nighttime falls.',
+          'How many nighttime bathroom trips since starting?',
+          'Any new leg cramps, palpitations, dizziness on standing, or muscle weakness?',
+        ],
+      },
+      {
+        name: 'Long-Acting Benzodiazepines & "Z-drugs"',
+        examples: 'Lorazepam, Oxazepam, Temazepam, Zopiclone, Zolpidem',
+        caregiverQuestions: [
+          'Is this a scheduled or PRN medication, and how often is PRN actually given?',
+          'Has there been a morning hangover effect, daytime sleepiness, or near-fall?',
+          'Any memory gaps or paradoxical agitation after a dose?',
+          'Has a taper been discussed with the prescriber?',
+        ],
+      },
+    ],
+    highAlertFlags: [
+      'Anticholinergic Cognitive Burden (ACB) score ≥3 — confirmed risk of falls, delirium, urinary retention, and accelerated cognitive decline. Common contributors: 1st-gen antihistamines (Gravol, Benadryl, hydroxyzine), TCAs (amitriptyline, nortriptyline), bladder antispasmodics (oxybutynin, tolterodine), and many OTC sleep aids.',
+      'TRIPLE-WHAMMY: ACEi (or ARB) + Loop/Thiazide Diuretic + NSAID — concurrent use dramatically increases risk of Acute Kidney Injury (AKI), especially during dehydration, acute illness, or contrast-dye studies. Hold the NSAID first; consider acetaminophen or topical therapy for pain.',
+      'Warfarin + NSAID (or ASA >325 mg) without PPI cover — GI bleeding risk is multiplicative. If NSAID unavoidable, add a PPI and monitor INR/Hb closely. Avoid ibuprofen especially — displaces warfarin from albumin.',
+      'Long-acting benzodiazepines (lorazepam, oxazepam, temazepam, diazepam) and Z-drugs (zopiclone, zolpidem) still on the active list for >4 weeks — Beers Criteria flag; chronic use spikes fall & hip-fracture risk and impairs cognition. Plan a gradual taper with prescriber — never stop abruptly (seizure risk).',
+      'PPI use >8 weeks without documented re-evaluation — increased risk of C. difficile infection, hip/wrist fracture, hypomagnesemia, B12 deficiency, and acute interstitial nephritis. Trial off when the original indication has resolved.',
+      'Duplicate therapy within the same drug class (two PPIs, two SSRIs, two antihistamines) — almost always a documentation error and double the side-effect burden.',
+      'Triple antithrombotic stack (anticoagulant + antiplatelet + NSAID) — life-threatening GI bleed risk; escalate same-day.',
+      'Beers flagged medications without an active indication — QT-prolonging antipsychotics without documented target symptom; digoxin at doses >0.125 mg/day; sliding-scale insulin alone without basal coverage.',
+    ],
+    symptomsToLookFor: [
+      'Acute functional decline after any new prescription — always consider med as cause.',
+      'New or worsening falls, near-syncope, or orthostatic drops.',
+      'Confusion, drowsiness, or behaviour change disproportionate to the clinical picture.',
+      'New GI symptoms — nausea, dark/tarry stools, abdominal pain, or new-onset diarrhea (think C. diff if recent antibiotic + PPI).',
+      'Ankle swelling, weight gain, or sudden drop in urine output (early AKI signs).',
+      'Bone pain or unexplained fracture after a long-term PPI.',
+      'Dry mouth, urinary retention, constipation, blurry vision — classic anticholinergic syndrome.',
+    ],
+    screeningTools: [
+      'AGS Beers Criteria® 2023 — list of Potentially Inappropriate Medications for adults 65+.',
+      'STOPP/START Version 3 — Screening Tool of Older Persons\u2019 Prescriptions / Screening Tool to Alert to Right Treatment.',
+      'Anticholinergic Cognitive Burden (ACB) scale — score each medication and sum.',
+      'Bruyère Deprescribing.org algorithms — by drug class (PPI, benzo, antipsychotic, statin, sulfonylurea).',
+      'Medication Appropriateness Index (MAI) — 10-criterion implicit review.',
+      'CIHI polypharmacy threshold — ≥10 active medications = elevated risk.',
+    ],
+    interventions: [
+      'Confirm one prescriber owns the full medication list — flag any duplicate prescribers.',
+      'Ask "Does this med still have an active indication?" before every refill.',
+      'Trial off one medication at a time — never stop benzos, anticholinergics, or beta-blockers abruptly.',
+      'Document indication, start date, and target review date for every chronic prescription.',
+      'Coordinate with community pharmacist — MedsReview (NB Medicare-covered).',
+      'Time diuretics for morning; cluster sedating meds at bedtime to minimize daytime falls.',
+      'Consider non-pharm first-line: acetaminophen for pain, sleep hygiene for insomnia, PT for falls.',
+    ],
+    nbResources: [
+      'NB Pharmacy Association — MedsCheck / MedsReview programs.',
+      'Choosing Wisely Canada — geriatric "12 tests & treatments to question".',
+      'Bruyère Deprescribing Guidelines — deprescribing.org.',
+      'NB Health Links (811) — for non-urgent polypharmacy questions.',
+      'Forward referrals to partner MD (Dr. LeBlanc, Moncton) for full med reconciliation.',
+    ],
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -395,6 +504,7 @@ const FILTERS: { key: FilterKey; label: string; Icon: React.FC<{ className?: str
   { key: 'neuro', label: 'Neurology / Dementia', Icon: Brain },
   { key: 'mental', label: 'Mental Health', Icon: HeartPulse },
   { key: 'diabetes', label: 'Diabetes / Endocrine', Icon: Activity },
+  { key: 'pharmacy', label: 'Polypharmacy', Icon: Pill },
 ];
 
 const CATEGORIES: Record<CategoryKey, { label: string; sub: string }> = {
