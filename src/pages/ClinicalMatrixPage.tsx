@@ -16,7 +16,6 @@ export default function ClinicalMatrixPage() {
             <span className="text-ink-400">Reference Matrix.</span>
           </>
         }
-        description="An instantly searchable bedside cheat-sheet for home visits. Search by diagnosis, medication, or symptom — then drill into Medications, High-Alert Flags, Symptoms & Behaviours, Screening Tools, Interventions, or NB Resources. Each medication expands into caregiver-interview prompts to surface hidden non-compliance."
       >
         <div className="mt-6">
           <HighAlertTriggers />

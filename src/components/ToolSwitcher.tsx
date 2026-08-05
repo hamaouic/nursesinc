@@ -68,13 +68,13 @@ export default function ToolSwitcher() {
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          'inline-flex w-full max-w-md items-center gap-3 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-left shadow-soft backdrop-blur transition-all duration-300 sm:w-auto',
+          'flex w-full items-center gap-3 self-stretch rounded-full border border-white/60 bg-white/60 px-4 py-2.5 text-left shadow-soft backdrop-blur transition-all duration-300',
           'hover:bg-white/80 hover:-translate-y-0.5',
           open && 'bg-white shadow-glow ring-2 ring-blush-200/60',
         )}
       >
-        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-ink-500 text-white">
-          <Search className="h-3.5 w-3.5" />
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink-500 text-white">
+          <Search className="h-4 w-4" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">

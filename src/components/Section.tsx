@@ -38,14 +38,14 @@ export default function Section({
           )}
         >
           {(eyebrow || eyebrowAction) && (
-            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
               {eyebrow && (
-                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/60 bg-white/60 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-ink-400 shadow-soft backdrop-blur">
+                <span className="inline-flex shrink-0 items-center gap-2 self-stretch rounded-full border border-white/60 bg-white/60 px-4 py-2.5 text-xs font-medium uppercase tracking-[0.2em] text-ink-400 shadow-soft backdrop-blur">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blush-300" />
                   {eyebrow}
                 </span>
               )}
-              {eyebrowAction}
+              <div className="flex-1">{eyebrowAction}</div>
             </div>
           )}
           {title && (
