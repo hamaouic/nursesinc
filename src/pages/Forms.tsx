@@ -15,7 +15,15 @@ export default function Forms() {
   return (
     <>
       <div className="pt-28" />
+
+      {/* High-Alert Immediate Intervention Triggers — first thing on the page */}
+      <div className="mx-auto w-full max-w-6xl px-6 pt-20 sm:pt-28">
+        <HighAlertTriggers />
+      </div>
+
+      {/* Printable Forms section header + body */}
       <Section
+        className="!pt-8"
         eyebrow="Free Downloads"
         title={
           <>
@@ -25,11 +33,6 @@ export default function Forms() {
         }
         description="Single-page PDFs you can print, fill out, and keep on the fridge."
       >
-        {/* High-Alert Immediate Intervention Triggers — top of page */}
-        <div className="mb-8">
-          <HighAlertTriggers />
-        </div>
-
         {/* Internal Tools showcase — sits above the printable grid */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
