@@ -5,7 +5,6 @@ import {
   HeartPulse,
   Pill,
   ShieldPlus,
-  Search,
   Copy,
   Check,
   Bookmark,
@@ -684,7 +683,6 @@ export default function ClinicalReferenceMatrix() {
   const [filter, setFilter] = useState<FilterKey>('all');
   const [activeKey, setActiveKey] = useState<EntryKey>('dementia');
   const [category, setCategory] = useState<CategoryKey>('medications');
-  const [search, setSearch] = useState('');
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -781,26 +779,6 @@ export default function ClinicalReferenceMatrix() {
     }
   };
 
-  const searchMatches = useMemo(() => {
-    if (!search.trim()) return null;
-    const q = search.toLowerCase();
-    return ENTRIES.map((entry) => {
-      const allText = [
-        entry.label,
-        entry.sub,
-        ...entry.medications.flatMap((m) => [m.name, m.examples]),
-        ...entry.highAlertFlags,
-        ...entry.symptomsToLookFor,
-        ...entry.screeningTools,
-        ...entry.interventions,
-        ...entry.nbResources,
-      ]
-        .join(' ')
-        .toLowerCase();
-      return { entry, hit: allText.includes(q) };
-    }).filter((m) => m.hit);
-  }, [search]);
-
   const copyAll = async () => {
     try {
       const lines = [
@@ -837,20 +815,10 @@ export default function ClinicalReferenceMatrix() {
   return (
     <div className="space-y-6">
       {/* ====================================================== */}
-      {/* SECTION 1: Search & filter header                       */}
+      {/* SECTION 1: Filter chips                                  */}
       {/* ====================================================== */}
       <div className="rounded-3xl border border-white/60 bg-white/70 p-4 shadow-soft backdrop-blur md:p-5">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-300" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by diagnosis, medication, or symptom..."
-            className="w-full rounded-full border border-white/60 bg-white py-3 pl-11 pr-4 text-sm text-ink-700 shadow-soft outline-none transition focus:border-mint-300 focus:ring-2 focus:ring-mint-200/60"
-          />
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
           {FILTERS.map((f) => (
             <FilterChip
               key={f.key}
@@ -860,30 +828,6 @@ export default function ClinicalReferenceMatrix() {
             />
           ))}
         </div>
-
-        {searchMatches && (
-          <div className="mt-4 rounded-2xl border border-mint-200 bg-mint-50/50 p-3">
-            <p className="text-[11px] uppercase tracking-widest text-ink-400">
-              {searchMatches.length} match{searchMatches.length === 1 ? '' : 'es'}
-            </p>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {searchMatches.map(({ entry }) => (
-                <button
-                  key={entry.key}
-                  type="button"
-                  onClick={() => {
-                    setActiveKey(entry.key);
-                    setFilter('all');
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-white/60 bg-white px-3 py-1 text-[11px] font-semibold text-ink-500 shadow-soft hover:bg-white/80"
-                >
-                  <entry.Icon className="h-3 w-3" />
-                  {entry.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ====================================================== */}
