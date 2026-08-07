@@ -56,8 +56,19 @@ const filterChips: { id: Filter; label: string }[] = [
   { id: 'clinical', label: 'Clinical Forms' },
 ];
 
-export default function FormsCanvas() {
-  const [filter, setFilter] = useState<Filter>('all');
+type Category = 'family' | 'clinical' | null;
+
+export default function FormsCanvas({
+  category = null,
+  searchPlaceholder,
+}: {
+  /** Lock the canvas to a single audience (used when the page
+   *  renders two canvases — one per section). */
+  category?: Category;
+  /** Override the default search placeholder text. */
+  searchPlaceholder?: string;
+} = {}) {
+  const [filter, setFilter] = useState<Filter>(category ?? 'all');
   const [query, setQuery] = useState('');
   const [preview, setPreview] = useState<PreviewState | null>(null);
 
@@ -102,6 +113,8 @@ export default function FormsCanvas() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return medFormList.filter((f) => {
+      // Locked canvas — only show the locked category.
+      if (category && f.category !== category) return false;
       const inFilter = filter === 'all' || f.category === filter;
       if (!inFilter) return false;
       if (!q) return true;
@@ -115,7 +128,7 @@ export default function FormsCanvas() {
         .toLowerCase();
       return hay.includes(q);
     });
-  }, [filter, query]);
+  }, [filter, query, category]);
 
   const counts = useMemo(
     () => ({
@@ -139,7 +152,14 @@ export default function FormsCanvas() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search 15 forms by keyword or condition…"
+            placeholder={
+              searchPlaceholder ??
+              (category === 'family'
+                ? 'Search 8 family-pack forms by keyword or condition…'
+                : category === 'clinical'
+                ? 'Search 7 clinical forms by keyword or condition…'
+                : 'Search 15 forms by keyword or condition…')
+            }
             aria-label="Search forms"
             className="w-full bg-transparent text-sm text-ink-700 placeholder:text-ink-300 focus:outline-none"
           />
@@ -155,69 +175,71 @@ export default function FormsCanvas() {
           )}
         </div>
 
-        <div
-          role="tablist"
-          aria-label="Filter forms by audience"
-          className="flex flex-wrap items-center gap-2"
-        >
-          {filterChips.map((c) => {
-            const isActive = filter === c.id;
-            const count = counts[c.id];
-            return (
-              <button
-                key={c.id}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setFilter(c.id)}
-                className={cn(
-                  'group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all',
-                  isActive
-                    ? 'border-ink-700 bg-ink-700 text-white shadow-soft'
-                    : 'border-white/70 bg-white/70 text-ink-500 hover:border-blush-200 hover:bg-blush-50',
-                )}
-              >
-                {c.id === 'family' && (
-                  <Heart
-                    className={cn(
-                      'h-3 w-3',
-                      isActive ? 'text-white' : 'text-blush-400',
-                    )}
-                    aria-hidden="true"
-                  />
-                )}
-                {c.id === 'clinical' && (
-                  <Stethoscope
-                    className={cn(
-                      'h-3 w-3',
-                      isActive ? 'text-white' : 'text-mint-500',
-                    )}
-                    aria-hidden="true"
-                  />
-                )}
-                {c.id === 'all' && (
-                  <Check
-                    className={cn(
-                      'h-3 w-3',
-                      isActive ? 'text-white' : 'text-ink-400',
-                    )}
-                    aria-hidden="true"
-                  />
-                )}
-                <span>{c.label}</span>
-                <span
+        {category === null && (
+          <div
+            role="tablist"
+            aria-label="Filter forms by audience"
+            className="flex flex-wrap items-center gap-2"
+          >
+            {filterChips.map((c) => {
+              const isActive = filter === c.id;
+              const count = counts[c.id];
+              return (
+                <button
+                  key={c.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setFilter(c.id)}
                   className={cn(
-                    'rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest',
+                    'group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all',
                     isActive
-                      ? 'bg-white/20 text-white'
-                      : 'bg-ink-100 text-ink-400',
+                      ? 'border-ink-700 bg-ink-700 text-white shadow-soft'
+                      : 'border-white/70 bg-white/70 text-ink-500 hover:border-blush-200 hover:bg-blush-50',
                   )}
                 >
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                  {c.id === 'family' && (
+                    <Heart
+                      className={cn(
+                        'h-3 w-3',
+                        isActive ? 'text-white' : 'text-blush-400',
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {c.id === 'clinical' && (
+                    <Stethoscope
+                      className={cn(
+                        'h-3 w-3',
+                        isActive ? 'text-white' : 'text-mint-500',
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
+                  {c.id === 'all' && (
+                    <Check
+                      className={cn(
+                        'h-3 w-3',
+                        isActive ? 'text-white' : 'text-ink-400',
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
+                  <span>{c.label}</span>
+                  <span
+                    className={cn(
+                      'rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest',
+                      isActive
+                        ? 'bg-white/20 text-white'
+                        : 'bg-ink-100 text-ink-400',
+                    )}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Dynamic grid */}

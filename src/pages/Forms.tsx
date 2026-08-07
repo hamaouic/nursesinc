@@ -20,12 +20,12 @@ export default function Forms() {
         <HighAlertTriggers />
       </div>
 
-      {/* Clinical Forms section — no header, just the heading + showcase box */}
+      {/* Clinical Tools section — interactive tools for nurses & partner physicians */}
       <Section className="!pt-8">
-        {/* Clinical Forms — heading sits above the showcase box */}
+        {/* Clinical Tools — heading sits above the showcase box */}
         <h3 className="mb-6 font-display text-3xl font-semibold tracking-tight text-ink-700 sm:text-4xl md:text-5xl">
           Clinical{' '}
-          <span className="text-ink-400">Forms.</span>
+          <span className="text-ink-400">Tools.</span>
         </h3>
 
         <motion.div
@@ -88,6 +88,21 @@ export default function Forms() {
         </motion.div>
       </Section>
 
+      {/* Clinical Forms — single-page PDFs for nursing visits */}
+      <Section
+        className="!pt-8"
+        eyebrow="Nurse Reference"
+        title={
+          <>
+            Clinical{' '}
+            <span className="text-ink-400">Forms.</span>
+          </>
+        }
+        description="Single-page reference sheets for nursing visits — Beers, STOPP/START, polypharmacy, deprescribing algorithms and more."
+      >
+        <FormsCanvas category="clinical" />
+      </Section>
+
       {/* Printable Forms section header + body */}
       <Section
         className="!pt-8"
@@ -100,7 +115,7 @@ export default function Forms() {
         }
         description="Single-page PDFs you can print, fill out, and keep on the fridge."
       >
-        <FormsCanvas />
+        <FormsCanvas category="family" />
       </Section>
     </>
   );
