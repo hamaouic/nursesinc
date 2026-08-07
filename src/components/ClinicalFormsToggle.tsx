@@ -15,12 +15,12 @@ import { cn } from '@/lib/utils';
 type View = 'forms' | 'tools';
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
-  { id: 'tools', label: 'Interactive Tools', icon: Wrench },
   { id: 'forms', label: 'Printable Forms', icon: FileText },
+  { id: 'tools', label: 'Interactive Tools', icon: Wrench },
 ];
 
 export default function ClinicalFormsToggle() {
-  const [view, setView] = useState<View>('tools');
+  const [view, setView] = useState<View>('forms');
 
   return (
     <div>
@@ -72,7 +72,17 @@ export default function ClinicalFormsToggle() {
 
       {/* Toggled content */}
       <AnimatePresence mode="wait">
-        {view === 'tools' ? (
+        {view === 'forms' ? (
+          <motion.div
+            key="forms"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <FormsCanvas category="clinical" searchPlaceholder="Search 7 clinical printable forms by keyword or condition…" />
+          </motion.div>
+        ) : (
           <motion.div
             key="tools"
             initial={{ opacity: 0, y: 8 }}
@@ -137,16 +147,6 @@ export default function ClinicalFormsToggle() {
                 </Link>
               </div>
             </motion.div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="forms"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <FormsCanvas category="clinical" searchPlaceholder="Search 7 clinical printable forms by keyword or condition…" />
           </motion.div>
         )}
       </AnimatePresence>
