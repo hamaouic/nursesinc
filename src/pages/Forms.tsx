@@ -20,12 +20,12 @@ export default function Forms() {
         <HighAlertTriggers />
       </div>
 
-      {/* Internal Tools section — no header, just the heading + showcase box */}
+      {/* Clinical Forms section — no header, just the heading + showcase box */}
       <Section className="!pt-8">
-        {/* Internal Tools — heading sits above the showcase box */}
+        {/* Clinical Forms — heading sits above the showcase box */}
         <h3 className="mb-6 font-display text-3xl font-semibold tracking-tight text-ink-700 sm:text-4xl md:text-5xl">
-          Internal{' '}
-          <span className="text-ink-400">Tools.</span>
+          Clinical{' '}
+          <span className="text-ink-400">Forms.</span>
         </h3>
 
         <motion.div
