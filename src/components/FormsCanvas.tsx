@@ -390,7 +390,7 @@ function FormPreviewDrawer({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-widest text-blush-400">
-                Form {meta.number} of 15
+                Form {meta.number} of {meta.category === 'family' ? 8 : 7}
               </span>
               <span
                 className={cn(

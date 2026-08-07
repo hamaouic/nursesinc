@@ -76,7 +76,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   beers: {
     id: 'beers',
-    number: '3',
+    number: '1',
     title: 'Beers Criteria® 2023 — Quick Reference',
     shortTitle: 'Potentially inappropriate medications for adults 65+',
     audience: 'Reference · Nurses',
@@ -91,7 +91,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'stopp-start': {
     id: 'stopp-start',
-    number: '4',
+    number: '2',
     title: 'STOPP/START Version 3 — Quick Reference',
     shortTitle: 'STOPP / START prescribing screens',
     audience: 'Reference · Nurses',
@@ -106,7 +106,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   polypharmacy: {
     id: 'polypharmacy',
-    number: '5',
+    number: '3',
     title: 'Polypharmacy & Deprescribing',
     shortTitle: 'Clinical reference',
     audience: 'Reference · Nurses',
@@ -121,7 +121,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'symptom-cause': {
     id: 'symptom-cause',
-    number: '6',
+    number: '4',
     title: 'New Symptom → Medication Cause?',
     shortTitle: 'Symptom causation form',
     audience: 'Form · Nurses',
@@ -136,7 +136,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'deprescribing-algorithms': {
     id: 'deprescribing-algorithms',
-    number: '7',
+    number: '5',
     title: 'Deprescribing Algorithms (Bruyère / Deprescribing.org)',
     shortTitle: '4 drug-class deprescribing steps',
     audience: 'Reference · Nurses',
@@ -151,7 +151,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'deprescribing-conversation': {
     id: 'deprescribing-conversation',
-    number: '8',
+    number: '3',
     title: 'Schedule a Deprescribing Conversation',
     shortTitle: 'Conversation scheduler',
     audience: 'Form · Families',
@@ -166,7 +166,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'empower-brochures': {
     id: 'empower-brochures',
-    number: '9',
+    number: '6',
     title: 'EMPOWER Brochure Series',
     shortTitle: 'Patient handouts for safe deprescribing',
     audience: 'Reference · Nurses',
@@ -181,7 +181,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'adherence-safety': {
     id: 'adherence-safety',
-    number: '10',
+    number: '7',
     title: 'Adherence & Safety Audit',
     shortTitle: 'Chain of administration · Storage · Expiry',
     audience: 'Form · Nurses',
@@ -196,7 +196,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'fridge-list': {
     id: 'fridge-list',
-    number: '11',
+    number: '4',
     title: 'Fridge Medication List',
     shortTitle: 'Quick-reference emergency list',
     audience: 'Form · Families',
@@ -211,7 +211,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'feedback-survey': {
     id: 'feedback-survey',
-    number: '12',
+    number: '5',
     title: 'Client & Family Feedback',
     shortTitle: 'Post-Visit Evaluation',
     audience: 'Form · Families',
@@ -226,7 +226,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'emergency-card': {
     id: 'emergency-card',
-    number: '13',
+    number: '6',
     title: 'Caregiver Emergency Contact Card',
     shortTitle: 'Wallet & fridge-ready contact card',
     audience: 'Form · Families',
@@ -241,7 +241,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'side-effect-tracker': {
     id: 'side-effect-tracker',
-    number: '14',
+    number: '7',
     title: 'Medication Side-Effect Tracker',
     shortTitle: 'Daily reaction log',
     audience: 'Form · Families',
@@ -256,7 +256,7 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
   },
   'doctor-visit-prep': {
     id: 'doctor-visit-prep',
-    number: '15',
+    number: '8',
     title: 'Doctor Visit Preparation Sheet',
     shortTitle: 'Bring this to your next appointment',
     audience: 'Form · Families',
@@ -272,16 +272,18 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
 };
 
 export const medFormList: MedFormMeta[] = [
-  medForms['welcome-prep'],
-  medForms.inventory,
+  // Clinical Forms (7) — used inside the Clinical Forms & Tools section
   medForms.beers,
   medForms['stopp-start'],
   medForms.polypharmacy,
   medForms['symptom-cause'],
   medForms['deprescribing-algorithms'],
-  medForms['deprescribing-conversation'],
   medForms['empower-brochures'],
   medForms['adherence-safety'],
+  // Printable Forms (8) — used in the Printable Forms section
+  medForms['welcome-prep'],
+  medForms.inventory,
+  medForms['deprescribing-conversation'],
   medForms['fridge-list'],
   medForms['feedback-survey'],
   medForms['emergency-card'],
