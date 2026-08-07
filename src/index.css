@@ -163,3 +163,11 @@ body.has-drawer-open header {
   pointer-events: none;
   user-select: none;
 }
+
+/* Hide the floating PHIPAA badge while a preview is open so it
+   doesn't overlap the drawer content. */
+body.has-drawer-open .phipea-badge {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
