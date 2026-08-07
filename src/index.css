@@ -153,3 +153,13 @@ body {
   .card-track:hover { transform: none; }
   .flip-card:hover .flip-card-inner { transform: none; }
 }
+
+/* When a drawer / modal is open, yield pointer events from the
+   fixed navbar so the drawer's close button (top-right) stays
+   clickable. The drawer is z-[100]; the navbar is z-50 + a
+   fixed-position stacking context, so the navbar's pointer area
+   would otherwise sit on top of the drawer's header. */
+body.has-drawer-open header {
+  pointer-events: none;
+  user-select: none;
+}

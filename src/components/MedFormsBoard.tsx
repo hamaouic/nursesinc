@@ -59,6 +59,15 @@ export default function MedFormsBoard() {
     return () => window.removeEventListener('keydown', onKey);
   }, [preview]);
 
+  // Toggle body class so the navbar can yield pointer events
+  // to the preview modal while it is open.
+  useEffect(() => {
+    if (preview) {
+      document.body.classList.add('has-drawer-open');
+      return () => document.body.classList.remove('has-drawer-open');
+    }
+  }, [preview]);
+
   // Cleanup
   useEffect(() => {
     return () => {
@@ -185,7 +194,7 @@ function FormPreviewModal({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[70] flex flex-col bg-ink-700/60 backdrop-blur-md"
+      className="fixed inset-0 z-[100] flex flex-col bg-ink-700/60 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-labelledby="form-preview-title"
@@ -227,9 +236,9 @@ function FormPreviewModal({
             type="button"
             aria-label="Close preview"
             onClick={onClose}
-            className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+            className="grid h-11 w-11 place-items-center rounded-full bg-white/20 text-white transition-all hover:scale-105 hover:bg-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-ink-700"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
       </motion.div>

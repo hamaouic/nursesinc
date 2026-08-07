@@ -85,6 +85,15 @@ export default function FormsCanvas({
     return () => window.removeEventListener('keydown', onKey);
   }, [preview]);
 
+  // Toggle body class so the navbar can yield pointer events
+  // to the drawer while a preview is open.
+  useEffect(() => {
+    if (preview) {
+      document.body.classList.add('has-drawer-open');
+      return () => document.body.classList.remove('has-drawer-open');
+    }
+  }, [preview]);
+
   // Cleanup object URLs on unmount
   useEffect(() => {
     return () => {
@@ -361,7 +370,7 @@ function FormPreviewDrawer({
   const meta = medForms[preview.id];
 
   return (
-    <div className="fixed inset-0 z-[70]">
+    <div className="fixed inset-0 z-[100]">
       {/* Backdrop */}
       <motion.button
         type="button"
@@ -383,10 +392,10 @@ function FormPreviewDrawer({
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
-        className="absolute inset-y-0 right-0 flex w-full max-w-2xl flex-col bg-cream-50 shadow-glow"
+        className="absolute inset-y-0 right-0 flex w-full max-w-5xl flex-col bg-cream-50 shadow-glow"
       >
         {/* Header */}
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-ink-100/60 bg-white/80 px-5 py-4 backdrop-blur sm:px-7">
+        <div className="relative z-10 flex shrink-0 items-start justify-between gap-3 border-b border-ink-100/60 bg-white/90 px-5 py-4 shadow-soft backdrop-blur sm:px-7">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-widest text-blush-400">
@@ -418,38 +427,15 @@ function FormPreviewDrawer({
             type="button"
             aria-label="Close preview"
             onClick={onClose}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ink-100 text-ink-500 transition-colors hover:bg-ink-200"
+            className="relative z-20 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink-700 text-white shadow-soft transition-all hover:scale-105 hover:bg-ink-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-500 focus-visible:ring-offset-2"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Body — split: summary + preview */}
+        {/* Body — preview first (large), summary as a small side panel */}
         <div className="flex flex-1 flex-col overflow-hidden lg:flex-row">
-          {/* Summary panel */}
-          <div className="shrink-0 border-b border-ink-100/60 bg-white/40 p-5 sm:p-6 lg:w-72 lg:border-b-0 lg:border-r">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
-              What's inside
-            </div>
-            <ul className="mt-3 space-y-2.5">
-              {meta.summary.map((line, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2 text-[12px] leading-relaxed text-ink-500"
-                >
-                  <span className="mt-1.5 grid h-1.5 w-1.5 shrink-0 place-items-center rounded-full bg-blush-400" />
-                  {line}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-5 rounded-2xl border border-blush-200/60 bg-blush-50 p-3 text-[11px] leading-relaxed text-ink-500">
-              <span className="font-semibold text-ink-700">Tip.</span> Print on
-              standard letter (8.5×11″) — every form is single-page and fridge-ready.
-            </div>
-          </div>
-
-          {/* PDF preview */}
+          {/* PDF preview — main content */}
           <div className="relative flex-1 overflow-hidden bg-ink-100/40">
             {preview.loading && (
               <div className="flex h-full min-h-[40vh] flex-col items-center justify-center gap-3 p-8 text-ink-500">
@@ -482,10 +468,33 @@ function FormPreviewDrawer({
               />
             )}
           </div>
+
+          {/* Summary panel — narrow side panel on desktop, top strip on mobile */}
+          <div className="shrink-0 overflow-y-auto border-t border-ink-100/60 bg-white/40 p-5 lg:w-64 lg:border-l lg:border-t-0">
+            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
+              What's inside
+            </div>
+            <ul className="mt-3 space-y-2.5">
+              {meta.summary.map((line, idx) => (
+                <li
+                  key={idx}
+                  className="flex items-start gap-2 text-[12px] leading-relaxed text-ink-500"
+                >
+                  <span className="mt-1.5 grid h-1.5 w-1.5 shrink-0 place-items-center rounded-full bg-blush-400" />
+                  {line}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-5 rounded-2xl border border-blush-200/60 bg-blush-50 p-3 text-[11px] leading-relaxed text-ink-500">
+              <span className="font-semibold text-ink-700">Tip.</span> Print on
+              standard letter (8.5×11″) — every form is single-page and fridge-ready.
+            </div>
+          </div>
         </div>
 
         {/* Footer — single primary CTA */}
-        <div className="shrink-0 border-t border-ink-100/60 bg-white/80 px-5 py-4 backdrop-blur sm:px-7">
+        <div className="shrink-0 border-t border-ink-100/60 bg-white/90 px-5 py-4 shadow-soft backdrop-blur sm:px-7">
           <button
             type="button"
             onClick={() => downloadMedForm(preview.id)}
