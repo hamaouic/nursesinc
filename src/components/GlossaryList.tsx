@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, BookOpen, X, ArrowRight, FileText } from 'lucide-react';
+import { Search, BookOpen, X, ArrowRight, FileText, Stethoscope } from 'lucide-react';
 import {
   glossary,
   glossaryCategories,
@@ -15,6 +15,8 @@ const filterChips: { id: CategoryFilter; label: string }[] = [
   { id: 'all', label: 'All' },
   { id: 'nursing', label: 'Nursing' },
   { id: 'clinical', label: 'Clinical' },
+  { id: 'vaccines', label: 'Vaccines' },
+  { id: 'diseases', label: 'Illnesses' },
   { id: 'regulatory', label: 'Regulatory' },
   { id: 'workflow', label: 'Workflow' },
 ];
@@ -29,6 +31,16 @@ const categoryStyles: Record<
     halo: 'hover:shadow-[0_18px_50px_-12px_rgba(170,210,190,0.55)]',
   },
   clinical: {
+    dot: 'bg-blush-400',
+    chip: 'bg-blush-100 text-blush-500',
+    halo: 'hover:shadow-[0_18px_50px_-12px_rgba(255,209,220,0.55)]',
+  },
+  vaccines: {
+    dot: 'bg-mint-500',
+    chip: 'bg-mint-100 text-mint-700',
+    halo: 'hover:shadow-[0_18px_50px_-12px_rgba(170,210,190,0.55)]',
+  },
+  diseases: {
     dot: 'bg-blush-400',
     chip: 'bg-blush-100 text-blush-500',
     halo: 'hover:shadow-[0_18px_50px_-12px_rgba(255,209,220,0.55)]',
@@ -66,6 +78,8 @@ export default function GlossaryList() {
     const groups: Record<GlossaryEntry['category'], GlossaryEntry[]> = {
       nursing: [],
       clinical: [],
+      vaccines: [],
+      diseases: [],
       regulatory: [],
       workflow: [],
     };
@@ -80,6 +94,8 @@ export default function GlossaryList() {
       all: glossary.length,
       nursing: glossary.filter((g) => g.category === 'nursing').length,
       clinical: glossary.filter((g) => g.category === 'clinical').length,
+      vaccines: glossary.filter((g) => g.category === 'vaccines').length,
+      diseases: glossary.filter((g) => g.category === 'diseases').length,
       regulatory: glossary.filter((g) => g.category === 'regulatory').length,
       workflow: glossary.filter((g) => g.category === 'workflow').length,
     }),
@@ -233,6 +249,12 @@ export default function GlossaryList() {
                         <p className="mt-2.5 text-[12px] leading-relaxed text-ink-500">
                           {g.definition}
                         </p>
+                        {g.deferToClinician && (
+                          <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-blush-200/60 bg-blush-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-blush-500">
+                            <Stethoscope className="h-3 w-3" />
+                            See your provider
+                          </p>
+                        )}
                         {linkedForm && (
                           <div className="mt-3 flex items-center justify-between border-t border-ink-100/60 pt-2.5 text-[10px]">
                             <span className="inline-flex items-center gap-1 font-semibold uppercase tracking-widest text-ink-300">
