@@ -1104,7 +1104,7 @@ function LabListGrouped({
                 </p>
               </div>
             </header>
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {systemEntries.map((entry) => (
                 <LabCard
                   key={entry.id}
@@ -1137,7 +1137,7 @@ function LabCard({
     <article
       className={cn(
         'group overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
-        isOpen && 'ring-2 ring-ink-700/30',
+        isOpen && 'ring-2 ring-ink-700/30 md:col-span-2 xl:col-span-3',
       )}
     >
       {/* Header */}
