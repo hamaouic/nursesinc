@@ -8,15 +8,18 @@ import {
   Sparkles,
   FileText,
   Wrench,
+  BookOpen,
 } from 'lucide-react';
 import FormsCanvas from '@/components/FormsCanvas';
+import GlossaryList from '@/components/GlossaryList';
 import { cn } from '@/lib/utils';
 
-type View = 'forms' | 'tools';
+type View = 'forms' | 'tools' | 'definitions';
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'forms', label: 'Printable Forms', icon: FileText },
   { id: 'tools', label: 'Interactive Tools', icon: Wrench },
+  { id: 'definitions', label: 'Definitions', icon: BookOpen },
 ];
 
 export default function ClinicalFormsToggle() {
@@ -28,7 +31,7 @@ export default function ClinicalFormsToggle() {
       <div className="mb-6 flex items-center justify-center">
         <div
           role="tablist"
-          aria-label="Toggle between interactive tools and printable forms"
+          aria-label="Toggle between printable forms, interactive tools, and definitions"
           className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
         >
           {views.map((v) => {
@@ -72,7 +75,7 @@ export default function ClinicalFormsToggle() {
 
       {/* Toggled content */}
       <AnimatePresence mode="wait">
-        {view === 'forms' ? (
+        {view === 'forms' && (
           <motion.div
             key="forms"
             initial={{ opacity: 0, y: 8 }}
@@ -82,7 +85,9 @@ export default function ClinicalFormsToggle() {
           >
             <FormsCanvas category="clinical" searchPlaceholder="Search 7 clinical printable forms by keyword or condition…" />
           </motion.div>
-        ) : (
+        )}
+
+        {view === 'tools' && (
           <motion.div
             key="tools"
             initial={{ opacity: 0, y: 8 }}
@@ -147,6 +152,18 @@ export default function ClinicalFormsToggle() {
                 </Link>
               </div>
             </motion.div>
+          </motion.div>
+        )}
+
+        {view === 'definitions' && (
+          <motion.div
+            key="definitions"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <GlossaryList />
           </motion.div>
         )}
       </AnimatePresence>
