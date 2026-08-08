@@ -88,6 +88,32 @@ const labSystemIcons: Record<LabEntry['system'], React.FC<{ className?: string }
   toxicology: AlertTriangle,
 };
 
+// Vibrant category colors used by the section headers above each lab
+// group. Two-tone (left bar + tint wash + bold label) so the heading
+// really pops without sitting in a card.
+const labSystemHeaderColors: Record<
+  LabEntry['system'],
+  { bar: string; tint: string; label: string; icon: string }
+> = {
+  hematology:   { bar: 'bg-rose-500',    tint: 'bg-rose-50',    label: 'text-rose-700',    icon: 'text-rose-500' },
+  metabolic:    { bar: 'bg-rose-500',    tint: 'bg-rose-50',    label: 'text-rose-700',    icon: 'text-rose-500' },
+  coagulation:  { bar: 'bg-amber-500',   tint: 'bg-amber-50',   label: 'text-amber-800',   icon: 'text-amber-500' },
+  electrolytes: { bar: 'bg-yellow-500',  tint: 'bg-yellow-50',  label: 'text-yellow-800',  icon: 'text-yellow-500' },
+  renal:        { bar: 'bg-orange-500',  tint: 'bg-orange-50',  label: 'text-orange-700',  icon: 'text-orange-500' },
+  hepatic:      { bar: 'bg-lime-500',    tint: 'bg-lime-50',    label: 'text-lime-700',    icon: 'text-lime-500' },
+  lipid:        { bar: 'bg-pink-500',    tint: 'bg-pink-50',    label: 'text-pink-700',    icon: 'text-pink-500' },
+  thyroid:      { bar: 'bg-fuchsia-500', tint: 'bg-fuchsia-50', label: 'text-fuchsia-700', icon: 'text-fuchsia-500' },
+  glucose:      { bar: 'bg-emerald-500', tint: 'bg-emerald-50', label: 'text-emerald-700', icon: 'text-emerald-500' },
+  iron:         { bar: 'bg-red-500',     tint: 'bg-red-50',     label: 'text-red-700',     icon: 'text-red-500' },
+  inflammation: { bar: 'bg-blue-500',    tint: 'bg-blue-50',    label: 'text-blue-700',    icon: 'text-blue-500' },
+  cardiac:      { bar: 'bg-cyan-500',    tint: 'bg-cyan-50',    label: 'text-cyan-700',    icon: 'text-cyan-500' },
+  vitamins:     { bar: 'bg-green-500',   tint: 'bg-green-50',   label: 'text-green-700',   icon: 'text-green-500' },
+  urine:        { bar: 'bg-teal-500',    tint: 'bg-teal-50',    label: 'text-teal-700',    icon: 'text-teal-500' },
+  microbiology: { bar: 'bg-purple-500',  tint: 'bg-purple-50',  label: 'text-purple-700',  icon: 'text-purple-500' },
+  serology:     { bar: 'bg-indigo-500',  tint: 'bg-indigo-50',  label: 'text-indigo-700',  icon: 'text-indigo-500' },
+  toxicology:   { bar: 'bg-slate-700',   tint: 'bg-slate-100',  label: 'text-slate-700',   icon: 'text-slate-500' },
+};
+
 export default function ClinicalReferenceList() {
   const [tab, setTab] = useState<ClinicianTab>('drugs');
   const [query, setQuery] = useState('');
@@ -1035,30 +1061,64 @@ function LabListGrouped({
 
   return (
     <div className="space-y-6">
-      {grouped.map(({ system, entries: systemEntries }) => (
-        <section key={system.id}>
-          <header className="mb-2 flex items-baseline gap-2 rounded-2xl bg-white/60 px-3 py-2 ring-1 ring-ink-100 backdrop-blur">
-            <span className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-ink-700">
-              {system.label}:
-            </span>
-            <p className="text-[11px] leading-snug text-ink-500">
-              {system.description}
-            </p>
-          </header>
-          <div className="space-y-3">
-            {systemEntries.map((entry) => (
-              <LabCard
-                key={entry.id}
-                entry={entry}
-                isOpen={expanded === entry.id}
-                onToggle={() =>
-                  setExpanded(expanded === entry.id ? null : entry.id)
-                }
+      {grouped.map(({ system, entries: systemEntries }) => {
+        const Icon = labSystemIcons[system.id];
+        const c = labSystemHeaderColors[system.id];
+        return (
+          <section key={system.id}>
+            <header className="relative mb-3 flex items-stretch gap-3 overflow-hidden rounded-2xl px-4 py-3 ring-1 ring-ink-100/70 backdrop-blur">
+              {/* Left accent bar */}
+              <span
+                aria-hidden="true"
+                className={cn('absolute left-0 top-0 h-full w-1.5', c.bar)}
               />
-            ))}
-          </div>
-        </section>
-      ))}
+              {/* Soft color wash background */}
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'pointer-events-none absolute inset-0 opacity-70',
+                  c.tint,
+                )}
+              />
+              {/* Icon */}
+              <span
+                className={cn(
+                  'relative grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/85 ring-1 ring-inset ring-white shadow-soft',
+                  c.icon,
+                )}
+              >
+                <Icon className="h-4 w-4" />
+              </span>
+              {/* Label + description */}
+              <div className="relative min-w-0 flex-1">
+                <h3
+                  className={cn(
+                    'font-display text-sm font-bold uppercase tracking-[0.16em]',
+                    c.label,
+                  )}
+                >
+                  {system.label}:
+                </h3>
+                <p className="mt-0.5 text-[11.5px] leading-snug text-ink-600">
+                  {system.description}
+                </p>
+              </div>
+            </header>
+            <div className="space-y-3">
+              {systemEntries.map((entry) => (
+                <LabCard
+                  key={entry.id}
+                  entry={entry}
+                  isOpen={expanded === entry.id}
+                  onToggle={() =>
+                    setExpanded(expanded === entry.id ? null : entry.id)
+                  }
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
@@ -1164,6 +1224,19 @@ function LabCard({
                   <p className="text-[11px] text-ink-700">{entry.notes}</p>
                 </div>
               )}
+
+              {/* Close button at the bottom of the card */}
+              <div className="mt-4 flex justify-center border-t border-ink-100/60 pt-3">
+                <button
+                  type="button"
+                  onClick={onToggle}
+                  aria-label={`Collapse ${entry.fullName}`}
+                  className="group/close inline-flex items-center gap-1.5 rounded-full border border-ink-100/80 bg-white/80 px-4 py-1.5 text-[11px] font-semibold text-ink-500 shadow-soft transition hover:border-ink-200 hover:bg-white hover:text-ink-700"
+                >
+                  <span>Collapse card</span>
+                  <ChevronDown className="h-3.5 w-3.5 rotate-180 transition-transform group-hover/close:-translate-y-0.5" />
+                </button>
+              </div>
             </div>
           </motion.div>
         )}
