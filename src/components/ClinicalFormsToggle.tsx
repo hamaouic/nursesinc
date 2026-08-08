@@ -11,7 +11,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import FormsCanvas from '@/components/FormsCanvas';
-import GlossaryList from '@/components/GlossaryList';
+import ClinicalReferenceList from '@/components/ClinicalReferenceList';
 import { cn } from '@/lib/utils';
 
 type View = 'forms' | 'tools' | 'definitions';
@@ -163,7 +163,7 @@ export default function ClinicalFormsToggle() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <GlossaryList />
+            <ClinicalReferenceList />
           </motion.div>
         )}
       </AnimatePresence>
