@@ -9,17 +9,20 @@ import {
   FileText,
   Wrench,
   BookOpen,
+  Heart,
 } from 'lucide-react';
 import FormsCanvas from '@/components/FormsCanvas';
 import ClinicalReferenceList from '@/components/ClinicalReferenceList';
+import OrgansList from '@/components/OrgansList';
 import { cn } from '@/lib/utils';
 
-type View = 'forms' | 'tools' | 'definitions';
+type View = 'forms' | 'tools' | 'definitions' | 'organs';
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'forms', label: 'Printable Forms', icon: FileText },
   { id: 'tools', label: 'Interactive Tools', icon: Wrench },
   { id: 'definitions', label: 'Definitions', icon: BookOpen },
+  { id: 'organs', label: 'Organs', icon: Heart },
 ];
 
 export default function ClinicalFormsToggle() {
@@ -31,7 +34,7 @@ export default function ClinicalFormsToggle() {
       <div className="mb-6 flex items-center justify-center">
         <div
           role="tablist"
-          aria-label="Toggle between printable forms, interactive tools, and definitions"
+          aria-label="Toggle between printable forms, interactive tools, definitions, and organs"
           className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
         >
           {views.map((v) => {
@@ -164,6 +167,18 @@ export default function ClinicalFormsToggle() {
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
             <ClinicalReferenceList />
+          </motion.div>
+        )}
+
+        {view === 'organs' && (
+          <motion.div
+            key="organs"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <OrgansList />
           </motion.div>
         )}
       </AnimatePresence>
