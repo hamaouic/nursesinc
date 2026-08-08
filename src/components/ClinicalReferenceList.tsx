@@ -754,13 +754,13 @@ function WoundCareView() {
         <span className="h-1.5 w-1.5 rounded-full bg-ink-500" />
         Wound classification & dressing plan
       </h4>
-      <div className="mb-6 space-y-3">
+      <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {woundStages.map((stage) => (
           <article
             key={stage.id}
             className={cn(
               'overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
-              expanded === stage.id && 'ring-2 ring-ink-700/30',
+              expanded === stage.id && 'ring-2 ring-ink-700/30 md:col-span-2 lg:col-span-3',
             )}
           >
             <button
@@ -1104,7 +1104,7 @@ function LabListGrouped({
                 </p>
               </div>
             </header>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               {systemEntries.map((entry) => (
                 <LabCard
                   key={entry.id}
@@ -1137,7 +1137,7 @@ function LabCard({
     <article
       className={cn(
         'group overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
-        isOpen && 'ring-2 ring-ink-700/30 md:col-span-2 xl:col-span-3',
+        isOpen && 'ring-2 ring-ink-700/30 md:col-span-2 lg:col-span-3',
       )}
     >
       {/* Header */}
