@@ -1,6 +1,15 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, ChevronDown, Heart, Activity, Brain, Stethoscope, Sparkles } from 'lucide-react';
+import {
+  Search,
+  X,
+  ChevronDown,
+  Heart,
+  Activity,
+  Brain,
+  Stethoscope,
+  Sparkles,
+} from 'lucide-react';
 import { organs, organSystems, type OrganEntry, type OrganSystem } from '@/nurses-inc-organs';
 import { cn } from '@/lib/utils';
 
@@ -52,6 +61,23 @@ export default function OrgansList() {
       );
     });
   }, [system, query]);
+
+  // Group filtered organs by system, preserving the organSystems order so
+  // the chart reads top-to-bottom like a textbook.
+  const grouped = useMemo(() => {
+    const map = new Map<OrganSystem, OrganEntry[]>();
+    for (const o of filtered) {
+      const list = map.get(o.system) ?? [];
+      list.push(o);
+      map.set(o.system, list);
+    }
+    return organSystems
+      .filter((s) => map.has(s.id))
+      .map((s) => ({
+        system: s,
+        entries: map.get(s.id) ?? [],
+      }));
+  }, [filtered]);
 
   return (
     <div>
@@ -129,7 +155,7 @@ export default function OrgansList() {
         })}
       </div>
 
-      {/* Organ cards */}
+      {/* Organ cards — grouped by system, 3 columns */}
       {filtered.length === 0 ? (
         <div className="rounded-3xl border border-white/60 bg-white/60 p-8 text-center shadow-soft">
           <p className="font-display text-base text-ink-700">No matches.</p>
@@ -138,14 +164,27 @@ export default function OrgansList() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filtered.map((o) => (
-            <OrganCard
-              key={o.id}
-              entry={o}
-              isOpen={expanded === o.id}
-              onToggle={() => setExpanded(expanded === o.id ? null : o.id)}
-            />
+        <div className="space-y-6">
+          {grouped.map(({ system: s, entries: systemEntries }) => (
+            <section key={s.id}>
+              {/* Section header — matches the wound classification header */}
+              <h4 className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-ink-500">
+                <span className="h-1.5 w-1.5 rounded-full bg-ink-500" />
+                {s.label}
+              </h4>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {systemEntries.map((o) => (
+                  <OrganCard
+                    key={o.id}
+                    entry={o}
+                    isOpen={expanded === o.id}
+                    onToggle={() =>
+                      setExpanded(expanded === o.id ? null : o.id)
+                    }
+                  />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       )}
@@ -167,7 +206,7 @@ function OrganCard({
     <article
       className={cn(
         'group overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
-        isOpen && 'ring-2 ring-ink-700/30',
+        isOpen && 'ring-2 ring-ink-700/30 md:col-span-2 lg:col-span-3',
       )}
     >
       <button
