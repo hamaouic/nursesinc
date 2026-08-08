@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { organs, organSystems, type OrganEntry, type OrganSystem } from '@/nurses-inc-organs';
+import { OrganIllustration } from '@/nurses-inc-organ-illustrations';
 import { cn } from '@/lib/utils';
 
 const systemIcons: Record<OrganSystem, React.FC<{ className?: string }>> = {
@@ -218,11 +219,14 @@ function OrganCard({
       >
         <span
           className={cn(
-            'grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 ring-inset',
+            'grid h-12 w-12 shrink-0 place-items-center rounded-xl ring-1 ring-inset overflow-hidden',
             systemColors[entry.system],
           )}
         >
-          <Icon className="h-4 w-4" />
+          <OrganIllustration
+            id={entry.id}
+            className="h-12 w-12 -m-1"
+          />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
