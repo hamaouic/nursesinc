@@ -18,10 +18,23 @@
  * and your local wound-care formulary. Last reviewed Aug 2026.
  */
 
+export type WoundColor =
+  | 'red'      // granulating / RYB red
+  | 'yellow'   // sloughy / RYB yellow
+  | 'black'    // necrotic / RYB black
+  | 'rose'     // pressure I (intact, mild)
+  | 'amber'    // pressure II (shallow, moderate)
+  | 'orange'   // pressure III (deep, severe)
+  | 'crimson'  // pressure IV (deepest, critical)
+  | 'purple'   // sDTI (deep tissue injury)
+  | 'slate';   // unstageable (obscured base)
+
 export type WoundStage = {
   id: string;
   /** Stage name (the user-facing label). */
   name: string;
+  /** Color chip for the icon (RYB for wounds, severity ramp for pressure). */
+  color: WoundColor;
   /** Clinical description. */
   description: string;
   /** Typical appearance / depth. */
@@ -44,6 +57,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'red',
     name: 'Red Wound (Granulating)',
+    color: 'red',
     description:
       'Healthy healing wound. Red, moist, beefy-red granulation tissue. Goal: protect the granulation and support epithelialization.',
     appearance:
@@ -67,6 +81,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'yellow',
     name: 'Yellow Wound (Sloughy)',
+    color: 'yellow',
     description:
       'Wound with devitalized tissue (slough). Yellow, soft, stringy, or creamy. Goal: debridement — remove slough to reveal red granulation.',
     appearance:
@@ -90,6 +105,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'black',
     name: 'Black Wound (Necrotic / Eschar)',
+    color: 'black',
     description:
       'Wound covered with thick, leathery, black or brown eschar (full-thickness necrosis). Goal: debridement before healing can begin. Stable dry eschar on a heel is sometimes left intact (acts as natural cover).',
     appearance:
@@ -114,6 +130,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'pressure-1',
     name: 'Pressure Injury Stage I',
+    color: 'rose',
     description:
       'Non-blanchable erythema of intact skin. The earliest visible sign of pressure damage. Common over bony prominences (sacrum, heels, trochanters).',
     appearance:
@@ -135,6 +152,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'pressure-2',
     name: 'Pressure Injury Stage II',
+    color: 'amber',
     description:
       'Partial-thickness skin loss involving the epidermis and/or dermis. Shallow, pink/red wound bed. No slough or bruising.',
     appearance:
@@ -155,6 +173,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'pressure-3',
     name: 'Pressure Injury Stage III',
+    color: 'orange',
     description:
       'Full-thickness skin loss. Subcutaneous fat may be visible. Slough may be present. No exposed bone, tendon, or muscle.',
     appearance:
@@ -176,6 +195,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'pressure-4',
     name: 'Pressure Injury Stage IV',
+    color: 'crimson',
     description:
       'Full-thickness skin and tissue loss with exposed bone, tendon, ligament, cartilage, or muscle. Often with undermining and tunneling.',
     appearance:
@@ -199,6 +219,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'dti',
     name: 'Suspected Deep Tissue Injury (sDTI)',
+    color: 'purple',
     description:
       'Purple or maroon localized area of discolored intact skin or blood-filled blister. The damage is deeper than visible — the skin is hiding what is happening below.',
     appearance:
@@ -219,6 +240,7 @@ export const woundStages: WoundStage[] = [
   {
     id: 'unstageable',
     name: 'Unstageable Pressure Injury',
+    color: 'slate',
     description:
       'Full-thickness skin and tissue loss in which the base of the ulcer is covered by slough or eschar. The depth cannot be determined until the devitalized tissue is removed.',
     appearance:

@@ -23,7 +23,7 @@ import {
   clinicalReferenceGroups,
   type ClinicalRefEntry,
 } from '@/nurses-inc-clinical-reference';
-import { woundStages, woundMeds } from '@/nurses-inc-wound-care';
+import { woundStages, woundMeds, type WoundColor } from '@/nurses-inc-wound-care';
 import { labReference, labSystems, type LabEntry } from '@/nurses-inc-labs';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +34,18 @@ const groupIcons: Record<ClinicalRefEntry['group'], React.FC<{ className?: strin
   respiratory: Activity,
   general: Stethoscope,
   vaccine: Syringe,
+};
+
+const woundColorClasses: Record<WoundColor, string> = {
+  red: 'bg-red-100 text-red-700 ring-red-200',
+  yellow: 'bg-amber-100 text-amber-700 ring-amber-200',
+  black: 'bg-slate-700 text-slate-100 ring-slate-500',
+  rose: 'bg-rose-100 text-rose-700 ring-rose-200',
+  amber: 'bg-amber-100 text-amber-800 ring-amber-300',
+  orange: 'bg-orange-100 text-orange-700 ring-orange-300',
+  crimson: 'bg-red-200 text-red-900 ring-red-400',
+  purple: 'bg-purple-100 text-purple-700 ring-purple-300',
+  slate: 'bg-slate-200 text-slate-700 ring-slate-300',
 };
 
 const labSystemIcons: Record<LabEntry['system'], React.FC<{ className?: string }>> = {
@@ -517,7 +529,12 @@ function WoundCareView() {
               className="flex w-full items-center gap-3 px-4 py-3 text-left"
               aria-expanded={expanded === stage.id}
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ink-50 text-ink-500">
+              <span
+                className={cn(
+                  'grid h-9 w-9 shrink-0 place-items-center rounded-xl ring-1 ring-inset',
+                  woundColorClasses[stage.color],
+                )}
+              >
                 <Wrench className="h-4 w-4" />
               </span>
               <div className="min-w-0 flex-1">
