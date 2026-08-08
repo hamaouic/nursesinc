@@ -1831,21 +1831,101 @@ export const labReference: LabEntry[] = [
   },
 ];
 
-export const labSystems: { id: LabSystem; label: string }[] = [
-  { id: 'hematology', label: 'Hematology (CBC)' },
-  { id: 'coagulation', label: 'Coagulation' },
-  { id: 'electrolytes', label: 'Electrolytes' },
-  { id: 'renal', label: 'Renal function' },
-  { id: 'hepatic', label: 'Liver function' },
-  { id: 'lipid', label: 'Lipid panel' },
-  { id: 'thyroid', label: 'Thyroid' },
-  { id: 'glucose', label: 'Glucose' },
-  { id: 'iron', label: 'Iron studies' },
-  { id: 'inflammation', label: 'Inflammation' },
-  { id: 'cardiac', label: 'Cardiac' },
-  { id: 'vitamins', label: 'Vitamins & minerals' },
-  { id: 'toxicology', label: 'Toxicology / drug levels' },
-  { id: 'urine', label: 'Urinalysis & urine chemistry' },
-  { id: 'microbiology', label: 'Microbiology' },
-  { id: 'serology', label: 'Serology' },
+export const labSystems: { id: LabSystem; label: string; description: string }[] = [
+  {
+    id: 'hematology',
+    label: 'Hematology (CBC)',
+    description:
+      'Blood cells and their components — the workhorses that carry oxygen, fight infection, and stop bleeding. A CBC tells you how many of each cell type you have and how they are shaped.',
+  },
+  {
+    id: 'coagulation',
+    label: 'Coagulation',
+    description:
+      'How well your blood clots. These tests check the proteins and pathways your body uses to seal wounds and stop bleeding — and to make sure clots are not forming where they should not.',
+  },
+  {
+    id: 'electrolytes',
+    label: 'Electrolytes',
+    description:
+      'Dissolved salts that carry electrical signals and control fluid balance in and out of every cell. They power your heartbeat, nerve firing, and muscle contraction — and shift quickly with dehydration, kidney issues, or medications.',
+  },
+  {
+    id: 'renal',
+    label: 'Renal function',
+    description:
+      'How well your kidneys filter waste and balance fluid. These values rise when the kidneys are stressed or failing and are essential for drug dosing.',
+  },
+  {
+    id: 'hepatic',
+    label: 'Liver function',
+    description:
+      'How well your liver is working. Enzymes, bilirubin, and proteins here tell you whether liver cells are injured, bile flow is blocked, or synthetic function (clotting factors, albumin) is impaired.',
+  },
+  {
+    id: 'lipid',
+    label: 'Lipid panel',
+    description:
+      'Cholesterol and fat in the blood. Used to estimate your cardiovascular risk and decide whether you need a statin or other lipid-lowering therapy.',
+  },
+  {
+    id: 'thyroid',
+    label: 'Thyroid',
+    description:
+      'How well your thyroid gland is regulating metabolism. TSH and thyroid hormones tell you whether the gland is underactive, overactive, or being affected by autoimmune disease.',
+  },
+  {
+    id: 'glucose',
+    label: 'Glucose',
+    description:
+      'Blood sugar and longer-term markers of sugar control. Used to diagnose diabetes, monitor treatment, and assess risk in acutely ill patients.',
+  },
+  {
+    id: 'iron',
+    label: 'Iron studies',
+    description:
+      'How much iron your body has in storage and how well it is moving around. Distinguishes iron deficiency from anemia of chronic disease and screens for iron overload.',
+  },
+  {
+    id: 'inflammation',
+    label: 'Inflammation',
+    description:
+      'Inflammation is your body\u2019s response to injury or infection — blood vessels widen, immune cells rush in, and proteins like CRP and ESR rise. Markers here tell you whether inflammation is acute (infection), chronic (autoimmune, cancer), or post-operative.',
+  },
+  {
+    id: 'cardiac',
+    label: 'Cardiac',
+    description:
+      'Heart-specific markers released when the heart muscle is stressed or damaged. Used to diagnose heart attacks, assess heart failure, and risk-stratify chest pain.',
+  },
+  {
+    id: 'vitamins',
+    label: 'Vitamins & minerals',
+    description:
+      'Levels of fat- and water-soluble vitamins plus trace minerals. Deficiencies are common in malnutrition, malabsorption, alcoholism, pregnancy, and certain medications.',
+  },
+  {
+    id: 'toxicology',
+    label: 'Toxicology / drug levels',
+    description:
+      'Drug levels and toxic alcohols / metabolites. Used to confirm therapeutic dosing for narrow-window drugs, detect overdose, and identify toxic exposures.',
+  },
+  {
+    id: 'urine',
+    label: 'Urinalysis & urine chemistry',
+    description:
+      'A window into what your kidneys are excreting. Urine chemistry can reveal kidney disease, UTI, diabetes, dehydration, and pregnancy — often before blood tests change.',
+  },
+  {
+    id: 'microbiology',
+    label: 'Microbiology',
+    description:
+      'Cultures and molecular tests for bacteria, viruses, fungi, and parasites. Confirms infection and guides which antibiotic or antiviral will actually work.',
+  },
+  {
+    id: 'serology',
+    label: 'Serology',
+    description:
+      'Antibody and antigen tests that show past or current infection, vaccination status, or autoimmune activity. Often the first clue in hepatitis, HIV, Lyme, syphilis, and rheumatologic disease.',
+  },
 ];

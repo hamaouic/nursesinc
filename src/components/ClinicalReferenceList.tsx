@@ -997,17 +997,68 @@ function LabsView({
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filtered.map((entry) => (
-            <LabCard
-              key={entry.id}
-              entry={entry}
-              isOpen={expanded === entry.id}
-              onToggle={() => setExpanded(expanded === entry.id ? null : entry.id)}
-            />
-          ))}
-        </div>
+        <LabListGrouped
+          entries={filtered}
+          expanded={expanded}
+          setExpanded={setExpanded}
+        />
       )}
+    </div>
+  );
+}
+
+function LabListGrouped({
+  entries,
+  expanded,
+  setExpanded,
+}: {
+  entries: LabEntry[];
+  expanded: string | null;
+  setExpanded: (id: string | null) => void;
+}) {
+  // Group entries by system, preserving the labSystems order so the chart
+  // reads top-to-bottom like a textbook.
+  const grouped = useMemo(() => {
+    const map = new Map<LabEntry['system'], LabEntry[]>();
+    for (const entry of entries) {
+      const list = map.get(entry.system) ?? [];
+      list.push(entry);
+      map.set(entry.system, list);
+    }
+    return labSystems
+      .filter((s) => map.has(s.id))
+      .map((s) => ({
+        system: s,
+        entries: map.get(s.id) ?? [],
+      }));
+  }, [entries]);
+
+  return (
+    <div className="space-y-6">
+      {grouped.map(({ system, entries: systemEntries }) => (
+        <section key={system.id}>
+          <header className="mb-2 flex items-baseline gap-2 rounded-2xl bg-white/60 px-3 py-2 ring-1 ring-ink-100 backdrop-blur">
+            <span className="font-display text-[11px] font-bold uppercase tracking-[0.18em] text-ink-700">
+              {system.label}:
+            </span>
+            <p className="text-[11px] leading-snug text-ink-500">
+              {system.description}
+            </p>
+          </header>
+          <div className="space-y-3">
+            {systemEntries.map((entry) => (
+              <LabCard
+                key={entry.id}
+                entry={entry}
+                isOpen={expanded === entry.id}
+                onToggle={() =>
+                  setExpanded(expanded === entry.id ? null : entry.id)
+                }
+              />
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
