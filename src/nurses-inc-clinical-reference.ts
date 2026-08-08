@@ -559,6 +559,256 @@ export const clinicalReference: ClinicalRefEntry[] = [
       'Ophthalmic involvement, Ramsay Hunt syndrome, dissemination, or immunocompromised host → IV acyclovir + specialist consult.',
     group: 'general',
   },
+  // ============================================================
+  // VIRAL & TICK-BORNE DISEASES — quick reference
+  // (disease description, classic symptoms, usual prescribing)
+  // ============================================================
+  {
+    id: 'disease-lyme',
+    title: 'Lyme Disease',
+    indication:
+      'Tick-borne infection by Borrelia burgdorferi (Ixodes scapularis / pacificus). Endemic in NB, ON, QC, BC, NS, MB. Early localized: erythema migrans (target / bull\u2019s-eye rash ≥ 5 cm, expanding), flu-like illness (fatigue, fever, chills, myalgia, arthralgia, headache, lymphadenopathy). Early disseminated: multiple EM lesions, neurologic (Bell\u2019s palsy, radiculopathy, meningitis), cardiac (AV block, myocarditis). Late: Lyme arthritis (large-joint, especially knee).',
+    drugClass: 'Tetracycline / β-lactam',
+    mechanism:
+      'Doxycycline inhibits 30S ribosomal subunit (bacteriostatic). Amoxicillin inhibits cell-wall synthesis (bactericidal). Ceftriaxone for severe neurologic / cardiac disease.',
+    firstLine:
+      'Adults (non-pregnant): Doxycycline 100 mg PO BID × 10–21 days (early localized: 10 days; disseminated / neurologic: 14–21 days).',
+    alternatives:
+      'Pregnancy / children < 8 years: Amoxicillin 500 mg PO TID × 14–21 days. Severe neurologic (meningitis, radiculopathy) or cardiac (high-grade AV block): Ceftriaxone 2 g IV daily × 14–28 days.',
+    duration: '10–28 days depending on stage',
+    adrs: [
+      'Doxycycline: photosensitivity (strict sun avoidance), pill oesophagitis (take with water, upright).',
+      'Amoxicillin: GI upset, rash, possible C. difficile.',
+      'Ceftriaxone: biliary sludging, rare anaphylaxis.',
+      'Jarisch-Herxheimer reaction (fever, chills, myalgia within 24 h of first dose) — common, self-limited, supportive care.',
+    ],
+    interactions: [
+      'Doxycycline: chelates with Ca²⁺/Mg²⁺/Fe²⁺/Al³⁺ antacids — separate by 2–4 h.',
+      'Ceftriaxone: avoid with calcium-containing IV fluids (precipitates) in neonates.',
+    ],
+    doseAdjust:
+      'No renal adjustment for doxycycline or amoxicillin. Ceftriaxone: reduce dose in combined hepatic / renal failure.',
+    pregnancy:
+      'Doxycycline CONTRAINDICATED in pregnancy and children < 8 years (tooth discoloration, bone growth). Use amoxicillin; ceftriaxone for severe disease.',
+    monitoring: [
+      'Reassess at 48–72 h — most patients improve within days.',
+      'Persistent or worsening symptoms: reconsider diagnosis (co-infections like Babesia, Anaplasma), referral to infectious disease.',
+      'Serology NOT routinely required for typical EM rash in endemic areas — clinical diagnosis.',
+      'Tick-bite prevention: DEET 20–30%, permethrin-treated clothing, daily tick checks, remove attached ticks within 24 h with fine-tipped tweezers.',
+    ],
+    escalation:
+      'High-grade AV block, meningitis, persistent arthritis, or pregnancy with suspected disseminated disease → hospital admission + IV ceftriaxone + ID consult.',
+    group: 'general',
+  },
+  {
+    id: 'disease-measles',
+    title: 'Measles (Rubeola)',
+    indication:
+      'Highly contagious paramyxovirus (Morbillivirus). Transmission airborne / droplets. Prodrome (2–4 days): high fever, cough, coryza, conjunctivitis (the 3 C\u2019s), Koplik spots (tiny white lesions on buccal mucosa — pathognomonic). Exanthem: maculopapular rash starting at hairline, spreading cephalocaudally to trunk and extremities, often confluent. Complications: otitis media (10%), pneumonia (5%), diarrhea (8%), acute encephalitis (0.1%), subacute sclerosing panencephalitis (SSPE) years later (rare, fatal).',
+    drugClass: 'Supportive + Vitamin A',
+    mechanism:
+      'No effective antiviral. Vitamin A reduces morbidity and mortality in children, especially with vitamin A deficiency. WHO recommends Vitamin A for all children with acute measles.',
+    firstLine:
+      'Vitamin A 200,000 IU PO once daily × 2 days (children ≥ 12 months). Repeat a 3rd dose 2–4 weeks later if signs of vitamin A deficiency. Supportive care: antipyretics, hydration, oxygen as needed.',
+    alternatives:
+      'Antibiotics only for secondary bacterial infection (otitis media, pneumonia). Post-exposure prophylaxis for susceptible contacts: MMR vaccine within 72 h of exposure OR immune globulin within 6 days.',
+    duration: 'Acute illness 7–10 days. Vitamin A: 2 days (3rd dose if deficient).',
+    adrs: [
+      'Vitamin A: rarely acute toxicity at recommended doses; high doses can cause transient bulging fontanelle in infants, hepatotoxicity.',
+      'Antipyretics: avoid aspirin in children < 18 (Reye syndrome).',
+    ],
+    interactions: [
+      'Vitamin A: avoid concurrent retinoid drugs (isotretinoin, acitretin) — additive toxicity.',
+    ],
+    doseAdjust:
+      'No renal adjustment for vitamin A.',
+    pregnancy:
+      'Vitamin A: limit doses to < 10,000 IU/day in pregnancy (teratogenic). Measles in pregnancy → risk of preterm labor, low birth weight, maternal pneumonia. IG can be considered for susceptible exposed pregnant patients.',
+    monitoring: [
+      'Airborne isolation (negative-pressure room) for 4 days after rash onset (or duration of illness if immunocompromised).',
+      'Vitamin A dose adjustment by age: infants 6–11 mo: 100,000 IU; < 6 mo: 50,000 IU.',
+      'Report to public health immediately — measles is a notifiable disease.',
+      'MMR vaccine prevents measles — 2-dose series ≥ 95% effective.',
+    ],
+    escalation:
+      'Pneumonia, encephalitis (confusion, seizures), severe dehydration, or keratitis → hospital admission + IV fluids / antibiotics / supportive care as indicated.',
+    group: 'general',
+  },
+  {
+    id: 'disease-mumps',
+    title: 'Mumps',
+    indication:
+      'Contagious paramyxovirus. Transmission respiratory droplets / direct contact. Prodrome (1–2 days): low-grade fever, malaise, myalgia, headache, anorexia. Parotitis: unilateral or bilateral parotid swelling (90%), tender, lasts 3–7 days. Complications: orchitis (post-pubertal males, 20–30%), oophoritis (5% females), aseptic meningitis (1–10%), pancreatitis, sensorineural hearing loss (rare, usually unilateral).',
+    drugClass: 'Supportive',
+    mechanism:
+      'No effective antiviral. Self-limited disease. Supportive care with analgesics and hydration.',
+    firstLine:
+      'Supportive: acetaminophen 500–1000 mg PO q6h PRN (max 4 g/day) or ibuprofen 400 mg PO q6h PRN. Warm or cold compresses to parotid area. Adequate hydration.',
+    alternatives:
+      'No specific antiviral. Post-exposure prophylaxis: MMR vaccine within 72 h of exposure if not immune.',
+    duration: 'Self-limited, parotitis resolves in 3–7 days, full recovery 1–2 weeks',
+    adrs: [
+      'Acetaminophen: hepatotoxicity at high doses (limit 4 g/day).',
+      'Ibuprofen: GI upset, renal effects — caution in CKD, dehydration.',
+    ],
+    interactions: [
+      'Ibuprofen: caution with anticoagulants (warfarin), ACE-I/ARB in dehydration (AKI risk), lithium.',
+      'Acetaminophen: warfarin (modest INR increase).',
+    ],
+    doseAdjust:
+      'Acetaminophen / ibuprofen: standard dosing; ibuprofen reduce in CKD.',
+    pregnancy:
+      'Mumps in pregnancy → increased risk of spontaneous abortion in 1st trimester. No congenital syndrome. Supportive care.',
+    monitoring: [
+      'Droplet isolation for 5 days after parotitis onset.',
+      'Report to public health — notifiable disease.',
+      'Watch for orchitis in post-pubertal males (fever, severe testicular pain, swelling) — supportive care, scrotal support, NSAIDs.',
+      'MMR vaccine: 2-dose series prevents mumps; outbreaks still occur in highly vaccinated populations (waning immunity in young adults).',
+    ],
+    escalation:
+      'Meningitis, pancreatitis (severe epigastric pain, ↑ lipase), encephalitis, or significant orchitis → hospital admission for supportive care.',
+    group: 'general',
+  },
+  {
+    id: 'disease-parvovirus',
+    title: 'Parvovirus B19 ("Fifth Disease", Erythema Infectiosum)',
+    indication:
+      'Common childhood viral exanthem (slapped-cheek appearance). Transmission respiratory droplets / vertical (maternal-fetal). Three-stage rash: 1) "slapped cheek" erythema on face; 2) lacy reticular rash on trunk / extremities; 3) recurrent rash with sun, heat, exercise for weeks. Prodromal symptoms (fever, coryza, headache) occur BEFORE rash — child is no longer contagious once rash appears. Adults: arthralgia / arthritis (symmetric, small joints of hands, wrists, knees — more common in women). Complications: aplastic crisis in patients with hemolytic anemias (sickle cell, hereditary spherocytosis, thalassemia); chronic anemia in immunocompromised; hydrops fetalis in pregnancy (rare, < 10% transmission if maternal infection).',
+    drugClass: 'Supportive + IVIG for immunocompromised',
+    mechanism:
+      'Parvovirus B19 infects erythroid progenitor cells via the P antigen receptor. Causes transient red-cell aplasia. In normal hosts, the brief shutdown of erythropoiesis is clinically silent. In patients with shortened RBC lifespan (hemolytic anemia) → severe anemia (aplastic crisis).',
+    firstLine:
+      'Healthy children / adults: supportive care only — acetaminophen / ibuprofen for fever and arthralgia. No specific antiviral.',
+    alternatives:
+      'Immunocompromised with chronic anemia: IVIG 0.4 g/kg IV daily × 5 days (or 1 g/kg × 3 days) suppresses viremia. Aplastic crisis: transfusion + IVIG. Hydrops fetalis: intrauterine transfusion.',
+    duration: 'Self-limited; rash may recur for weeks with triggers',
+    adrs: [
+      'IVIG: headache, aseptic meningitis, fluid overload, anaphylaxis (rare, IgA deficiency), renal dysfunction.',
+      'NSAIDs / acetaminophen: standard ADRs.',
+    ],
+    interactions: [
+      'IVIG: live vaccines may be less effective — defer MMR / varicella 3+ months after IVIG.',
+      'IgA-deficient patients: risk of anaphylaxis — screen if known.',
+    ],
+    doseAdjust:
+      'IVIG: reduce infusion rate in renal dysfunction; sucrose-containing IVIG products risk osmotic nephropathy.',
+    pregnancy:
+      'Maternal parvovirus B19: < 10% transmission to fetus. If fetal hydrops develops: intrauterine transfusion can be lifesaving. Pregnant exposed / symptomatic patients should have serial ultrasounds (q 1–2 weeks × 8–12 weeks post-exposure).',
+    monitoring: [
+      'Children are NOT contagious once the rash appears — can attend school.',
+      'Pregnant healthcare workers / teachers: routine work restrictions not needed with standard hygiene.',
+      'Sickle cell patients with fever and Hb drop: suspect aplastic crisis — CBC + retic count + parvovirus serology.',
+      'Hand hygiene prevents transmission.',
+    ],
+    escalation:
+      'Aplastic crisis (severe anemia, retic < 1%), hydrops fetalis, or chronic anemia in immunocompromised → transfusion / IVIG / specialist consult.',
+    group: 'general',
+  },
+  {
+    id: 'disease-rubella',
+    title: 'Rubella ("German Measles", 3-Day Measles)',
+    indication:
+      'Mild viral exanthem caused by Togavirus (Rubivirus). Transmission respiratory droplets. Prodrome (1–5 days): low-grade fever, malaise, lymphadenopathy (posterior auricular, suboccipital — classic), mild coryza. Rash: pink maculopapular, starts on face → spreads cephalocaudally, fades in 3 days ("3-day measles"). Forchheimer spots (petechiae on soft palate — non-specific). Complications: arthritis / arthralgia (up to 70% adult women), thrombocytopenia, encephalitis (rare). CRITICAL: Congenital rubella syndrome (CRS) — first-trimester infection causes cataracts, sensorineural deafness, PDA, microcephaly, "blueberry muffin" rash.',
+    drugClass: 'Supportive',
+    mechanism:
+      'No specific antiviral. Self-limited disease. Prevention via MMR vaccine.',
+    firstLine:
+      'Supportive: acetaminophen 500–1000 mg PO q6h PRN for fever and arthralgia. Adequate hydration.',
+    alternatives:
+      'Post-exposure prophylaxis: MMR vaccine within 72 h of exposure (does not prevent disease if already infected, but may prevent if given early).',
+    duration: 'Self-limited; rash 3 days, full recovery 5–10 days',
+    adrs: [
+      'Acetaminophen: hepatotoxicity at high doses (limit 4 g/day).',
+      'MMR vaccine: rare transient arthralgia / arthritis (especially adult women), thrombocytopenia.',
+    ],
+    interactions: [
+      'Acetaminophen: warfarin (modest INR increase).',
+    ],
+    doseAdjust:
+      'No renal adjustment.',
+    pregnancy:
+      'Rubella in pregnancy (especially 1st trimester) → up to 85% fetal infection rate, with severe CRS consequences. Termination may be discussed. Pregnant exposed patients: serology (IgM / IgG) + serial ultrasounds. Immunoglobulin does NOT prevent fetal infection reliably.',
+    monitoring: [
+      'Droplet isolation for 7 days after rash onset.',
+      'Report to public health — notifiable disease; CRS is also notifiable.',
+      'Verify MMR vaccination in all pregnant patients (rubella immunity status is part of routine prenatal panel).',
+      'MMR vaccine is a LIVE attenuated vaccine — CONTRAINDICATED in pregnancy. Avoid pregnancy for ≥ 4 weeks after MMR.',
+    ],
+    escalation:
+      'Thrombocytopenia with bleeding, encephalitis (confusion, seizures), or suspected congenital rubella syndrome in neonate → specialist referral.',
+    group: 'general',
+  },
+  {
+    id: 'disease-sars',
+    title: 'SARS (Severe Acute Respiratory Syndrome)',
+    indication:
+      'Severe viral pneumonia caused by SARS-associated coronavirus (SARS-CoV-1, 2002–2004 outbreak; now historical). Transmission respiratory droplets / close contact. Prodrome (2–7 days): high fever, chills, myalgia, headache, malaise, dry cough. Days 3–7: lower respiratory phase — non-productive cough, dyspnea, hypoxemia. Chest x-ray: bilateral interstitial infiltrates / ground-glass opacities. Risk factors for severe disease: age > 60, comorbidities (DM, cardiovascular, immunosuppression).',
+    drugClass: 'Antiviral (ribavirin historically) + corticosteroids',
+    mechanism:
+      'No proven specific antiviral. Historical regimens used ribavirin (guanosine analogue — inhibits viral RNA synthesis) + systemic corticosteroids for immunomodulation. Most current SARS-CoV-2 antivirals (Paxlovid, remdesivir) target SARS-CoV-2, not SARS-CoV-1.',
+    firstLine:
+      'Historical: Ribavirin 8 mg/kg IV q8h × 14 days + methylprednisolone 1–2 mg/kg/day × 5–7 days (then taper). Modern supportive care: oxygen, lung-protective ventilation if needed, fluid management.',
+    alternatives:
+      'No established alternatives for SARS-CoV-1 specifically. Modern care is largely supportive (oxygen, ventilation, ECMO in severe cases). Interferon-α historically tried.',
+    duration: 'Historical 14 days',
+    adrs: [
+      'Ribavirin: hemolytic anemia (dose-related, common), teratogenicity (CATEGORY X — both partners must use contraception during and for 6 months after), cough, rash.',
+      'Corticosteroids: hyperglycemia, hypertension, mood changes, infection risk, adrenal suppression with prolonged use.',
+    ],
+    interactions: [
+      'Ribavirin: CONTRAINDICATED with didanosine (additive mitochondrial toxicity).',
+      'Ribavirin: teratogenic — strict contraception.',
+      'Methylprednisolone: numerous drug interactions (CYP3A4 metabolism — adjust cyclosporine, tacrolimus).',
+    ],
+    doseAdjust:
+      'Ribavirin: reduce dose in CrCl < 50 mL/min (hemolytic anemia worsened).',
+    pregnancy:
+      'Ribavirin is CATEGORY X — absolutely contraindicated. Corticosteroids may be used in severe maternal disease.',
+    monitoring: [
+      'Strict airborne + contact isolation (negative-pressure room, N95 respirator).',
+      'Report to public health immediately.',
+      'Serial chest imaging, oxygen saturation, CBC (hemolytic anemia risk with ribavirin).',
+      'Contact tracing essential — high transmission in healthcare settings.',
+    ],
+    escalation:
+      'Progressive hypoxemia, ARDS, multiorgan failure → ICU + lung-protective ventilation + consider ECMO.',
+    group: 'general',
+  },
+  {
+    id: 'disease-west-nile',
+    title: 'West Nile Virus',
+    indication:
+      'Mosquito-borne flavivirus (Culex species). Most infections asymptomatic (~80%). West Nile fever (~20%): abrupt fever, headache, myalgia, fatigue, anorexia, lymphadenopathy, occasionally maculopapular rash. Neurologic disease (< 1%): meningitis (headache, photophobia, meningismus), encephalitis (altered mental status, seizures, focal deficits), acute flaccid paralysis (poliomyelitis-like, asymmetric limb weakness). Risk factors for severe disease: age > 60, immunocompromised, diabetes, hypertension, CKD.',
+    drugClass: 'Supportive',
+    mechanism:
+      'No specific antiviral. Treatment is supportive care.',
+    firstLine:
+      'Supportive: acetaminophen for fever and headache. Adequate hydration. NO aspirin / NSAIDs in suspected neurologic disease (bleeding risk if thrombocytopenia develops). For severe neurologic disease: ICU-level supportive care.',
+    alternatives:
+      'No specific alternatives. Interferon and IVIG have been tried without strong evidence.',
+    duration: 'West Nile fever: 3–10 days. Neurologic disease: weeks to months of recovery; some residual deficits.',
+    adrs: [
+      'Acetaminophen: hepatotoxicity at high doses (limit 4 g/day).',
+      'NSAIDs / aspirin: avoid in suspected neurologic involvement.',
+    ],
+    interactions: [
+      'Acetaminophen: warfarin (modest INR increase).',
+    ],
+    doseAdjust:
+      'No renal adjustment.',
+    pregnancy:
+      'Limited data — no specific congenital syndrome documented. Supportive care.',
+    monitoring: [
+      'Mosquito-bite prevention (DEET, long sleeves, eliminate standing water) is the primary prevention.',
+      'Report to public health — notifiable disease.',
+      'Neurologic disease: serial exams, MRI brain + spine, lumbar puncture (CSF pleocytosis, elevated protein).',
+      'Plasma / CSF WNV IgM is diagnostic; IgG confirms past infection.',
+      'No vaccine available.',
+    ],
+    escalation:
+      'Encephalitis (confusion, seizures), acute flaccid paralysis, or progressive neurologic decline → ICU admission + supportive care + ID / neurology consult.',
+    group: 'general',
+  },
 ];
 
 export const clinicalReferenceGroups: { id: ClinicalRefEntry['group']; label: string }[] = [
