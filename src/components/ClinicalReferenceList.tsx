@@ -8,7 +8,6 @@ import {
   AlertTriangle,
   Activity,
   Heart,
-  Baby,
   FlaskConical,
   Shield,
   Stethoscope,
@@ -16,17 +15,19 @@ import {
   Wrench,
   Eye,
   Sparkles,
+  Microscope,
+  Beaker,
 } from 'lucide-react';
 import {
   clinicalReference,
   clinicalReferenceGroups,
   type ClinicalRefEntry,
 } from '@/nurses-inc-clinical-reference';
-import { woundStages, woundMeds, woundMedicationTypes } from '@/nurses-inc-wound-care';
+import { woundStages, woundMeds } from '@/nurses-inc-wound-care';
+import { labReference, labSystems, type LabEntry } from '@/nurses-inc-labs';
 import { cn } from '@/lib/utils';
 
-type AudienceMode = 'patient' | 'clinician';
-type ClinicianTab = 'drugs' | 'wound-care';
+type ClinicianTab = 'drugs' | 'wound-care' | 'labs';
 
 const groupIcons: Record<ClinicalRefEntry['group'], React.FC<{ className?: string }>> = {
   std: Heart,
@@ -35,14 +36,35 @@ const groupIcons: Record<ClinicalRefEntry['group'], React.FC<{ className?: strin
   vaccine: Syringe,
 };
 
+const labSystemIcons: Record<LabEntry['system'], React.FC<{ className?: string }>> = {
+  hematology: Beaker,
+  coagulation: Activity,
+  metabolic: FlaskConical,
+  renal: Activity,
+  hepatic: Shield,
+  lipid: Heart,
+  thyroid: Microscope,
+  glucose: FlaskConical,
+  iron: Beaker,
+  inflammation: Activity,
+  cardiac: Heart,
+  vitamins: Beaker,
+  electrolytes: FlaskConical,
+  urine: Beaker,
+  microbiology: Microscope,
+  serology: Shield,
+  toxicology: AlertTriangle,
+};
+
 export default function ClinicalReferenceList() {
-  const [audience, setAudience] = useState<AudienceMode>('patient');
-  const [clinicianTab, setClinicianTab] = useState<ClinicianTab>('drugs');
+  const [tab, setTab] = useState<ClinicianTab>('drugs');
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState<'all' | ClinicalRefEntry['group']>('all');
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [labSystem, setLabSystem] = useState<'all' | LabEntry['system']>('all');
+  const [expandedDrug, setExpandedDrug] = useState<string | null>(null);
+  const [expandedLab, setExpandedLab] = useState<string | null>(null);
 
-  const filtered = useMemo(() => {
+  const filteredDrugs = useMemo(() => {
     const q = query.trim().toLowerCase();
     return clinicalReference.filter((entry) => {
       if (group !== 'all' && entry.group !== group) return false;
@@ -61,170 +83,27 @@ export default function ClinicalReferenceList() {
     });
   }, [group, query]);
 
+  const filteredLabs = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return labReference.filter((entry) => {
+      if (labSystem !== 'all' && entry.system !== labSystem) return false;
+      if (!q) return true;
+      const hay = [
+        entry.acronym,
+        entry.fullName,
+        entry.description,
+        entry.purpose,
+        entry.indications.join(' '),
+      ]
+        .join(' ')
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [labSystem, query]);
+
   return (
     <div>
-      {/* Audience toggle — Patient / Clinician */}
-      <div className="mb-4 flex items-center justify-center">
-        <div
-          role="tablist"
-          aria-label="Toggle glossary audience"
-          className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
-        >
-          {[
-            { id: 'patient' as const, label: 'For Families', icon: Heart },
-            { id: 'clinician' as const, label: 'For Nurses & Physicians', icon: Stethoscope },
-          ].map((a) => {
-            const isActive = audience === a.id;
-            const Icon = a.icon;
-            return (
-              <button
-                key={a.id}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setAudience(a.id)}
-                className={cn(
-                  'relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
-                  isActive ? 'text-white' : 'text-ink-500 hover:text-ink-700',
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="audience-toggle-pill"
-                    className="absolute inset-0 rounded-full bg-ink-700 shadow-soft"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative inline-flex items-center gap-1.5">
-                  <Icon
-                    className={cn(
-                      'h-3.5 w-3.5',
-                      isActive ? 'text-white' : 'text-ink-300',
-                    )}
-                    aria-hidden="true"
-                  />
-                  <span>{a.label}</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <AnimatePresence mode="wait">
-        {audience === 'patient' ? (
-          <motion.div
-            key="patient"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <PatientView query={query} setQuery={setQuery} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="clinician"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <ClinicianView
-              tab={clinicianTab}
-              setTab={setClinicianTab}
-              query={query}
-              setQuery={setQuery}
-              group={group}
-              setGroup={setGroup}
-              filtered={filtered}
-              expanded={expanded}
-              setExpanded={setExpanded}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// =============================================================================
-// Patient-friendly view (hides the clinician-grade content from families)
-// =============================================================================
-function PatientView({
-  query,
-  setQuery,
-}: {
-  query: string;
-  setQuery: (v: string) => void;
-}) {
-  return (
-    <div>
-      <div className="mb-4 flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 px-4 py-3 shadow-soft backdrop-blur transition focus-within:border-mint-200 focus-within:shadow-[0_0_0_4px_rgba(170,210,190,0.35)]">
-        <Search className="h-4 w-4 shrink-0 text-ink-300" aria-hidden="true" />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search the patient dictionary — type a term, acronym, or topic…"
-          aria-label="Search patient glossary"
-          className="w-full bg-transparent text-sm text-ink-700 placeholder:text-ink-300 focus:outline-none"
-        />
-        {query && (
-          <button
-            type="button"
-            onClick={() => setQuery('')}
-            aria-label="Clear search"
-            className="grid h-6 w-6 place-items-center rounded-full text-ink-300 transition hover:bg-ink-100 hover:text-ink-700"
-          >
-            <X className="h-3 w-3" />
-          </button>
-        )}
-      </div>
-
-      <div className="rounded-3xl border border-white/60 bg-white/70 p-8 text-center shadow-soft">
-        <span className="mx-auto mb-3 grid h-10 w-10 place-items-center rounded-2xl bg-blush-100 text-blush-500">
-          <Heart className="h-5 w-5" />
-        </span>
-        <h3 className="font-display text-base font-semibold text-ink-700">
-          You're viewing the patient dictionary.
-        </h3>
-        <p className="mt-1 text-sm text-ink-500">
-          The patient glossary shows plain-English definitions anyone can read.
-          For clinician-grade dosage and treatment information, switch to
-          <span className="font-semibold text-ink-700"> For Nurses &amp; Physicians</span>.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-// =============================================================================
-// Clinician view
-// =============================================================================
-function ClinicianView({
-  tab,
-  setTab,
-  query,
-  setQuery,
-  group,
-  setGroup,
-  filtered,
-  expanded,
-  setExpanded,
-}: {
-  tab: ClinicianTab;
-  setTab: (t: ClinicianTab) => void;
-  query: string;
-  setQuery: (v: string) => void;
-  group: 'all' | ClinicalRefEntry['group'];
-  setGroup: (g: 'all' | ClinicalRefEntry['group']) => void;
-  filtered: ClinicalRefEntry[];
-  expanded: string | null;
-  setExpanded: (id: string | null) => void;
-}) {
-  return (
-    <div>
-      {/* Sub-tabs: Drug Cards / Wound Care */}
+      {/* Sub-tabs: Drug Cards / Wound Care / Labs */}
       <div className="mb-4 flex justify-center">
         <div
           role="tablist"
@@ -234,6 +113,7 @@ function ClinicianView({
           {[
             { id: 'drugs' as const, label: 'Drug Cards', icon: Pill },
             { id: 'wound-care' as const, label: 'Wound Care', icon: Wrench },
+            { id: 'labs' as const, label: 'Labs', icon: FlaskConical },
           ].map((t) => {
             const isActive = tab === t.id;
             const Icon = t.icon;
@@ -242,7 +122,10 @@ function ClinicianView({
                 key={t.id}
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => setTab(t.id)}
+                onClick={() => {
+                  setTab(t.id);
+                  setQuery('');
+                }}
                 className={cn(
                   'relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
                   isActive ? 'text-white' : 'text-ink-500 hover:text-ink-700',
@@ -272,7 +155,7 @@ function ClinicianView({
       </div>
 
       <AnimatePresence mode="wait">
-        {tab === 'drugs' ? (
+        {tab === 'drugs' && (
           <motion.div
             key="drugs"
             initial={{ opacity: 0, y: 8 }}
@@ -285,12 +168,13 @@ function ClinicianView({
               setQuery={setQuery}
               group={group}
               setGroup={setGroup}
-              filtered={filtered}
-              expanded={expanded}
-              setExpanded={setExpanded}
+              filtered={filteredDrugs}
+              expanded={expandedDrug}
+              setExpanded={setExpandedDrug}
             />
           </motion.div>
-        ) : (
+        )}
+        {tab === 'wound-care' && (
           <motion.div
             key="wound-care"
             initial={{ opacity: 0, y: 8 }}
@@ -299,6 +183,25 @@ function ClinicianView({
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
             <WoundCareView />
+          </motion.div>
+        )}
+        {tab === 'labs' && (
+          <motion.div
+            key="labs"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <LabsView
+              query={query}
+              setQuery={setQuery}
+              labSystem={labSystem}
+              setLabSystem={setLabSystem}
+              filtered={filteredLabs}
+              expanded={expandedLab}
+              setExpanded={setExpandedLab}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -527,7 +430,7 @@ function DrugCard({
                 )}
                 {entry.pregnancy && (
                   <>
-                    <FieldLabel icon={<Baby className="h-3 w-3" />}>
+                    <FieldLabel icon={<Sparkles className="h-3 w-3" />}>
                       Pregnancy / lactation
                     </FieldLabel>
                     <div />
@@ -753,5 +656,234 @@ function WoundCareView() {
         ))}
       </div>
     </div>
+  );
+}
+
+// =============================================================================
+// Labs quick reference
+// =============================================================================
+function LabsView({
+  query,
+  setQuery,
+  labSystem,
+  setLabSystem,
+  filtered,
+  expanded,
+  setExpanded,
+}: {
+  query: string;
+  setQuery: (v: string) => void;
+  labSystem: 'all' | LabEntry['system'];
+  setLabSystem: (s: 'all' | LabEntry['system']) => void;
+  filtered: LabEntry[];
+  expanded: string | null;
+  setExpanded: (id: string | null) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-4 rounded-3xl border border-white/70 bg-white/85 p-4 shadow-soft backdrop-blur">
+        <h3 className="font-display text-base font-semibold text-ink-700">
+          <FlaskConical className="mr-1 inline h-4 w-4" />
+          Labs quick reference
+        </h3>
+        <p className="mt-1 text-[12px] text-ink-500">
+          Adult reference ranges. Always compare with your lab's specific range.
+          Tap any card to expand the indications, full range, and what high/low
+          means clinically.
+        </p>
+      </div>
+
+      {/* Search */}
+      <div className="mb-3 flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 px-4 py-2.5 shadow-soft backdrop-blur transition focus-within:border-ink-300 focus-within:shadow-[0_0_0_4px_rgba(44,62,80,0.15)]">
+        <Search className="h-4 w-4 shrink-0 text-ink-300" aria-hidden="true" />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by acronym, full name, or test purpose…"
+          aria-label="Search labs"
+          className="w-full bg-transparent text-sm text-ink-700 placeholder:text-ink-300 focus:outline-none"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery('')}
+            aria-label="Clear search"
+            className="grid h-6 w-6 place-items-center rounded-full text-ink-300 transition hover:bg-ink-100 hover:text-ink-700"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        )}
+      </div>
+
+      {/* System chips */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
+          <Microscope className="mr-1 inline h-3 w-3" />
+          {filtered.length} of {labReference.length} tests
+        </span>
+        <span className="h-px flex-1 bg-ink-100" />
+        <button
+          onClick={() => setLabSystem('all')}
+          aria-pressed={labSystem === 'all'}
+          className={cn(
+            'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-all',
+            labSystem === 'all'
+              ? 'border-ink-700 bg-ink-700 text-white shadow-soft'
+              : 'border-white/70 bg-white/70 text-ink-500 hover:border-ink-200',
+          )}
+        >
+          All
+        </button>
+        {labSystems.map((s) => {
+          const isActive = labSystem === s.id;
+          return (
+            <button
+              key={s.id}
+              onClick={() => setLabSystem(s.id)}
+              aria-pressed={isActive}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold transition-all',
+                isActive
+                  ? 'border-ink-700 bg-ink-700 text-white shadow-soft'
+                  : 'border-white/70 bg-white/70 text-ink-500 hover:border-ink-200',
+              )}
+            >
+              {s.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Lab cards */}
+      {filtered.length === 0 ? (
+        <div className="rounded-3xl border border-white/60 bg-white/60 p-8 text-center shadow-soft">
+          <p className="font-display text-base text-ink-700">No matches.</p>
+          <p className="mt-1 text-xs text-ink-400">
+            Try a different keyword or body system.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((entry) => (
+            <LabCard
+              key={entry.id}
+              entry={entry}
+              isOpen={expanded === entry.id}
+              onToggle={() => setExpanded(expanded === entry.id ? null : entry.id)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LabCard({
+  entry,
+  isOpen,
+  onToggle,
+}: {
+  entry: LabEntry;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const Icon = labSystemIcons[entry.system] ?? FlaskConical;
+  return (
+    <article
+      className={cn(
+        'group overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
+        isOpen && 'ring-2 ring-ink-700/30',
+      )}
+    >
+      {/* Header */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left"
+        aria-expanded={isOpen}
+        aria-controls={`lab-${entry.id}`}
+      >
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ink-50 text-ink-500">
+          <Icon className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-ink-700 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">
+              {entry.acronym}
+            </span>
+            <span className="rounded-full bg-ink-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-ink-500">
+              {entry.system}
+            </span>
+          </div>
+          <h4 className="font-display text-base font-semibold leading-tight text-ink-700">
+            {entry.fullName}
+          </h4>
+          <p className="text-[11px] text-ink-500">{entry.description}</p>
+        </div>
+        <ChevronDown
+          className={cn(
+            'h-4 w-4 shrink-0 text-ink-300 transition-transform duration-300',
+            isOpen && 'rotate-180 text-ink-700',
+          )}
+          aria-hidden="true"
+        />
+      </button>
+
+      {/* Body */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            id={`lab-${entry.id}`}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-ink-100/60 px-4 py-3 text-[12px] leading-relaxed text-ink-500">
+              <FieldLabel icon={<Sparkles className="h-3 w-3" />}>Purpose</FieldLabel>
+              <p>{entry.purpose}</p>
+
+              <FieldLabel icon={<Stethoscope className="h-3 w-3" />}>
+                When to order
+              </FieldLabel>
+              <ul className="list-inside list-disc space-y-0.5">
+                {entry.indications.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+
+              <FieldLabel icon={<FlaskConical className="h-3 w-3" />}>
+                Reference range
+              </FieldLabel>
+              <p className="font-mono text-[11px] text-ink-700">{entry.range}</p>
+
+              <div className="mt-3 grid gap-2 md:grid-cols-2">
+                <div className="rounded-2xl border border-blush-200/60 bg-blush-50 px-3 py-2">
+                  <FieldLabel icon={<ChevronDown className="h-3 w-3" />}>
+                    LOW
+                  </FieldLabel>
+                  <p className="text-[11px] text-ink-700">{entry.low}</p>
+                </div>
+                <div className="rounded-2xl border border-mint-200/60 bg-mint-50 px-3 py-2">
+                  <FieldLabel icon={<ChevronDown className="h-3 w-3 rotate-180" />}>
+                    HIGH
+                  </FieldLabel>
+                  <p className="text-[11px] text-ink-700">{entry.high}</p>
+                </div>
+              </div>
+
+              {entry.notes && (
+                <div className="mt-2 rounded-2xl border border-ink-100/60 bg-ink-50 px-3 py-2">
+                  <FieldLabel icon={<Eye className="h-3 w-3" />}>Notes</FieldLabel>
+                  <p className="text-[11px] text-ink-700">{entry.notes}</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </article>
   );
 }
