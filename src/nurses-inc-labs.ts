@@ -232,7 +232,8 @@ export const labReference: LabEntry[] = [
     acronym: 'ANC',
     fullName: 'Absolute Neutrophil Count',
     system: 'hematology',
-    description: 'Calculated count of neutrophils — used to assess infection risk.',
+    description:
+      'Calculated count of neutrophils — used to assess infection risk. ANC = WBC × (% segs + % bands) ÷ 100.',
     purpose: 'Critical for infection risk in immunocompromised patients (chemo, transplant).',
     indications: [
       'Monitoring chemotherapy',

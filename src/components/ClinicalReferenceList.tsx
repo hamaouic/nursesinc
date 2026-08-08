@@ -710,8 +710,16 @@ function WoundCareView() {
         </h3>
         <p className="mt-1 text-[12px] text-ink-500">
           Color-coded staging (red / yellow / black) plus the NPIAP pressure
-          injury stages I–IV. Tap any card to expand the dressing plan, watch
-          points, and escalation criteria.
+          injury stages I–IV. NPIAP ={' '}
+          <span className="font-semibold text-ink-700">
+            National Pressure Injury Advisory Panel
+          </span>{' '}
+          — the international body that standardized the 6-stage pressure
+          injury classification system (Stages I–IV + suspected Deep Tissue
+          Injury + Unstageable), revised most recently in 2016. Their staging
+          is used by WOCN, RNAO, NHS, and most Canadian wound-care guidelines.
+          Tap any card to expand the dressing plan, watch points, and
+          escalation criteria.
         </p>
       </div>
 
