@@ -238,11 +238,14 @@ export const labReference: LabEntry[] = [
     indications: [
       'Monitoring chemotherapy',
       'Immunosuppression risk stratification',
-      'Febrile neutropenia workup',
+      'Febrile neutropenia workup (fever ≥ 38.3 °C once OR ≥ 38.0 °C sustained for ≥ 1 h in a patient with neutropenia — ANC < 0.5 × 10⁹/L or expected to fall below that within 48 h)',
     ],
     range: '2.0–7.5 × 10⁹/L',
-    low: 'Neutropenia — high infection risk. < 1.5 = moderate; < 0.5 = severe (febrile neutropenia risk).',
+    low:
+      'Neutropenia = low neutrophil count (ANC < 1.5). Severe neutropenia ANC < 0.5. Profound neutropenia ANC < 0.1 — minimal defence against bacterial or fungal invasion. < 1.5 = moderate risk; < 0.5 = severe (febrile neutropenia risk).',
     high: 'Neutrophilia — bacterial infection, inflammation, steroids, stress.',
+    notes:
+      'Febrile neutropenia is an ONCOLOGIC EMERGENCY. A single fever spike in a patient with ANC < 0.5 can be the only warning sign of life-threatening sepsis — they may not mount a typical inflammatory response. Empiric broad-spectrum IV antibiotics within 1 hour is standard of care (do NOT wait for cultures).',
   },
   {
     id: 'lymphocytes',
