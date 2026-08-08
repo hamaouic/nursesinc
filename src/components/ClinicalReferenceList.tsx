@@ -23,6 +23,7 @@ import {
   clinicalReferenceGroups,
   type ClinicalRefEntry,
 } from '@/nurses-inc-clinical-reference';
+import { drugClasses, type DrugClassEntry } from '@/nurses-inc-drug-classes';
 import { woundStages, woundMeds, type WoundColor } from '@/nurses-inc-wound-care';
 import { labReference, labSystems, type LabEntry } from '@/nurses-inc-labs';
 import { cn } from '@/lib/utils';
@@ -34,6 +35,25 @@ const groupIcons: Record<ClinicalRefEntry['group'], React.FC<{ className?: strin
   respiratory: Activity,
   general: Stethoscope,
   vaccine: Syringe,
+};
+
+const drugClassColorClasses: Record<DrugClassEntry['color'], string> = {
+  red: 'bg-red-100 text-red-700 ring-red-200',
+  orange: 'bg-orange-100 text-orange-700 ring-orange-300',
+  amber: 'bg-amber-100 text-amber-700 ring-amber-200',
+  yellow: 'bg-yellow-100 text-yellow-700 ring-yellow-200',
+  lime: 'bg-lime-100 text-lime-700 ring-lime-200',
+  green: 'bg-green-100 text-green-700 ring-green-200',
+  teal: 'bg-teal-100 text-teal-700 ring-teal-200',
+  cyan: 'bg-cyan-100 text-cyan-700 ring-cyan-200',
+  sky: 'bg-sky-100 text-sky-700 ring-sky-200',
+  blue: 'bg-blue-100 text-blue-700 ring-blue-200',
+  indigo: 'bg-indigo-100 text-indigo-700 ring-indigo-200',
+  purple: 'bg-purple-100 text-purple-700 ring-purple-200',
+  fuchsia: 'bg-fuchsia-100 text-fuchsia-700 ring-fuchsia-200',
+  pink: 'bg-pink-100 text-pink-700 ring-pink-200',
+  rose: 'bg-rose-100 text-rose-700 ring-rose-200',
+  slate: 'bg-slate-200 text-slate-700 ring-slate-300',
 };
 
 const woundColorClasses: Record<WoundColor, string> = {
@@ -241,8 +261,111 @@ function DrugCardsView({
   expanded: string | null;
   setExpanded: (id: string | null) => void;
 }) {
+  const [showClassChart, setShowClassChart] = useState(true);
+  const [expandedClass, setExpandedClass] = useState<string | null>(null);
+  const [classQuery, setClassQuery] = useState('');
+
+  const filteredClasses = useMemo(() => {
+    const q = classQuery.trim().toLowerCase();
+    if (!q) return drugClasses;
+    return drugClasses.filter((c) => {
+      const hay = [c.name, c.mechanism, c.examples.join(' '), c.uses.join(' ')]
+        .join(' ')
+        .toLowerCase();
+      return hay.includes(q);
+    });
+  }, [classQuery]);
+
   return (
     <div>
+      {/* Drug classification chart */}
+      <div className="mb-4 overflow-hidden rounded-3xl border border-white/70 bg-white/85 shadow-soft backdrop-blur">
+        <button
+          type="button"
+          onClick={() => setShowClassChart((v) => !v)}
+          aria-expanded={showClassChart}
+          aria-controls="drug-class-chart"
+          className="flex w-full items-center gap-3 px-4 py-3 text-left"
+        >
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ink-50 text-ink-500">
+            <Sparkles className="h-4 w-4" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-display text-base font-semibold text-ink-700">
+              <Pill className="mr-1 inline h-4 w-4" />
+              Drug classification chart
+            </h3>
+            <p className="text-[11px] text-ink-500">
+              Class name, what it does, prototypical agents, what it treats — and the
+              one classic "watch out for" each class carries. {drugClasses.length} classes.
+            </p>
+          </div>
+          <ChevronDown
+            className={cn(
+              'h-4 w-4 shrink-0 text-ink-300 transition-transform duration-300',
+              showClassChart && 'rotate-180 text-ink-700',
+            )}
+            aria-hidden="true"
+          />
+        </button>
+
+        <AnimatePresence initial={false}>
+          {showClassChart && (
+            <motion.div
+              id="drug-class-chart"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="border-t border-ink-100/60 px-4 py-3">
+                {/* Search inside chart */}
+                <div className="mb-3 flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 px-3 py-2 shadow-soft backdrop-blur transition focus-within:border-ink-300 focus-within:shadow-[0_0_0_4px_rgba(44,62,80,0.15)]">
+                  <Search className="h-3.5 w-3.5 shrink-0 text-ink-300" aria-hidden="true" />
+                  <input
+                    type="search"
+                    value={classQuery}
+                    onChange={(e) => setClassQuery(e.target.value)}
+                    placeholder="Filter classes — e.g. NSAID, antacid, heparin…"
+                    aria-label="Search drug classes"
+                    className="w-full bg-transparent text-xs text-ink-700 placeholder:text-ink-300 focus:outline-none"
+                  />
+                  {classQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setClassQuery('')}
+                      aria-label="Clear class search"
+                      className="grid h-5 w-5 place-items-center rounded-full text-ink-300 transition hover:bg-ink-100 hover:text-ink-700"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {filteredClasses.map((cls) => (
+                    <DrugClassChip
+                      key={cls.id}
+                      entry={cls}
+                      isOpen={expandedClass === cls.id}
+                      onToggle={() =>
+                        setExpandedClass(expandedClass === cls.id ? null : cls.id)
+                      }
+                    />
+                  ))}
+                </div>
+                {filteredClasses.length === 0 && (
+                  <p className="rounded-2xl bg-ink-50 px-3 py-2 text-center text-[11px] text-ink-400">
+                    No matching classes. Try a different keyword.
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* Search + filter */}
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 px-4 py-2.5 shadow-soft backdrop-blur transition focus-within:border-ink-300 focus-within:shadow-[0_0_0_4px_rgba(44,62,80,0.15)]">
@@ -485,6 +608,91 @@ function FieldLabel({
       {icon}
       {children}
     </div>
+  );
+}
+
+// =============================================================================
+// Drug class chart chip
+// =============================================================================
+function DrugClassChip({
+  entry,
+  isOpen,
+  onToggle,
+}: {
+  entry: DrugClassEntry;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <article
+      className={cn(
+        'overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
+        isOpen && 'ring-2 ring-ink-700/30',
+      )}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex w-full items-center gap-2 px-3 py-2.5 text-left"
+      >
+        <span
+          className={cn(
+            'grid h-7 w-7 shrink-0 place-items-center rounded-lg ring-1 ring-inset',
+            drugClassColorClasses[entry.color],
+          )}
+        >
+          <Pill className="h-3.5 w-3.5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h4 className="font-display text-[13px] font-semibold leading-tight text-ink-700">
+            {entry.name}
+          </h4>
+          <p className="line-clamp-2 text-[10px] leading-snug text-ink-500">
+            {entry.mechanism}
+          </p>
+        </div>
+        <ChevronDown
+          className={cn(
+            'h-3.5 w-3.5 shrink-0 text-ink-300 transition-transform duration-300',
+            isOpen && 'rotate-180 text-ink-700',
+          )}
+          aria-hidden="true"
+        />
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.2, 0.8, 0.2, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-ink-100/60 px-3 pb-3 pt-2 text-[11px] leading-relaxed text-ink-500">
+              <FieldLabel>What it does</FieldLabel>
+              <p>{entry.mechanism}</p>
+              <FieldLabel>Common agents</FieldLabel>
+              <p className="font-mono text-[10px] text-ink-700">
+                {entry.examples.join(' · ')}
+              </p>
+              <FieldLabel>Used for</FieldLabel>
+              <ul className="list-inside list-disc space-y-0.5">
+                {entry.uses.map((u, i) => (
+                  <li key={i}>{u}</li>
+                ))}
+              </ul>
+              <div className="mt-2 rounded-2xl border border-amber-200/60 bg-amber-50 px-2.5 py-1.5">
+                <FieldLabel icon={<AlertTriangle className="h-3 w-3" />}>
+                  Watch out for
+                </FieldLabel>
+                <p className="text-[10.5px] text-ink-700">{entry.watchOut}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </article>
   );
 }
 
