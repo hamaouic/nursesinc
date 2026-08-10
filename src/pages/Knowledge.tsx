@@ -5,7 +5,7 @@ import ResourcesBoard from '@/components/ResourcesBoard';
 export default function Knowledge() {
   return (
     <>
-      <div className="pt-4" />
+      <div className="pt-2" />
       <Section
         eyebrow="Knowledge Hub"
         title={
