@@ -1,14 +1,36 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Menu, X, HeartPulse } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, HeartPulse, Users, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/services', label: 'Services' },
-  { to: '/knowledge', label: 'Knowledge Hub' },
-  { to: '/forms', label: 'Forms' },
-  { to: '/contact', label: 'Contact' },
+type NavEntry =
+  | { kind: 'link'; to: string; label: string }
+  | { kind: 'section'; label: string; icon: React.FC<{ className?: string }>; items: { to: string; label: string }[] };
+
+const navEntries: NavEntry[] = [
+  { kind: 'link', to: '/', label: 'Home' },
+  { kind: 'link', to: '/services', label: 'Services' },
+  {
+    kind: 'section',
+    label: 'Clients',
+    icon: Users,
+    items: [
+      { to: '/clients', label: 'Overview' },
+      { to: '/services', label: 'Services' },
+      { to: '/knowledge', label: 'Knowledge Hub' },
+    ],
+  },
+  {
+    kind: 'section',
+    label: 'Clinic',
+    icon: Building2,
+    items: [
+      { to: '/clinic', label: 'About the clinic' },
+      { to: '/forms', label: 'Forms' },
+      { to: '/contact', label: 'Contact' },
+    ],
+  },
 ];
 
 export default function Nav() {
@@ -51,30 +73,36 @@ export default function Nav() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
-          {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.to === '/'}
-              className={({ isActive }) =>
-                cn(
-                  'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'text-ink-700'
-                    : 'text-ink-400 hover:text-ink-700',
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <span className="relative z-10">{l.label}</span>
-                  {isActive && (
-                    <span className="absolute inset-0 -z-0 rounded-full bg-blush-100" />
+          {navEntries.map((entry) => {
+            if (entry.kind === 'link') {
+              return (
+                <NavLink
+                  key={entry.to}
+                  to={entry.to}
+                  end={entry.to === '/'}
+                  className={({ isActive }) =>
+                    cn(
+                      'relative rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                      isActive
+                        ? 'text-ink-700'
+                        : 'text-ink-400 hover:text-ink-700',
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <span className="relative z-10">{entry.label}</span>
+                      {isActive && (
+                        <span className="absolute inset-0 -z-0 rounded-full bg-blush-100" />
+                      )}
+                    </>
                   )}
-                </>
-              )}
-            </NavLink>
-          ))}
+                </NavLink>
+              );
+            }
+            // Section dropdown
+            return <NavSection key={entry.label} entry={entry} />;
+          })}
         </nav>
 
         <div className="hidden md:block">
@@ -102,29 +130,60 @@ export default function Nav() {
         className={cn(
           'mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl border border-white/60 transition-all duration-500 md:hidden',
           open
-            ? 'max-h-96 opacity-100 glass shadow-soft'
+            ? 'max-h-[80vh] opacity-100 glass shadow-soft'
             : 'pointer-events-none max-h-0 opacity-0',
         )}
       >
-        <nav className="flex flex-col gap-1 p-3" aria-label="Mobile">
-          {links.map((l) => (
-            <NavLink
-              key={l.to}
-              to={l.to}
-              end={l.to === '/'}
-              onClick={() => setOpen(false)}
-              className={({ isActive }) =>
-                cn(
-                  'rounded-2xl px-4 py-3 text-base font-medium transition-colors',
-                  isActive
-                    ? 'bg-blush-100 text-ink-700'
-                    : 'text-ink-400 hover:bg-mint-100/60 hover:text-ink-700',
-                )
-              }
-            >
-              {l.label}
-            </NavLink>
-          ))}
+        <nav className="flex flex-col gap-1 overflow-y-auto p-3" aria-label="Mobile">
+          {navEntries.map((entry) => {
+            if (entry.kind === 'link') {
+              return (
+                <NavLink
+                  key={entry.to}
+                  to={entry.to}
+                  end={entry.to === '/'}
+                  onClick={() => setOpen(false)}
+                  className={({ isActive }) =>
+                    cn(
+                      'rounded-2xl px-4 py-3 text-base font-medium transition-colors',
+                      isActive
+                        ? 'bg-blush-100 text-ink-700'
+                        : 'text-ink-400 hover:bg-mint-100/60 hover:text-ink-700',
+                    )
+                  }
+                >
+                  {entry.label}
+                </NavLink>
+              );
+            }
+            return (
+              <div key={entry.label} className="mt-2">
+                <div className="flex items-center gap-2 px-4 pt-2 text-[10px] font-bold uppercase tracking-[0.18em] text-ink-300">
+                  <entry.icon className="h-3.5 w-3.5" />
+                  {entry.label}
+                </div>
+                <div className="mt-1 flex flex-col gap-1">
+                  {entry.items.map((it) => (
+                    <NavLink
+                      key={it.to}
+                      to={it.to}
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          'rounded-2xl px-4 py-2.5 text-sm font-medium transition-colors',
+                          isActive
+                            ? 'bg-blush-100 text-ink-700'
+                            : 'text-ink-400 hover:bg-mint-100/60 hover:text-ink-700',
+                        )
+                      }
+                    >
+                      {it.label}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
           <Link
             to="/contact"
             onClick={() => setOpen(false)}
@@ -135,5 +194,77 @@ export default function Nav() {
         </nav>
       </div>
     </header>
+  );
+}
+
+// ============================================================
+// Desktop section dropdown
+// ============================================================
+function NavSection({ entry }: { entry: Extract<NavEntry, { kind: 'section' }> }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const Icon = entry.icon;
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsOpen(true)}
+      onMouseLeave={() => setIsOpen(false)}
+    >
+      <button
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        className={cn(
+          'relative inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-colors',
+          'text-ink-400 hover:text-ink-700',
+        )}
+      >
+        <Icon className="h-3.5 w-3.5" />
+        <span>{entry.label}</span>
+        <svg
+          className={cn(
+            'h-3 w-3 transition-transform',
+            isOpen && 'rotate-180',
+          )}
+          viewBox="0 0 12 12"
+          aria-hidden="true"
+        >
+          <path d="M3 4.5 L 6 8 L 9 4.5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
+            className="absolute right-0 top-full z-50 mt-2 min-w-[14rem] overflow-hidden rounded-2xl border border-white/70 bg-white/95 p-2 shadow-soft backdrop-blur"
+          >
+            {entry.items.map((it) => (
+              <NavLink
+                key={it.to}
+                to={it.to}
+                end={it.to === '/'}
+                onClick={() => setIsOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-blush-100 text-ink-700'
+                      : 'text-ink-500 hover:bg-mint-100/60 hover:text-ink-700',
+                  )
+                }
+              >
+                <span>{it.label}</span>
+                <svg className="h-3 w-3 opacity-50" viewBox="0 0 12 12" aria-hidden="true">
+                  <path d="M4 3 L 8 6 L 4 9" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </NavLink>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

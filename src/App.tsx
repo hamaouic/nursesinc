@@ -10,6 +10,8 @@ import Forms from './pages/Forms';
 import Reconciliation from './pages/Reconciliation';
 import ClinicalMatrixPage from './pages/ClinicalMatrixPage';
 import Contact from './pages/Contact';
+import Clients from './pages/Clients';
+import Clinic from './pages/Clinic';
 
 export default function App() {
   const location = useLocation();
@@ -33,6 +35,8 @@ export default function App() {
             <Route path="/forms" element={<Forms />} />
             <Route path="/forms/reconciliation" element={<Reconciliation />} />
             <Route path="/forms/clinical-tools" element={<ClinicalMatrixPage />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/clinic" element={<Clinic />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<Home />} />
           </Routes>
