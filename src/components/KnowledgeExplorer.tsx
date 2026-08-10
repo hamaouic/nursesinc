@@ -7,13 +7,18 @@ import {
   Download,
   FileText,
   Eye,
+  Printer,
   ChevronDown,
   X,
+  ListChecks,
+  Quote,
 } from 'lucide-react';
 import { knowledgePaths, type KnowledgePath } from '@/nurses-inc-config';
+import { onePagers } from '@/onepagers-config';
 import {
   generateOnePagerPdf,
   previewOnePagerPdf,
+  printOnePagerPdf,
 } from '@/lib/onepager-pdf';
 import { cn } from '@/lib/utils';
 import DocumentPreviewModal, {
@@ -205,11 +210,20 @@ export default function KnowledgeExplorer() {
           >
             <div
               className={cn(
-                'mt-6 overflow-hidden rounded-[2rem] border border-white/60 bg-gradient-to-br p-8 shadow-soft backdrop-blur md:p-12',
+                'relative mt-6 overflow-hidden rounded-[2rem] border border-white/60 bg-gradient-to-br p-8 shadow-soft backdrop-blur md:p-12',
                 pathAccents[current.theme],
               )}
             >
-              <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <button
+                type="button"
+                aria-label="Close article"
+                onClick={() => setActive(null)}
+                className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/60 bg-white/80 text-ink-500 shadow-soft backdrop-blur transition-all hover:rotate-90 hover:bg-white sm:right-6 sm:top-6"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              <div className="mb-6 flex flex-col gap-4 pr-12 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h3 className="font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
                     {current.label}
@@ -219,24 +233,41 @@ export default function KnowledgeExplorer() {
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => startPreview(current.id)}
-                    aria-label={`View ${current.label} one-pager PDF`}
-                    className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
+                  <div
+                    className="inline-flex items-center justify-center gap-1 rounded-full border border-ink-200 bg-white px-2 py-2 text-sm font-medium text-ink-500 shadow-soft"
+                    role="group"
+                    aria-label={`View or print ${current.label}`}
                   >
-                    <Eye className="h-4 w-4" />
-                    <span>View</span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => startPreview(current.id)}
+                      aria-label={`View ${current.label} one-pager PDF`}
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition-colors hover:bg-cream-50"
+                    >
+                      <Eye className="h-4 w-4" />
+                      <span>View</span>
+                    </button>
+                    <span className="text-ink-300" aria-hidden>
+                      /
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => printOnePagerPdf(current.id)}
+                      aria-label={`Print ${current.label} one-pager PDF`}
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 transition-colors hover:bg-cream-50"
+                    >
+                      <Printer className="h-4 w-4" />
+                      <span>Print</span>
+                    </button>
+                  </div>
                   <button
                     type="button"
                     onClick={() => generateOnePagerPdf(current.id)}
                     aria-label={`Download ${current.label} one-pager PDF`}
                     className="group inline-flex items-center gap-2 rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
                   >
-                    <FileText className="h-4 w-4" />
-                    <span>One-Pager PDF</span>
-                    <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" />
+                    <Download className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
+                    <span>Download PDF</span>
                   </button>
                 </div>
               </div>

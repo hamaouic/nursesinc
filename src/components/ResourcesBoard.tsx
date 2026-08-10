@@ -294,13 +294,33 @@ export default function ResourcesBoard() {
                         : 'Preview'}
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handlePrint(current.id)}
-                        className="group inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-4 py-2 text-xs font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
+                      <div
+                        className="inline-flex items-center justify-center gap-1 rounded-full border border-ink-200 bg-white px-2 py-1.5 text-xs font-medium text-ink-500 shadow-soft"
+                        role="group"
+                        aria-label={`View or print ${current.title}`}
                       >
-                        <Printer className="h-3.5 w-3.5" /> Print
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => startInline(current.id)}
+                          aria-label={`View ${current.title}`}
+                          className="inline-flex items-center gap-1 rounded-full px-2 py-1 transition-colors hover:bg-cream-50"
+                        >
+                          <Eye className="h-3 w-3" />
+                          <span>View</span>
+                        </button>
+                        <span className="text-ink-300" aria-hidden>
+                          /
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handlePrint(current.id)}
+                          aria-label={`Print ${current.title}`}
+                          className="inline-flex items-center gap-1 rounded-full px-2 py-1 transition-colors hover:bg-cream-50"
+                        >
+                          <Printer className="h-3 w-3" />
+                          <span>Print</span>
+                        </button>
+                      </div>
                       <button
                         type="button"
                         onClick={() => downloadResource(current.id)}

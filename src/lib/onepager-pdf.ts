@@ -34,6 +34,24 @@ export function previewOnePagerPdf(id: OnePagerId): string {
   return URL.createObjectURL(blob);
 }
 
+/**
+ * Open the one-pager in a new tab and trigger the browser print dialog.
+ */
+export function printOnePagerPdf(id: OnePagerId): void {
+  const url = previewOnePagerPdf(id);
+  const win = window.open(url, '_blank');
+  if (win) {
+    win.addEventListener('load', () => {
+      try {
+        win.focus();
+        win.print();
+      } catch {
+        /* user closed the window — fine */
+      }
+    });
+  }
+}
+
 function buildOnePagerDoc(
   meta: (typeof onePagers)[OnePagerId],
   data: (typeof onePagerContent)[OnePagerId],
