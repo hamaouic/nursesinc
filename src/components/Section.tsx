@@ -26,7 +26,7 @@ export default function Section({
     <section
       id={id}
       className={cn(
-        'relative mx-auto w-full max-w-6xl px-6 py-20 sm:py-28',
+        'relative mx-auto w-full max-w-6xl px-6 pt-8 pb-10 sm:pt-10 sm:pb-14',
         className,
       )}
     >
