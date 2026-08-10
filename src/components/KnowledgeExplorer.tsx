@@ -7,6 +7,8 @@ import {
   Download,
   FileText,
   Eye,
+  ChevronDown,
+  X,
 } from 'lucide-react';
 import { knowledgePaths, type KnowledgePath } from '@/nurses-inc-config';
 import {
@@ -14,7 +16,6 @@ import {
   previewOnePagerPdf,
 } from '@/lib/onepager-pdf';
 import { cn } from '@/lib/utils';
-import MouseCard from './MouseCard';
 import DocumentPreviewModal, {
   type DocumentPreview,
 } from './DocumentPreviewModal';
@@ -31,10 +32,22 @@ const pathGradients: Record<KnowledgePath['theme'], string> = {
   cream: 'from-cream-100 via-white to-blush-50',
 };
 
+const pathAccents: Record<KnowledgePath['theme'], string> = {
+  blush: 'bg-gradient-to-br from-blush-100 to-blush-50 text-blush-400',
+  mint: 'bg-gradient-to-br from-mint-100 to-mint-50 text-mint-500',
+  cream: 'bg-gradient-to-br from-cream-100 to-cream-50 text-ink-500',
+};
+
+const pathActiveIcon: Record<KnowledgePath['theme'], string> = {
+  blush: 'bg-blush-100 text-blush-500 ring-blush-200',
+  mint: 'bg-mint-100 text-mint-500 ring-mint-200',
+  cream: 'bg-cream-100 text-ink-500 ring-cream-200',
+};
+
 export default function KnowledgeExplorer() {
-  const [active, setActive] = useState<KnowledgePath['id']>('dementia');
+  const [active, setActive] = useState<KnowledgePath['id'] | null>(null);
   const [preview, setPreview] = useState<DocumentPreview | null>(null);
-  const current = knowledgePaths.find((p) => p.id === active)!;
+  const current = knowledgePaths.find((p) => p.id === active);
 
   // Revoke preview blob URL on unmount or path change
   useEffect(() => {
@@ -44,18 +57,18 @@ export default function KnowledgeExplorer() {
   }, [preview]);
 
   const startPreview = async (id: KnowledgePath['id']) => {
+    const path = knowledgePaths.find((p) => p.id === id)!;
     setPreview({
-      title: knowledgePaths.find((p) => p.id === id)!.label,
+      title: path.label,
       meta: 'One-Pager · Knowledge Pathway · Read-only preview',
       url: null,
       loading: true,
     });
     try {
-      // Run preview generation off the synchronous render path
       await new Promise((r) => setTimeout(r, 30));
       const url = previewOnePagerPdf(id);
       setPreview({
-        title: knowledgePaths.find((p) => p.id === id)!.label,
+        title: path.label,
         meta: 'One-Pager · Knowledge Pathway · Read-only preview',
         url,
         loading: false,
@@ -65,7 +78,7 @@ export default function KnowledgeExplorer() {
       const message =
         err instanceof Error ? err.message : 'Could not open preview.';
       setPreview({
-        title: knowledgePaths.find((p) => p.id === id)!.label,
+        title: path.label,
         url: null,
         loading: false,
         error: message,
@@ -79,134 +92,183 @@ export default function KnowledgeExplorer() {
     setPreview(null);
   };
 
+  const toggle = (id: KnowledgePath['id']) => {
+    setActive((current) => (current === id ? null : id));
+  };
+
   return (
     <div>
-      {/* Path switcher */}
-      <div
-        role="tablist"
-        aria-label="Knowledge pathway"
-        className="mx-auto grid max-w-3xl gap-3 sm:grid-cols-3"
-      >
-        {knowledgePaths.map((p) => {
+      {/* Path cards — click to expand */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {knowledgePaths.map((p, i) => {
           const Icon = pathIcons[p.id];
           const isActive = active === p.id;
           return (
-            <button
+            <motion.div
               key={p.id}
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActive(p.id)}
-              className={cn(
-                'group relative overflow-hidden rounded-3xl border p-5 text-left transition-all duration-500',
-                isActive
-                  ? 'border-white bg-white/80 shadow-glow'
-                  : 'border-white/60 bg-white/40 shadow-soft hover:bg-white/70',
-              )}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{
+                duration: 0.5,
+                delay: i * 0.06,
+                ease: [0.2, 0.8, 0.2, 1],
+              }}
+              className="h-full"
             >
-              <span
-                aria-hidden
+              <button
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-expanded={isActive}
+                aria-controls={`path-panel-${p.id}`}
+                onClick={() => toggle(p.id)}
                 className={cn(
-                  'absolute inset-0 -z-10 bg-gradient-to-br opacity-0 transition-opacity duration-700',
-                  pathGradients[p.theme],
-                  isActive && 'opacity-100',
-                )}
-              />
-              <span
-                className={cn(
-                  'grid h-10 w-10 place-items-center rounded-2xl shadow-soft transition-colors',
+                  'group relative flex w-full flex-col gap-4 overflow-hidden rounded-3xl border p-6 text-left transition-all duration-500',
                   isActive
-                    ? 'bg-ink-500 text-white'
-                    : 'bg-white text-ink-500',
+                    ? 'border-white bg-white/85 shadow-glow'
+                    : 'border-white/60 bg-white/70 shadow-soft hover:bg-white/85 hover:-translate-y-0.5',
                 )}
               >
-                <Icon className="h-4 w-4" />
-              </span>
-              <div className="mt-3 font-display text-lg font-semibold text-ink-700">
-                {p.label}
-              </div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-ink-300">
-                {p.short}
-              </div>
-            </button>
+                <span
+                  aria-hidden
+                  className={cn(
+                    'absolute inset-0 -z-10 bg-gradient-to-br opacity-0 transition-opacity duration-700',
+                    pathGradients[p.theme],
+                    isActive && 'opacity-100',
+                  )}
+                />
+                <div className="flex items-start justify-between">
+                  <span
+                    className={cn(
+                      'grid h-12 w-12 place-items-center rounded-2xl ring-1 ring-inset transition-all',
+                      isActive ? pathActiveIcon[p.theme] : 'bg-ink-50 text-ink-500 ring-ink-100',
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span
+                    className={cn(
+                      'rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-widest transition-colors',
+                      isActive
+                        ? 'bg-white/80 text-ink-500'
+                        : 'bg-white/60 text-ink-300',
+                    )}
+                  >
+                    {p.id.split('-')[0]}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-semibold leading-snug text-ink-700">
+                    {p.label}
+                  </h3>
+                  <p className="mt-1 text-[11px] uppercase tracking-widest text-ink-300">
+                    {p.short}
+                  </p>
+                </div>
+                <div className="mt-auto flex items-center justify-between border-t border-ink-100/60 pt-3">
+                  <span className="text-[11px] font-medium text-ink-400">
+                    {isActive ? 'Tap to close' : 'Tap to read'}
+                  </span>
+                  <span
+                    className={cn(
+                      'grid h-7 w-7 place-items-center rounded-full transition-all',
+                      isActive
+                        ? 'bg-ink-700 text-white rotate-180'
+                        : 'bg-white text-ink-500',
+                    )}
+                  >
+                    {isActive ? (
+                      <X className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    )}
+                  </span>
+                </div>
+              </button>
+            </motion.div>
           );
         })}
       </div>
 
-      {/* Active path panel — morph transitions */}
+      {/* Expanded panel — single morph transition */}
       <AnimatePresence mode="wait">
-        <motion.div
-          key={current.id}
-          initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: -12, filter: 'blur(8px)' }}
-          transition={{ duration: 0.55, ease: [0.2, 0.8, 0.2, 1] }}
-          className={cn(
-            'mt-10 overflow-hidden rounded-[2rem] border border-white/60 bg-gradient-to-br p-8 shadow-soft backdrop-blur md:p-12',
-            pathGradients[current.theme],
-          )}
-        >
-          <div className="mb-8 flex flex-col gap-4">
-            <div>
-              <h3 className="font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
-                {current.label}
-              </h3>
-              <p className="mt-2 max-w-3xl text-base text-ink-400">
-                {current.description}
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => startPreview(current.id)}
-                aria-label={`View ${current.label} one-pager PDF`}
-                className="group inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
-              >
-                <Eye className="h-4 w-4" />
-                <span>View</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => generateOnePagerPdf(current.id)}
-                aria-label={`Download ${current.label} one-pager PDF`}
-                className="group inline-flex items-center gap-2 rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
-              >
-                <FileText className="h-4 w-4" />
-                <span>One-Pager PDF</span>
-                <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" />
-              </button>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            {current.facts.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.1 + i * 0.08,
-                  ease: [0.2, 0.8, 0.2, 1],
-                }}
-              >
-                <MouseCard
-                  intensity={4}
-                  className="h-full rounded-2xl border border-white/60 bg-white/70 p-5 shadow-soft backdrop-blur"
-                >
-                  <div className="text-[11px] font-medium uppercase tracking-widest text-ink-300">
-                    Insight {String(i + 1).padStart(2, '0')}
-                  </div>
-                  <h4 className="font-display mt-2 text-lg font-semibold leading-snug text-ink-700">
-                    {f.title}
-                  </h4>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-400">
-                    {f.body}
+        {current && (
+          <motion.div
+            key={current.id}
+            id={`path-panel-${current.id}`}
+            initial={{ opacity: 0, y: 16, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+            className="overflow-hidden"
+          >
+            <div
+              className={cn(
+                'mt-6 overflow-hidden rounded-[2rem] border border-white/60 bg-gradient-to-br p-8 shadow-soft backdrop-blur md:p-12',
+                pathAccents[current.theme],
+              )}
+            >
+              <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h3 className="font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
+                    {current.label}
+                  </h3>
+                  <p className="mt-2 max-w-2xl text-base text-ink-500">
+                    {current.description}
                   </p>
-                </MouseCard>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                </div>
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => startPreview(current.id)}
+                    aria-label={`View ${current.label} one-pager PDF`}
+                    className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span>View</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => generateOnePagerPdf(current.id)}
+                    aria-label={`Download ${current.label} one-pager PDF`}
+                    className="group inline-flex items-center gap-2 rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>One-Pager PDF</span>
+                    <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-y-0.5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3">
+                {current.facts.map((f, i) => (
+                  <motion.div
+                    key={f.title}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.45,
+                      delay: 0.1 + i * 0.06,
+                      ease: [0.2, 0.8, 0.2, 1],
+                    }}
+                    className="rounded-2xl border border-white/60 bg-white/80 p-5 shadow-soft backdrop-blur"
+                  >
+                    <div className="text-[11px] font-medium uppercase tracking-widest text-ink-300">
+                      Insight {String(i + 1).padStart(2, '0')}
+                    </div>
+                    <h4 className="mt-2 font-display text-lg font-semibold leading-snug text-ink-700">
+                      {f.title}
+                    </h4>
+                    <p className="mt-2 text-sm leading-relaxed text-ink-400">
+                      {f.body}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {/* Preview modal */}
