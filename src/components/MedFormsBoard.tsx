@@ -9,6 +9,7 @@ import {
   Quote,
   FileText,
   Eye,
+  Printer,
   Loader2,
   AlertTriangle,
   Pill,
@@ -18,7 +19,7 @@ import {
   medForms,
   type MedFormId,
 } from '@/med-form-forms';
-import { downloadMedForm, previewMedForm } from '@/lib/med-form-pdf';
+import { downloadMedForm, previewMedForm, printMedForm } from '@/lib/med-form-pdf';
 import { cn } from '@/lib/utils';
 
 const accentStyles = {
@@ -141,15 +142,33 @@ export default function MedFormsBoard() {
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => startPreview(f.id)}
-                  aria-label={`View ${f.title}`}
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-ink-200 bg-white px-3 py-1.5 text-[11px] font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
+                <div
+                  className="inline-flex flex-1 items-center justify-center gap-1 rounded-full border border-ink-200 bg-white px-2 py-1.5 text-[11px] font-medium text-ink-500 shadow-soft"
+                  role="group"
+                  aria-label={`View or print ${f.title}`}
                 >
-                  <Eye className="h-3 w-3" />
-                  View
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => startPreview(f.id)}
+                    aria-label={`View ${f.title}`}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 transition-colors hover:bg-cream-50"
+                  >
+                    <Eye className="h-3 w-3" />
+                    <span>View</span>
+                  </button>
+                  <span className="text-ink-300" aria-hidden>
+                    /
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => printMedForm(f.id)}
+                    aria-label={`Print ${f.title}`}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-1 transition-colors hover:bg-cream-50"
+                  >
+                    <Printer className="h-3 w-3" />
+                    <span>Print</span>
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={() => downloadMedForm(f.id)}
