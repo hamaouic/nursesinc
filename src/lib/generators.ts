@@ -553,3 +553,72 @@ export function previewDocxHtml(id: ResourceId): string {
 </body>
 </html>`;
 }
+
+// ---------------------------------------------------------------------------
+// Print helpers — open the document in a new tab and trigger the print
+// dialog. Uses the same monkey-patch trick as `previewPdf` to keep the
+// bytes in memory instead of triggering a download.
+// ---------------------------------------------------------------------------
+
+/**
+ * Build a PDF blob for the given resource and trigger the browser print
+ * dialog (no file is downloaded).
+ */
+export function printPdf(id: ResourceId): void {
+  if (id === 'medication-audit-checklist') return;
+  const url = previewPdfSync(id);
+  const win = window.open(url, '_blank');
+  if (win) {
+    win.addEventListener('load', () => {
+      try {
+        win.focus();
+        win.print();
+      } catch {
+        /* user closed the window — fine */
+      }
+    });
+  }
+}
+
+/** Synchronous variant of previewPdf for the print flow. */
+function previewPdfSync(id: ResourceId): string {
+  const originalSave = (jsPDF.prototype as { save: (s: string) => void }).save;
+  let captured: Blob | null = null;
+  (jsPDF.prototype as { save: (s: string) => void }).save = function (
+    this: { output: (mode: string) => Blob },
+    _filename: string,
+  ) {
+    captured = this.output('blob');
+  };
+
+  try {
+    generateStandardPdf(id);
+  } finally {
+    (jsPDF.prototype as { save: (s: string) => void }).save = originalSave;
+  }
+
+  if (!captured) throw new Error('Failed to generate PDF blob');
+  return URL.createObjectURL(captured);
+}
+
+/**
+ * Build a DOCX blob for the given resource and trigger the browser print
+ * dialog using a hidden iframe loaded with the DOCX HTML preview.
+ */
+export function printDocx(id: ResourceId): void {
+  if (id === 'medication-audit-checklist') return;
+  const html = previewDocxHtml(id);
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const win = window.open(url, '_blank');
+  if (win) {
+    win.addEventListener('load', () => {
+      try {
+        win.focus();
+        win.print();
+      } catch {
+        /* user closed the window — fine */
+      }
+    });
+  }
+}

@@ -10,7 +10,9 @@ import {
   FileText,
   Eye,
   ChevronDown,
-  Pill,
+  Printer,
+  Loader2,
+  AlertTriangle,
   Package,
 } from 'lucide-react';
 import { resourceList, resources, type ResourceId } from '@/resources-config';
@@ -18,7 +20,10 @@ import {
   downloadResource,
   previewPdf,
   previewDocxHtml,
+  printPdf,
+  printDocx,
 } from '@/lib/generators';
+import MedFormsBoard from './MedFormsBoard';
 import { cn } from '@/lib/utils';
 
 const accentStyles = {
@@ -42,95 +47,77 @@ const accentStyles = {
   },
 } as const;
 
-type PreviewState = {
-  bundle: boolean;
-  id?: ResourceId;
+type InlinePreviewState = {
   url: string | null;
   html: string | null;
   loading: boolean;
   error: string | null;
-  title: string;
 };
 
 export default function ResourcesBoard() {
   const [open, setOpen] = useState<ResourceId | null>(null);
-  const [preview, setPreview] = useState<PreviewState | null>(null);
+  const [inline, setInline] = useState<InlinePreviewState>({
+    url: null,
+    html: null,
+    loading: false,
+    error: null,
+  });
 
-  // ESC closes the preview
-  useEffect(() => {
-    if (!preview) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closePreview();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [preview]);
-
+  // Revoke any blob URL on unmount
   useEffect(() => {
     return () => {
-      if (preview?.url) URL.revokeObjectURL(preview.url);
+      if (inline.url) URL.revokeObjectURL(inline.url);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startPreview = async (id: ResourceId) => {
+  const startInline = async (id: ResourceId) => {
+    if (inline.url) URL.revokeObjectURL(inline.url);
     const meta = resources[id];
-    setPreview({
-      bundle: false,
-      id,
+    setInline({
       url: null,
       html: null,
       loading: true,
       error: null,
-      title: meta.title,
     });
     try {
       if (meta.kind === 'pdf') {
         const url = await previewPdf(id);
-        setPreview({
-          bundle: false,
-          id,
-          url,
-          html: null,
-          loading: false,
-          error: null,
-          title: meta.title,
-        });
+        setInline({ url, html: null, loading: false, error: null });
       } else {
         const html = previewDocxHtml(id);
-        setPreview({
-          bundle: false,
-          id,
-          url: null,
-          html,
-          loading: false,
-          error: null,
-          title: meta.title,
-        });
+        setInline({ url: null, html, loading: false, error: null });
       }
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Could not open preview.';
-      setPreview({
-        bundle: false,
-        id,
-        url: null,
-        html: null,
-        loading: false,
-        error: message,
-        title: meta.title,
-      });
+      setInline({ url: null, html: null, loading: false, error: message });
     }
   };
 
-  const closePreview = () => {
-    if (preview?.url) URL.revokeObjectURL(preview.url);
-    setPreview(null);
+  const closeInline = () => {
+    if (inline.url) URL.revokeObjectURL(inline.url);
+    setInline({ url: null, html: null, loading: false, error: null });
+  };
+
+  const handlePrint = (id: ResourceId) => {
+    const meta = resources[id];
+    if (meta.kind === 'pdf') printPdf(id);
+    else printDocx(id);
   };
 
   const current = open ? resources[open] : null;
   const toggle = (id: ResourceId) => {
-    setOpen((curr) => (curr === id ? null : id));
+    setOpen((curr) => {
+      const next = curr === id ? null : id;
+      if (next && next !== 'medication-audit-checklist') {
+        // Preload inline preview so the user sees the doc immediately
+        startInline(next);
+      } else {
+        closeInline();
+      }
+      return next;
+    });
   };
 
   return (
@@ -242,78 +229,122 @@ export default function ResourcesBoard() {
           >
             <div
               className={cn(
-                'mt-6 overflow-hidden rounded-[2rem] border border-white/60 p-8 shadow-soft backdrop-blur md:p-12',
+                'mt-6 overflow-hidden rounded-[2rem] border border-white/60 shadow-soft backdrop-blur',
                 accentStyles[current.accent].panel,
               )}
             >
-              <div className="flex items-start gap-3">
-                <span
-                  className={cn(
-                    'grid h-12 w-12 shrink-0 place-items-center rounded-2xl ring-1 ring-inset',
-                    accentStyles[current.accent].active,
-                  )}
-                >
-                  <FileText className="h-5 w-5" />
-                </span>
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-widest text-ink-300">
-                    {current.audience}
-                  </div>
-                  <h3 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
-                    {current.title}
-                  </h3>
-                </div>
-              </div>
-
-              <p className="mt-4 max-w-3xl text-base text-ink-500">
-                {current.subtitle}.
-              </p>
-
-              <div className="mt-6 grid gap-2">
-                {current.summary.map((s) => (
-                  <div
-                    key={s}
-                    className="flex items-start gap-2 text-sm text-ink-500"
+              <div className="p-8 md:p-12">
+                <div className="flex items-start gap-3">
+                  <span
+                    className={cn(
+                      'grid h-12 w-12 shrink-0 place-items-center rounded-2xl ring-1 ring-inset',
+                      accentStyles[current.accent].active,
+                    )}
                   >
-                    <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blush-400" />
-                    {s}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-7 rounded-2xl border border-white/60 bg-cream-50 p-4">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-ink-300">
-                  <Quote className="h-3 w-3" /> Evidence base
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-ink-500">
-                  Built on Canadian and international best-practice guidelines —
-                  including the AGS Beers Criteria®, STOPP/START v3, RNAO Best
-                  Practice Guidelines, P.I.E.C.E.S.™, U-First!®, Choosing Wisely
-                  Canada, and ACP Canada. Full APA-formatted references appear on
-                  the final page of every download.
-                </p>
-              </div>
-
-              <div className="mt-7 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-                <button
-                  type="button"
-                  onClick={() => startPreview(current.id)}
-                  className="group inline-flex items-center justify-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
-                >
-                  <Eye className="h-4 w-4" />
-                  View on screen
-                </button>
-                <button
-                  type="button"
-                  onClick={() => downloadResource(current.id)}
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
-                >
-                  <span className="relative z-10 inline-flex items-center gap-2">
-                    <Download className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
-                    Download {current.kind.toUpperCase()}
+                    <FileText className="h-5 w-5" />
                   </span>
-                  <span className="absolute inset-0 -z-0 bg-gradient-to-r from-blush-300 to-mint-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                </button>
+                  <div>
+                    <div className="text-[11px] font-medium uppercase tracking-widest text-ink-300">
+                      {current.audience}
+                    </div>
+                    <h3 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
+                      {current.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <p className="mt-4 max-w-3xl text-base text-ink-500">
+                  {current.subtitle}.
+                </p>
+
+                <div className="mt-6 grid gap-2">
+                  {current.summary.map((s) => (
+                    <div
+                      key={s}
+                      className="flex items-start gap-2 text-sm text-ink-500"
+                    >
+                      <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blush-400" />
+                      {s}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 rounded-2xl border border-white/60 bg-cream-50 p-4">
+                  <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-ink-300">
+                    <Quote className="h-3 w-3" /> Evidence base
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-ink-500">
+                    Built on Canadian and international best-practice guidelines —
+                    including the AGS Beers Criteria®, STOPP/START v3, RNAO Best
+                    Practice Guidelines, P.I.E.C.E.S.™, U-First!®, Choosing Wisely
+                    Canada, and ACP Canada. Full APA-formatted references appear on
+                    the final page of every download.
+                  </p>
+                </div>
+
+                {/* Inline preview + action buttons */}
+                <div className="mt-7">
+                  <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+                    <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-ink-300">
+                      <Eye className="h-3 w-3" />
+                      {inline.loading
+                        ? 'Building preview…'
+                        : inline.error
+                        ? 'Preview unavailable'
+                        : 'Preview'}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handlePrint(current.id)}
+                        className="group inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-4 py-2 text-xs font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
+                      >
+                        <Printer className="h-3.5 w-3.5" /> Print
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => downloadResource(current.id)}
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-ink-500 px-4 py-2 text-xs font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
+                      >
+                        <span className="relative z-10 inline-flex items-center gap-2">
+                          <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
+                          Download {current.kind.toUpperCase()}
+                        </span>
+                        <span className="absolute inset-0 -z-0 bg-gradient-to-r from-blush-300 to-mint-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 overflow-hidden rounded-2xl border border-white/60 bg-cream-50 shadow-inner">
+                    <div className="aspect-[8.5/11] w-full bg-white">
+                      {inline.loading && (
+                        <div className="flex h-full items-center justify-center gap-2 text-sm text-ink-400">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Generating preview…
+                        </div>
+                      )}
+                      {inline.error && (
+                        <div className="flex h-full items-center justify-center gap-2 px-6 text-center text-sm text-ink-500">
+                          <AlertTriangle className="h-4 w-4 text-blush-400" />
+                          {inline.error}
+                        </div>
+                      )}
+                      {inline.url && (
+                        <iframe
+                          title={`${current.title} preview`}
+                          src={inline.url}
+                          className="h-full w-full"
+                        />
+                      )}
+                      {inline.html && (
+                        <iframe
+                          title={`${current.title} preview`}
+                          srcDoc={inline.html}
+                          className="h-full w-full bg-white"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -331,188 +362,88 @@ export default function ResourcesBoard() {
           >
             <div
               className={cn(
-                'mt-6 overflow-hidden rounded-[2rem] border border-white/60 p-8 shadow-soft backdrop-blur md:p-12',
+                'mt-6 overflow-hidden rounded-[2rem] border border-white/60 shadow-soft backdrop-blur',
                 accentStyles[current.accent].panel,
               )}
             >
-              <div className="flex items-start gap-3">
-                <span
-                  className={cn(
-                    'grid h-12 w-12 shrink-0 place-items-center rounded-2xl ring-1 ring-inset',
-                    accentStyles[current.accent].active,
-                  )}
-                >
-                  <Package className="h-5 w-5" />
-                </span>
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-widest text-ink-300">
-                    {current.audience}
-                  </div>
-                  <h3 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
-                    {current.title}
-                  </h3>
-                </div>
-              </div>
-
-              <p className="mt-4 max-w-3xl text-base text-ink-500">
-                {current.subtitle}.
-              </p>
-
-              <div className="mt-6 grid gap-2">
-                {current.summary.map((s) => (
-                  <div
-                    key={s}
-                    className="flex items-start gap-2 text-sm text-ink-500"
+              <div className="p-8 md:p-12">
+                <div className="flex items-start gap-3">
+                  <span
+                    className={cn(
+                      'grid h-12 w-12 shrink-0 place-items-center rounded-2xl ring-1 ring-inset',
+                      accentStyles[current.accent].active,
+                    )}
                   >
-                    <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blush-400" />
-                    {s}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-8 rounded-2xl border border-white/60 bg-cream-50 p-4">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-ink-300">
-                  <Quote className="h-3 w-3" /> Evidence base
-                </div>
-                <p className="mt-2 text-xs leading-relaxed text-ink-500">
-                  Built on Canadian and international best-practice guidelines —
-                  including the AGS Beers Criteria®, STOPP/START v3, RNAO Best
-                  Practice Guidelines, P.I.E.C.E.S.™, U-First!®, Choosing Wisely
-                  Canada, and ACP Canada. Full APA-formatted references appear on
-                  the final page of every form.
-                </p>
-              </div>
-
-              <div className="mt-7 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-                <button
-                  type="button"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full border border-ink-200 bg-white px-5 py-2.5 text-sm font-medium text-ink-500 shadow-soft transition-colors hover:bg-white/80"
-                >
-                  <Pill className="h-4 w-4" />
-                  Browse the 10 forms inline
-                </button>
-                <button
-                  type="button"
-                  onClick={() => downloadResource(current.id)}
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-ink-500 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
-                >
-                  <span className="relative z-10 inline-flex items-center gap-2">
-                    <Download className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
-                    Download all 10 forms (ZIP)
+                    <Package className="h-5 w-5" />
                   </span>
-                  <span className="absolute inset-0 -z-0 bg-gradient-to-r from-blush-300 to-mint-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                </button>
+                  <div>
+                    <div className="text-[11px] font-medium uppercase tracking-widest text-ink-300">
+                      {current.audience}
+                    </div>
+                    <h3 className="mt-1 font-display text-2xl font-semibold tracking-tight text-ink-700 sm:text-3xl">
+                      {current.title}
+                    </h3>
+                  </div>
+                </div>
+
+                <p className="mt-4 max-w-3xl text-base text-ink-500">
+                  {current.subtitle}.
+                </p>
+
+                <div className="mt-6 grid gap-2">
+                  {current.summary.map((s) => (
+                    <div
+                      key={s}
+                      className="flex items-start gap-2 text-sm text-ink-500"
+                    >
+                      <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blush-400" />
+                      {s}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 rounded-2xl border border-white/60 bg-cream-50 p-4">
+                  <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-ink-300">
+                    <Quote className="h-3 w-3" /> Evidence base
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-ink-500">
+                    Built on Canadian and international best-practice guidelines —
+                    including the AGS Beers Criteria®, STOPP/START v3, RNAO Best
+                    Practice Guidelines, P.I.E.C.E.S.™, U-First!®, Choosing Wisely
+                    Canada, and ACP Canada. Full APA-formatted references appear on
+                    the final page of every form.
+                  </p>
+                </div>
+
+                {/* 10 forms inline — no extra click required */}
+                <div className="mt-7">
+                  <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+                    <div className="text-[11px] font-semibold uppercase tracking-widest text-ink-300">
+                      <FileText className="mr-1 inline h-3 w-3" />
+                      All 10 forms · preview, print or download
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => downloadResource(current.id)}
+                      className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-ink-500 px-4 py-2 text-xs font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
+                    >
+                      <span className="relative z-10 inline-flex items-center gap-2">
+                        <Download className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
+                        Download all 10 forms
+                      </span>
+                      <span className="absolute inset-0 -z-0 bg-gradient-to-r from-blush-300 to-mint-300 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    </button>
+                  </div>
+
+                  <div className="mt-4">
+                    <MedFormsBoard />
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Legacy Preview modal (still used for view-on-screen) */}
-      <AnimatePresence>
-        {preview && !preview.bundle && (
-          <PreviewModal preview={preview} onClose={closePreview} />
-        )}
-      </AnimatePresence>
     </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Standard preview modal (PDF / DOCX render)
-// ---------------------------------------------------------------------------
-function PreviewModal({
-  preview,
-  onClose,
-}: {
-  preview: PreviewState;
-  onClose: () => void;
-}) {
-  const meta = preview.id ? resources[preview.id] : null;
-  const a = meta ? accentStyles[meta.accent] : accentStyles.blush;
-
-  return (
-    <motion.div
-      key="preview-overlay"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-ink-500/40 backdrop-blur-md sm:items-center"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="preview-modal-title"
-    >
-      <motion.div
-        initial={{ y: 24, scale: 0.97, opacity: 0 }}
-        animate={{ y: 0, scale: 1, opacity: 1 }}
-        exit={{ y: 16, scale: 0.98, opacity: 0 }}
-        transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
-        onClick={(e) => e.stopPropagation()}
-        className="relative m-3 flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-[2rem] border border-white/60 bg-white shadow-glow sm:m-6"
-      >
-        <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-blush-200 opacity-70 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-56 w-56 rounded-full bg-mint-200 opacity-70 blur-3xl" />
-
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={onClose}
-          className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/70 text-ink-500 shadow-soft transition-colors hover:bg-white"
-        >
-          <X className="h-4 w-4" />
-        </button>
-
-        <div className="relative flex items-center gap-3 border-b border-ink-100 px-7 py-5 sm:px-9">
-          <span
-            className={cn(
-              'grid h-10 w-10 place-items-center rounded-xl shadow-soft',
-              a.icon,
-            )}
-          >
-            <Eye className="h-4 w-4" />
-          </span>
-          <div className="flex-1">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
-              Read-only preview
-            </div>
-            <h3
-              id="preview-modal-title"
-              className="font-display text-xl font-semibold leading-tight text-ink-700"
-            >
-              {preview.title}
-            </h3>
-          </div>
-        </div>
-
-        <div className="relative flex-1 overflow-hidden bg-cream-50">
-          {preview.loading && (
-            <div className="flex h-full min-h-[40vh] items-center justify-center text-sm text-ink-400">
-              Generating preview…
-            </div>
-          )}
-          {preview.error && (
-            <div className="flex h-full min-h-[40vh] items-center justify-center px-6 text-center text-sm text-ink-500">
-              {preview.error}
-            </div>
-          )}
-          {preview.url && (
-            <iframe
-              title={preview.title}
-              src={preview.url}
-              className="h-full min-h-[60vh] w-full"
-            />
-          )}
-          {preview.html && (
-            <iframe
-              title={preview.title}
-              srcDoc={preview.html}
-              className="h-full min-h-[60vh] w-full bg-white"
-            />
-          )}
-        </div>
-      </motion.div>
-    </motion.div>
   );
 }

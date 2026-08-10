@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import {
   medForms,
+  medFormList,
   inventoryColumns,
   beersBullets,
   beersIntro,
@@ -842,4 +843,35 @@ export function previewMedForm(id: MedFormId): string {
   const doc = generateMedFormPdf(id);
   const blob = doc.output('blob');
   return URL.createObjectURL(blob);
+}
+
+/**
+ * Open the form in a new tab and trigger the browser print dialog.
+ * The form is generated as a PDF blob first so the user prints a clean
+ * single-page document rather than the raw HTML wrapper.
+ */
+export function printMedForm(id: MedFormId): void {
+  const url = previewMedForm(id);
+  const win = window.open(url, '_blank');
+  if (win) {
+    win.addEventListener('load', () => {
+      try {
+        win.focus();
+        win.print();
+      } catch {
+        /* user closed the window — fine */
+      }
+    });
+  }
+}
+
+/**
+ * Bundle download — generates all 10 forms in sequence and triggers a
+ * download for each one. Browsers queue sequential downloads gracefully;
+ * JSZip is intentionally avoided to keep the bundle dependency-free.
+ */
+export function downloadAllMedForms(): void {
+  medFormList.forEach((f, i) => {
+    setTimeout(() => downloadMedForm(f.id), i * 250);
+  });
 }
