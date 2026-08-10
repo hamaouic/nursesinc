@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Users,
@@ -24,7 +24,7 @@ const careTypes = [
   {
     title: 'Post-surgical recovery',
     description:
-      'Wound care, drain management, mobility support, and SBAR escalation to your physician during the critical 2–6 week post-op window.',
+      'Wound care, drain management, mobility support, and SBAR escalation to your physician during the critical 2â€“6 week post-op window.',
     icon: Shield,
     color: 'bg-mint-100 text-mint-500 ring-mint-200',
   },
@@ -38,7 +38,7 @@ const careTypes = [
   {
     title: 'Complex medication regimens',
     description:
-      'Brown-bag medication reviews, deprescribing conversations, and reconciliation across specialists — built around the MedRec workflow already on this site.',
+      'Brown-bag medication reviews, deprescribing conversations, and reconciliation across specialists â€” built around the MedRec workflow already on this site.',
     icon: FileText,
     color: 'bg-indigo-100 text-indigo-500 ring-indigo-200',
   },
@@ -60,7 +60,7 @@ const services = [
   {
     title: 'Family portal access',
     description:
-      'Caregivers and adult children get a secure portal to view the visit summary, upcoming appointments, and care plan — with PHIPAA-aligned privacy throughout.',
+      'Caregivers and adult children get a secure portal to view the visit summary, upcoming appointments, and care plan â€” with PHIPAA-aligned privacy throughout.',
     icon: Shield,
   },
 ];
@@ -85,7 +85,7 @@ export default function Clients() {
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-ink-400">
             Nurses Inc. is a small collaborative practice in New Brunswick. We
-            work with a small roster of older adults and their families — never
+            work with a small roster of older adults and their families â€” never
             more clients than we can care for properly. Every visit is with the
             same nurse, every plan is reviewed by the same physician.
           </p>
@@ -96,7 +96,7 @@ export default function Clients() {
         eyebrow="Who we care for"
         title={
           <>
-            Built around the people we serve —{' '}
+            Built around the people we serve â€”{' '}
             <span className="text-ink-400">not the other way around.</span>
           </>
         }
@@ -135,11 +135,11 @@ export default function Clients() {
         eyebrow="What's included"
         title={
           <>
-            The day-to-day —{' '}
+            The day-to-day â€”{' '}
             <span className="text-ink-400">and the day you didn't expect.</span>
           </>
         }
-        description="Every Nurses Inc. client gets the same onboarding and the same baseline services. Care is delivered by LPNs with physician oversight — collaborative by design."
+        description="Every Nurses Inc. client gets the same onboarding and the same baseline services. Care is delivered by LPNs with physician oversight â€” collaborative by design."
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s, i) => (
@@ -169,7 +169,7 @@ export default function Clients() {
         eyebrow="A small roster on purpose"
         title={
           <>
-            We say no to growth —{' '}
+            We say no to growth â€”{' '}
             <span className="text-ink-400">so we can say yes to quality.</span>
           </>
         }
@@ -208,10 +208,10 @@ export default function Clients() {
         title={
           <>
             We take a few new clients per quarter.{' '}
-            <span className="text-ink-400">Let\u2019s start with a discovery call.</span>
+            <span className="text-ink-400">Let’s start with a discovery call.</span>
           </>
         }
-        description="A 30-minute video call with Catherine — no commitment, no sales pitch. We\u2019ll talk about your situation, your goals, and whether our roster has space."
+        description="A 30-minute video call with Catherine â€” no commitment, no sales pitch. We'll talk about your situation, your goals, and whether our roster has space."
         align="center"
       >
         <div className="flex flex-wrap items-center justify-center gap-3">
