@@ -23,11 +23,11 @@ export default function Knowledge() {
         eyebrow="Free Downloads"
         title={
           <>
-            A growing library of{' '}
-            <span className="text-ink-400">caregiver resources.</span>
+            Meet Up Tools —{' '}
+            <span className="text-ink-400">Tap any card to preview, print or download.</span>
           </>
         }
-        description="Printable — tap any card to preview and download."
+        description=""
       >
         <ResourcesBoard />
       </Section>
