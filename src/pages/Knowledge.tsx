@@ -10,11 +10,11 @@ export default function Knowledge() {
         eyebrow="Knowledge Hub"
         title={
           <>
-            Pick a path.{' '}
-            <span className="text-ink-400">We'll do the reading for you.</span>
+            Pick a path —{' '}
+            <span className="text-ink-400">Grounded in Canadian best-practice guidelines.</span>
           </>
         }
-        description="Choose a topic and the page will quietly shift to match. Every insight is evidence-aligned, shaped by real New Brunswick caregiving experience, and grounded in Canadian best-practice guidelines."
+        description=""
       >
         <KnowledgeExplorer />
       </Section>
