@@ -27,7 +27,7 @@ export default function Knowledge() {
             <span className="text-ink-400">caregiver resources.</span>
           </>
         }
-        description="Printable medication audit checklists, facility de-escalation playbooks, and family-care conference templates — all built on the same framework we use in practice. Tap any card to preview and download."
+        description="Printable — tap any card to preview and download."
       >
         <ResourcesBoard />
       </Section>
