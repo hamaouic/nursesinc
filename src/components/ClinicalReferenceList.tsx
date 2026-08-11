@@ -458,7 +458,7 @@ function DrugCardsView({
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
             <Stethoscope className="mr-1 inline h-3 w-3" />
-            Common Illness · {filtered.length} of {clinicalReference.length} entries
+            Common Illness
           </span>
           <span className="h-px flex-1 bg-ink-100" />
           <button
