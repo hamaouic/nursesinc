@@ -444,7 +444,9 @@ function DrugCardsView({
       </div>
       )}
 
-      {/* Search + filter */}
+      {/* Search + filter — clinical reference entries hidden on Drug Cards pill */}
+      {mode !== 'drugs' && (
+      <>
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex items-center gap-2 rounded-2xl border border-white/70 bg-white/80 px-4 py-2.5 shadow-soft backdrop-blur transition focus-within:border-ink-300 focus-within:shadow-[0_0_0_4px_rgba(44,62,80,0.15)]">
           <Search className="h-4 w-4 shrink-0 text-ink-300" aria-hidden="true" />
@@ -536,6 +538,8 @@ function DrugCardsView({
             />
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   );
