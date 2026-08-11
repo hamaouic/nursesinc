@@ -21,6 +21,26 @@ Three secrets are required:
 | `SENDGRID_FROM_EMAIL` | Verified sender (must be authenticated in SendGrid)        |
 | `SENDGRID_NURSE_EMAIL`| Optional override; defaults to `cathamaoui@hotmail.com`    |
 
+## Recommended: Single Sender Verification (this project)
+
+This project's DNS lives on GoDaddy, **not** Cloudflare — so we deliberately
+stay off any "Authenticate Your Domain" flow that touches DNS. The
+recommended path is **Single Sender Verification**, ~2 minutes:
+
+1. <https://app.sendgrid.com> → Settings → Sender Authentication →
+   **Verify a Single Sender**.
+2. Fill in:
+   - From name:  `Nurses Inc.`
+   - From email: `cathamaoui@hotmail.com`
+   - Reply-to:   same
+   - Your name and address (any NB address).
+3. SendGrid emails a confirmation link to that address — click it.
+4. The address becomes a verified sender; the API accepts
+   `from: 'cathamaoui@hotmail.com'` for any outbound mail.
+
+This avoids touching `shiftlock.ca` DNS, leaves Cloudflare Pages alone,
+and matches the project's actual operational identity.
+
 ## One-time SendGrid setup (do NOT share these with the assistant)
 
 1. Sign in to <https://app.sendgrid.com>
