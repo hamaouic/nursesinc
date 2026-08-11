@@ -1,9 +1,27 @@
+import { useMemo } from 'react';
 import Section from '@/components/Section';
 import ServicesBoard from '@/components/ServicesBoard';
+import BookingPanel from '@/components/BookingPanel';
+import AdminDashboard from '@/components/AdminDashboard';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { services } from '@/nurses-inc-config';
+import type { RequestedService } from '@/booking-store';
 
 export default function Services() {
+  // Flatten services across both audiences for the multi-select panel.
+  const allServices = useMemo<RequestedService[]>(
+    () =>
+      [...services.b2c, ...services.b2b].map((s) => ({
+        id: s.id,
+        title: s.title,
+        rate: s.rate,
+        unit: s.unit,
+        accent: s.accent,
+      })),
+    [],
+  );
+
   return (
     <>
       <div className="pt-20" />
@@ -19,6 +37,10 @@ export default function Services() {
       >
         <ServicesBoard />
       </Section>
+
+      {/* Multi-select booking system + Admin dashboard (gated by ?admin=true) */}
+      <BookingPanel services={allServices} eyebrow="Multi-select booking" />
+      <AdminDashboard />
 
       <Section
         eyebrow="Ready when you are"
