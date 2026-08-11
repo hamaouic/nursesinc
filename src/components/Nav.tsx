@@ -27,7 +27,7 @@ const navEntries: NavEntry[] = [
     icon: Building2,
     items: [
       { to: '/clinic', label: 'About the clinic' },
-      { to: '/forms', label: 'Forms' },
+      { to: '/forms', label: 'Admin' },
       { to: '/contact', label: 'Contact' },
     ],
   },

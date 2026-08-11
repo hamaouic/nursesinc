@@ -1,7 +1,21 @@
+import { lazy, Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import Section from '@/components/Section';
-import ClinicalReferenceMatrix from '@/components/ClinicalReferenceMatrix';
 import HighAlertTriggers from '@/components/HighAlertTriggers';
 import ToolSwitcher from '@/components/ToolSwitcher';
+
+const ClinicalReferenceMatrix = lazy(
+  () => import('@/components/ClinicalReferenceMatrix'),
+);
+
+function PanelFallback() {
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-3xl border border-white/60 bg-white/60 p-12 text-sm text-ink-400 shadow-soft">
+      <Loader2 className="h-4 w-4 animate-spin" />
+      Loading clinical matrix…
+    </div>
+  );
+}
 
 export default function ClinicalMatrixPage() {
   return (
@@ -20,7 +34,9 @@ export default function ClinicalMatrixPage() {
         <div className="mt-6">
           <HighAlertTriggers />
         </div>
-        <ClinicalReferenceMatrix />
+        <Suspense fallback={<PanelFallback />}>
+          <ClinicalReferenceMatrix />
+        </Suspense>
       </Section>
     </>
   );

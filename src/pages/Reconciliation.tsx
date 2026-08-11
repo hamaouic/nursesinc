@@ -1,10 +1,23 @@
+import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Loader2 } from 'lucide-react';
 import Section from '@/components/Section';
-import ReconciliationDashboard from '@/components/ReconciliationDashboard';
-import SbarEscalation from '@/components/SbarEscalation';
 import HighAlertTriggers from '@/components/HighAlertTriggers';
 import ToolSwitcher from '@/components/ToolSwitcher';
+
+// Heavy bundles — split out so the page shell renders instantly while
+// the worksheet and SBAR escalation tools load in parallel.
+const ReconciliationDashboard = lazy(() => import('@/components/ReconciliationDashboard'));
+const SbarEscalation = lazy(() => import('@/components/SbarEscalation'));
+
+function PanelFallback({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-3xl border border-white/60 bg-white/60 p-12 text-sm text-ink-400 shadow-soft">
+      <Loader2 className="h-4 w-4 animate-spin" />
+      {label}
+    </div>
+  );
+}
 
 export default function Reconciliation() {
   return (
@@ -24,7 +37,11 @@ export default function Reconciliation() {
           <HighAlertTriggers />
         </div>
 
-        <ReconciliationDashboard />
+        <div className="mt-10">
+          <Suspense fallback={<PanelFallback label="Loading worksheet…" />}>
+            <ReconciliationDashboard />
+          </Suspense>
+        </div>
 
         {/* Divider — visual handoff between Part A and Part B */}
         <motion.div
@@ -46,7 +63,9 @@ export default function Reconciliation() {
         </motion.div>
 
         <div className="mt-6">
-          <SbarEscalation />
+          <Suspense fallback={<PanelFallback label="Loading SBAR escalation…" />}>
+            <SbarEscalation />
+          </Suspense>
         </div>
       </Section>
     </>

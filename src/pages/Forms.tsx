@@ -1,7 +1,19 @@
+import { lazy, Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import Section from '@/components/Section';
-import FormsCanvas from '@/components/FormsCanvas';
-import ClinicalFormsToggle from '@/components/ClinicalFormsToggle';
 import HighAlertTriggers from '@/components/HighAlertTriggers';
+
+const ClinicalFormsToggle = lazy(() => import('@/components/ClinicalFormsToggle'));
+const FormsCanvas = lazy(() => import('@/components/FormsCanvas'));
+
+function PanelFallback({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 rounded-3xl border border-white/60 bg-white/60 p-12 text-sm text-ink-400 shadow-soft">
+      <Loader2 className="h-4 w-4 animate-spin" />
+      {label}
+    </div>
+  );
+}
 
 export default function Forms() {
   return (
@@ -15,7 +27,7 @@ export default function Forms() {
 
       {/* Clinical Forms & Tools — toggle between interactive tools and printable PDFs */}
       <Section
-        className="!pt-8"
+        className="!pt-12"
         eyebrow="Nurse Reference"
         title={
           <>
@@ -25,7 +37,9 @@ export default function Forms() {
         }
         description="Single-page reference sheets and interactive tools for nursing visits — Beers, STOPP/START, polypharmacy, deprescribing algorithms and more."
       >
-        <ClinicalFormsToggle />
+        <Suspense fallback={<PanelFallback label="Loading clinical reference…" />}>
+          <ClinicalFormsToggle />
+        </Suspense>
       </Section>
 
       {/* Printable Forms section header + body */}
@@ -40,7 +54,9 @@ export default function Forms() {
         }
         description="Single-page PDFs you can print, fill out, and keep on the fridge."
       >
-        <FormsCanvas category="family" />
+        <Suspense fallback={<PanelFallback label="Loading forms…" />}>
+          <FormsCanvas category="family" />
+        </Suspense>
       </Section>
     </>
   );
