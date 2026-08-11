@@ -23,11 +23,24 @@ export type MedFormId =
   | 'deprescribing-conversation'
   | 'empower-brochures'
   | 'adherence-safety'
+  | 'anticholinergic-burden'
   | 'fridge-list'
   | 'feedback-survey'
   | 'emergency-card'
   | 'side-effect-tracker'
-  | 'doctor-visit-prep';
+  | 'doctor-visit-prep'
+  // Cognitive & depression screening
+  | 'mmse'
+  | 'moca'
+  | 'mini-cog'
+  | 'clock-draw'
+  | 'gds-15'
+  | 'phq-9'
+  | 'csdd'
+  | 'cam'
+  // Falls risk
+  | 'morse-fall-scale'
+  | 'tinetti-poma';
 
 export type MedFormMeta = {
   id: MedFormId;
@@ -194,6 +207,21 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
       'Storage rules · Expiry audit · Reference lists',
     ],
   },
+  'anticholinergic-burden': {
+    id: 'anticholinergic-burden',
+    number: '8',
+    title: 'Anticholinergic Cognitive Burden (ACB) Scale',
+    shortTitle: 'Score anticholinergic load in older adults',
+    audience: 'Reference · Nurses',
+    filename: 'Nurses-Inc-Form-13-Anticholinergic-Burden.pdf',
+    icon: 'BookOpen',
+    accent: 'cream',
+    category: 'clinical',
+    summary: [
+      '100+ anticholinergic drugs scored 0–3',
+      'Pair with Beers Criteria at every med review',
+    ],
+  },
   'fridge-list': {
     id: 'fridge-list',
     number: '4',
@@ -269,10 +297,165 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
       'Recent changes, medications, vitals',
     ],
   },
+
+  // ── Cognitive & Depression Screening Forms ───────────────────────
+  mmse: {
+    id: 'mmse',
+    number: '9',
+    title: 'Mini-Mental State Examination (MMSE)',
+    shortTitle: '30-point cognitive screen',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-16-MMSE.pdf',
+    icon: 'Brain',
+    accent: 'mint',
+    category: 'clinical',
+    summary: [
+      '11-question 30-point screen',
+      'Orientation · Registration · Attention · Recall · Language · Visuospatial',
+    ],
+  },
+  moca: {
+    id: 'moca',
+    number: '10',
+    title: 'Montreal Cognitive Assessment (MoCA)',
+    shortTitle: '30-point cognitive screen (more sensitive than MMSE)',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-17-MoCA.pdf',
+    icon: 'Brain',
+    accent: 'mint',
+    category: 'clinical',
+    summary: [
+      '8 domains · 30 points · scores < 26 suggest MCI',
+      'Better detection of mild cognitive impairment than MMSE',
+    ],
+  },
+  'mini-cog': {
+    id: 'mini-cog',
+    number: '11',
+    title: 'Mini-Cog® Screening',
+    shortTitle: '3-minute cognitive screen',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-18-Mini-Cog.pdf',
+    icon: 'Brain',
+    accent: 'mint',
+    category: 'clinical',
+    summary: [
+      '3-word recall + clock draw',
+      'Validated for dementia screening in primary care',
+    ],
+  },
+  'clock-draw': {
+    id: 'clock-draw',
+    number: '12',
+    title: 'Clock Drawing Test (Sunderland / CLOX)',
+    shortTitle: 'Visuospatial + executive function',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-19-Clock-Draw.pdf',
+    icon: 'Brain',
+    accent: 'mint',
+    category: 'clinical',
+    summary: [
+      '10-point scoring · 11 o\'clock task',
+      'Stand-alone executive / visuospatial screen',
+    ],
+  },
+  'gds-15': {
+    id: 'gds-15',
+    number: '13',
+    title: 'Geriatric Depression Scale (GDS-15)',
+    shortTitle: '15-item depression screen',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-20-GDS-15.pdf',
+    icon: 'Heart',
+    accent: 'blush',
+    category: 'clinical',
+    summary: [
+      '15 yes/no items · cut-off ≥ 5 = depression',
+      'Validated specifically for older adults',
+    ],
+  },
+  'phq-9': {
+    id: 'phq-9',
+    number: '14',
+    title: 'Patient Health Questionnaire-9 (PHQ-9)',
+    shortTitle: '9-item depression + suicidality screen',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-21-PHQ-9.pdf',
+    icon: 'Heart',
+    accent: 'blush',
+    category: 'clinical',
+    summary: [
+      '9-item Likert · Item 9 screens for suicidality',
+      'Score ≥ 10 = moderate depression or worse',
+    ],
+  },
+  csdd: {
+    id: 'csdd',
+    number: '15',
+    title: 'Cornell Scale for Depression in Dementia (CSDD)',
+    shortTitle: 'Depression screen for patients with dementia',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-22-CSDD.pdf',
+    icon: 'Heart',
+    accent: 'blush',
+    category: 'clinical',
+    summary: [
+      '19-item clinician-administered · informant + patient interview',
+      'Cut-off ≥ 8 = significant depressive symptoms',
+    ],
+  },
+  cam: {
+    id: 'cam',
+    number: '16',
+    title: 'Confusion Assessment Method (CAM)',
+    shortTitle: '4-feature delirium screen',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-23-CAM.pdf',
+    icon: 'Activity',
+    accent: 'cream',
+    category: 'clinical',
+    summary: [
+      '4 features · 1 + 2 + 3 or 4 = delirium',
+      'Gold-standard bedside delirium screen',
+    ],
+  },
+
+  // ── Falls Risk Forms ──────────────────────────────────────────────
+  'morse-fall-scale': {
+    id: 'morse-fall-scale',
+    number: '17',
+    title: 'Morse Fall Scale (MFS)',
+    shortTitle: '6-item falls risk assessment',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-24-Morse-Fall-Scale.pdf',
+    icon: 'ShieldAlert',
+    accent: 'blush',
+    category: 'clinical',
+    summary: [
+      '6 items · max 125 · ≥ 45 = high risk',
+      'Standard falls-risk tool used across Canadian LTC',
+    ],
+  },
+  'tinetti-poma': {
+    id: 'tinetti-poma',
+    number: '18',
+    title: 'Tinetti Assessment Tool (POMA)',
+    shortTitle: 'Balance + gait assessment',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-25-Tinetti-POMA.pdf',
+    icon: 'ShieldAlert',
+    accent: 'blush',
+    category: 'clinical',
+    summary: [
+      'Balance (16 pts) + Gait (12 pts) · max 28',
+      'Score < 19 = high fall risk',
+    ],
+  },
 };
 
 export const medFormList: MedFormMeta[] = [
-  // Clinical Forms (7) — used inside the Clinical Forms & Tools section
+  // Clinical Forms (18) — used inside the Clinical Forms & Tools section
+  // Medication review
   medForms.beers,
   medForms['stopp-start'],
   medForms.polypharmacy,
@@ -280,6 +463,20 @@ export const medFormList: MedFormMeta[] = [
   medForms['deprescribing-algorithms'],
   medForms['empower-brochures'],
   medForms['adherence-safety'],
+  medForms['anticholinergic-burden'],
+  // Cognitive screening
+  medForms.mmse,
+  medForms.moca,
+  medForms['mini-cog'],
+  medForms['clock-draw'],
+  // Depression screening
+  medForms['gds-15'],
+  medForms['phq-9'],
+  medForms.csdd,
+  medForms.cam,
+  // Falls risk
+  medForms['morse-fall-scale'],
+  medForms['tinetti-poma'],
   // Printable Forms (8) — used in the Printable Forms section
   medForms['welcome-prep'],
   medForms.inventory,
