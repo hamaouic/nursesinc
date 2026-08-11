@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import {
-  Stethoscope,
-  BookMarked,
-  ArrowRight,
-  Sparkles,
   FileText,
-  Wrench,
   Heart,
   Pill,
   FlaskConical,
@@ -20,7 +14,6 @@ import { cn } from '@/lib/utils';
 
 type View =
   | 'forms'
-  | 'tools'
   | 'drug-cards'
   | 'wound-care'
   | 'labs'
@@ -28,7 +21,6 @@ type View =
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'forms', label: 'Printable Forms', icon: FileText },
-  { id: 'tools', label: 'Interactive Tools', icon: Wrench },
   { id: 'drug-cards', label: 'Drug Cards', icon: Pill },
   { id: 'wound-care', label: 'Wound Care', icon: Layers },
   { id: 'labs', label: 'Labs', icon: FlaskConical },
@@ -97,74 +89,6 @@ export default function ClinicalFormsToggle() {
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
             <FormsCanvas category="clinical" searchPlaceholder="Search 7 clinical printable forms by keyword or condition…" />
-          </motion.div>
-        )}
-
-        {view === 'tools' && (
-          <motion.div
-            key="tools"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
-              className="overflow-hidden rounded-3xl border border-white/60 bg-gradient-to-br from-blush-100 via-white to-mint-100 p-6 shadow-glow backdrop-blur md:p-8"
-            >
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Link
-                  to="/forms/reconciliation"
-                  className="group flex items-start gap-4 rounded-2xl border border-white/60 bg-white/80 p-5 shadow-soft transition hover:-translate-y-0.5"
-                >
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-mint-200 text-ink-700 shadow-soft">
-                    <Stethoscope className="h-5 w-5" />
-                  </span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-sm font-semibold text-ink-700">
-                        Reconciliation Worksheet
-                      </span>
-                      <span className="rounded-full bg-mint-200 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-ink-700">
-                        Live
-                      </span>
-                    </div>
-                    <p className="mt-1 text-[11px] leading-relaxed text-ink-400">
-                      Part A audit + Part B SBAR escalation with JSON summary.
-                    </p>
-                  </div>
-                  <ArrowRight className="mt-1 h-4 w-4 text-ink-300 transition-transform group-hover:translate-x-1 group-hover:text-ink-700" />
-                </Link>
-
-                <Link
-                  to="/forms/clinical-tools"
-                  className="group flex items-start gap-4 rounded-2xl border border-white/60 bg-white/80 p-5 shadow-soft transition hover:-translate-y-0.5"
-                >
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blush-200 text-ink-700 shadow-soft">
-                    <BookMarked className="h-5 w-5" />
-                  </span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-display text-sm font-semibold text-ink-700">
-                        Geriatric Reference Matrix
-                      </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-blush-200 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-ink-700">
-                        <Sparkles className="h-2.5 w-2.5" />
-                        New
-                      </span>
-                    </div>
-                    <p className="mt-1 text-[11px] leading-relaxed text-ink-400">
-                      Searchable medication + behavioural cheat-sheet for home
-                      visits — with caregiver-interview prompts.
-                    </p>
-                  </div>
-                  <ArrowRight className="mt-1 h-4 w-4 text-ink-300 transition-transform group-hover:translate-x-1 group-hover:text-ink-700" />
-                </Link>
-              </div>
-            </motion.div>
           </motion.div>
         )}
 
