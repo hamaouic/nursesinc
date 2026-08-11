@@ -273,6 +273,7 @@ export default function ClinicalReferenceList({
               filtered={filteredDrugs}
               expanded={expandedDrug}
               setExpanded={setExpandedDrug}
+              mode={mode}
               onJumpToWounds={() => setTab('wound-care')}
             />
           </motion.div>
@@ -324,6 +325,7 @@ function DrugCardsView({
   expanded,
   setExpanded,
   onJumpToWounds,
+  mode,
 }: {
   query: string;
   setQuery: (v: string) => void;
@@ -333,6 +335,7 @@ function DrugCardsView({
   expanded: string | null;
   setExpanded: (id: string | null) => void;
   onJumpToWounds: () => void;
+  mode?: 'drugs' | 'illnesses';
 }) {
   const [showClassChart, setShowClassChart] = useState(true);
   const [expandedClass, setExpandedClass] = useState<string | null>(null);
