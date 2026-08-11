@@ -92,7 +92,7 @@ export default function ClinicalFormsToggle() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <FormsCanvas category="clinical" searchPlaceholder="Search 7 clinical printable forms by keyword or condition…" />
+            <FormsCanvas category="clinical" searchPlaceholder="Search 18 printable forms by name or keyword…" />
             <ResourceTiles />
           </motion.div>
         )}
