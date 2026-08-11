@@ -430,15 +430,29 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
                       Request received
                     </p>
                     <p className="mt-1 text-ink-700">
-                      Reference <strong>{ack.id}</strong>. Two automated emails were sent:
+                      Reference <strong>{ack.id}</strong>. Two automated emails were sent
+                      through the mock engine:
                     </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-[12.5px] text-ink-500">
-                      <li>Nurse notification summary (internal).</li>
-                      <li>
-                        Client acknowledgement to <strong>{ack.to}</strong> stating no payment is
-                        due online.
+                    <ul className="mt-2 space-y-1.5 pl-0 text-[12.5px] text-ink-600">
+                      <li className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-ink-500" />
+                        <span>
+                          <strong>Nurse:</strong> internal summary email with your intake details
+                          and a deep-link to manage this request.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-mint-500" />
+                        <span>
+                          <strong>You:</strong> acknowledgement to <strong>{ack.to}</strong>{' '}
+                          confirming receipt and stating no payment is required online.
+                        </span>
                       </li>
                     </ul>
+                    <div className="mt-3 rounded-xl border border-mint-200 bg-white/70 px-3 py-2 text-[11px] text-ink-500">
+                      Real production: both emails route through SendGrid from{' '}
+                      <code className="rounded bg-white px-1 py-0.5">admin@shiftlock.ca</code>.
+                    </div>
                     <button
                       type="button"
                       onClick={() => bookingStore.closeModal()}
@@ -448,7 +462,26 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="rounded-2xl border border-white/70 bg-blush-50/70 p-3 text-[12px] text-ink-600">
+                    <p className="font-semibold uppercase tracking-widest text-blush-500">
+                      What happens after you submit
+                    </p>
+                    <ol className="mt-1 list-decimal space-y-0.5 pl-4">
+                      <li>Automated summary email is sent to our nurse for review.</li>
+                      <li>
+                        Automated acknowledgement email is sent to{' '}
+                        <strong>{form.email || 'your inbox'}</strong> with your reference
+                        number.
+                      </li>
+                      <li>
+                        We review availability and reply with a formal invoice within 24
+                        hours, Mon–Fri.
+                      </li>
+                    </ol>
+                  </div>
+                )}
+                {!ack && (
+                <div className="flex items-center justify-between gap-3">
                     <p className="flex items-center gap-2 text-[11px] text-ink-400">
                       <Lock className="h-3 w-3" />
                       PHIPAA-aligned intake. No payment collected online.
@@ -472,7 +505,7 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
                     </button>
                   </div>
                 )}
-              </div>
+                </div>
             </motion.form>
           </motion.div>
         )}
