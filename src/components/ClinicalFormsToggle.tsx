@@ -11,6 +11,7 @@ import {
 import FormsCanvas from '@/components/FormsCanvas';
 import ClinicalReferenceList from '@/components/ClinicalReferenceList';
 import OrgansList from '@/components/OrgansList';
+import ResourceTiles from '@/components/ResourceTiles';
 import { cn } from '@/lib/utils';
 
 type View =
@@ -92,6 +93,7 @@ export default function ClinicalFormsToggle() {
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
             <FormsCanvas category="clinical" searchPlaceholder="Search 7 clinical printable forms by keyword or condition…" />
+            <ResourceTiles />
           </motion.div>
         )}
 
