@@ -189,81 +189,94 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
             })}
           </ul>
 
-          {/* Selected ribbon + clear */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-ink-100/60 pt-4">
-            <p className="text-xs text-ink-400">
-              {selected.length === 0
-                ? 'No services selected yet.'
-                : `${selected.length} service${selected.length === 1 ? '' : 's'} selected.`}
-            </p>
-            {selected.length > 0 && (
-              <button
-                type="button"
-                onClick={() => bookingStore.clear()}
-                className="rounded-full border border-ink-200 bg-white/70 px-3 py-1.5 text-[11px] font-semibold text-ink-500 transition hover:bg-white"
+          {/* Inline selected cart — replaces both the empty-state row and
+              the previous fixed-bottom glass bar. Renders only when items
+              are selected; collapses gracefully on empty. */}
+          <AnimatePresence initial={false}>
+            {selected.length > 0 ? (
+              <motion.div
+                key="inline-cart"
+                initial={{ y: 16, opacity: 0, height: 0 }}
+                animate={{ y: 0, opacity: 1, height: 'auto' }}
+                exit={{ y: 16, opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+                className="mt-6 overflow-hidden"
               >
-                Clear all
-              </button>
+                <div className="overflow-hidden rounded-3xl border border-white/70 bg-gradient-to-br from-white/90 via-blush-50/40 to-mint-50/40 p-5 shadow-soft backdrop-blur">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
+                        Selected services
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-ink-400">
+                        {selected.length} service{selected.length === 1 ? '' : 's'} ·
+                        {' '}review and confirm below.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => bookingStore.clear()}
+                      className="rounded-full border border-ink-200 bg-white/70 px-3 py-1.5 text-[11px] font-semibold text-ink-500 transition hover:bg-white"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {selected.map((s) => (
+                      <li
+                        key={s.id}
+                        className={cn(
+                          'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] font-semibold',
+                          s.accent === 'blush'
+                            ? 'border-blush-200 bg-blush-100 text-blush-500'
+                            : 'border-mint-200 bg-mint-100 text-mint-600',
+                        )}
+                      >
+                        <Check className="h-3 w-3" />
+                        <span>{s.title}</span>
+                        <span className="text-ink-300">·</span>
+                        <span className="font-normal opacity-80">{s.rate}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-5 flex flex-col items-stretch gap-3 border-t border-ink-100/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
+                        Subtotal
+                      </span>
+                      <span className="font-display text-2xl font-semibold text-ink-700">
+                        {formatCAD(totals.subtotal)}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => bookingStore.openModal()}
+                      className="group inline-flex items-center justify-center gap-2 rounded-full bg-ink-500 px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-ink-700"
+                    >
+                      Request Care Booking
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty-row"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="mt-6 border-t border-ink-100/60 pt-4"
+              >
+                <p className="text-xs text-ink-400">
+                  No services selected yet — tap any card above to add it.
+                </p>
+              </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </div>
-
-      {/* Sticky glassmorphic cart */}
-      <AnimatePresence>
-        {selected.length > 0 && (
-          <motion.aside
-            key="cart"
-            initial={{ y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 80, opacity: 0 }}
-            transition={{ duration: 0.35, ease: [0.2, 0.8, 0.2, 1] }}
-            className="fixed inset-x-0 bottom-4 z-40 mx-auto w-[calc(100%-1.5rem)] max-w-5xl rounded-3xl border border-white/60 bg-white/80 p-4 shadow-glow backdrop-blur-xl sm:p-5"
-            aria-label="Booking cart summary"
-          >
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <div className="flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
-                  Selected services
-                </p>
-                <ul className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-[12.5px] text-ink-700">
-                  {selected.slice(0, 4).map((s, i, arr) => (
-                    <li key={s.id} className="flex items-center gap-2">
-                      <span className="font-semibold">{s.title}</span>
-                      {i < arr.length - 1 && (
-                        <span className="text-ink-300">·</span>
-                      )}
-                    </li>
-                  ))}
-                  {selected.length > 4 && (
-                    <li className="text-ink-400">
-                      +{selected.length - 4} more
-                    </li>
-                  )}
-                </ul>
-              </div>
-              <div className="flex shrink-0 items-center gap-4">
-                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
-                    Subtotal
-                  </p>
-                  <p className="font-display text-lg font-semibold text-ink-700">
-                    {formatCAD(totals.subtotal)}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => bookingStore.openModal()}
-                  className="group inline-flex items-center gap-2 rounded-full bg-ink-500 px-5 py-3 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-ink-700"
-                >
-                  Request Care Booking
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </button>
-              </div>
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
 
       {/* Intake modal */}
       <AnimatePresence>
