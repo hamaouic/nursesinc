@@ -3,15 +3,18 @@
  *
  * POST /api/booking/notify   (Cloudflare Pages Function)
  *
- * Sends two transactional emails via SendGrid:
+ * Sends two transactional emails via Resend:
  *   1. Internal nurse notification → cathamaoui@hotmail.com
  *   2. Branded client acknowledgement → the address the client submitted
  *
  * Configure as Cloudflare Pages secrets (Settings → Environment variables,
- * marked "Encrypt"):
- *   SENDGRID_API_KEY     — Bearer token from SendGrid
- *   SENDGRID_FROM_EMAIL  — Verified sender, e.g. admin@shiftlock.ca
- *   SENDGRID_NURSE_EMAIL — Optional override; defaults to cathamaoui@hotmail.com
+ * mark Encrypt):
+ *   RESEND_API_KEY      — API key from https://resend.com/api-keys
+ *   RESEND_FROM_EMAIL   — Verified sender, default cathamaoui@hotmail.com
+ *   RESEND_NURSE_EMAIL  — Optional override; defaults to cathamaoui@hotmail.com
+ *
+ * Why Resend? SendGrid trial expired 2026-01-19; Resend free tier is 100
+ * emails/day, no DNS setup needed for personal-email senders.
  */
 
 interface BookingRequestPayload {
@@ -33,10 +36,10 @@ interface BookingRequestPayload {
   requestedDate: string;
 }
 
-interface SendGridEnv {
-  SENDGRID_API_KEY?: string;
-  SENDGRID_FROM_EMAIL?: string;
-  SENDGRID_NURSE_EMAIL?: string;
+interface ResendEnv {
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  RESEND_NURSE_EMAIL?: string;
 }
 
 const corsHeaders = {
@@ -144,30 +147,29 @@ function buildClientAckEmail(req: BookingRequestPayload) {
   return { subject, text, html };
 }
 
-async function sendViaSendGrid(
+async function sendViaResend(
   to: string,
   subject: string,
   text: string,
   html: string,
-  env: SendGridEnv,
+  env: ResendEnv,
 ) {
-  if (!env.SENDGRID_API_KEY || !env.SENDGRID_FROM_EMAIL) {
-    return { ok: false, status: 503, body: 'SendGrid not configured' };
+  if (!env.RESEND_API_KEY || !env.RESEND_FROM_EMAIL) {
+    return { ok: false, status: 503, body: 'Resend not configured' };
   }
-  const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+  const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${env.SENDGRID_API_KEY}`,
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      personalizations: [{ to: [{ email: to }] }],
-      from: { email: env.SENDGRID_FROM_EMAIL, name: 'Nurses Inc.' },
+      from: `Nurses Inc. <${env.RESEND_FROM_EMAIL}>`,
+      to: [to],
+      reply_to: env.RESEND_FROM_EMAIL,
       subject,
-      content: [
-        { type: 'text/plain', value: text },
-        { type: 'text/html', value: html },
-      ],
+      text,
+      html,
     }),
   });
   if (!res.ok) {
@@ -177,7 +179,7 @@ async function sendViaSendGrid(
 }
 
 export async function onRequestPost(
-  { request, env }: { request: Request; env: SendGridEnv },
+  { request, env }: { request: Request; env: ResendEnv },
 ): Promise<Response> {
   let payload: BookingRequestPayload;
   try {
@@ -189,13 +191,13 @@ export async function onRequestPost(
     return json({ error: 'Missing required fields' }, 400);
   }
 
-  const nurseEmail = env.SENDGRID_NURSE_EMAIL || 'cathamaoui@hotmail.com';
+  const nurseEmail = env.RESEND_NURSE_EMAIL || 'cathamaoui@hotmail.com';
   const nurse = buildNurseEmail(payload);
   const ack = buildClientAckEmail(payload);
 
   const [nurseRes, ackRes] = await Promise.all([
-    sendViaSendGrid(nurseEmail, nurse.subject, nurse.text, nurse.html, env),
-    sendViaSendGrid(payload.client.email, ack.subject, ack.text, ack.html, env),
+    sendViaResend(nurseEmail, nurse.subject, nurse.text, nurse.html, env),
+    sendViaResend(payload.client.email, ack.subject, ack.text, ack.html, env),
   ]);
 
   return json({ ok: nurseRes.ok && ackRes.ok, nurse: nurseRes, client: ackRes });

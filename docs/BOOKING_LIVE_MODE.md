@@ -1,4 +1,4 @@
-# Booking live mode — SendGrid
+# Booking live mode — Resend
 
 The `/services` booking system has two delivery modes:
 
@@ -12,34 +12,72 @@ The `/services` booking system has two delivery modes:
 
 ## Mode `live`
 
-Set `VITE_BOOKING_MODE=live` to switch on real SendGrid delivery.
+Set `VITE_BOOKING_MODE=live` to switch on real Resend delivery.
 Three secrets are required:
 
 | Secret                | Purpose                                                    |
 | --------------------- | ---------------------------------------------------------- |
-| `SENDGRID_API_KEY`    | Bearer token from SendGrid                                 |
-| `SENDGRID_FROM_EMAIL` | Verified sender (must be authenticated in SendGrid)        |
-| `SENDGRID_NURSE_EMAIL`| Optional override; defaults to `cathamaoui@hotmail.com`    |
+| `RESEND_API_KEY`      | API key from <https://resend.com/api-keys>                 |
+| `RESEND_FROM_EMAIL`   | Verified sender (default: `cathamaoui@hotmail.com`)        |
+| `RESEND_NURSE_EMAIL`  | Optional override; defaults to `cathamaoui@hotmail.com`   |
 
-## Recommended: Single Sender Verification (this project)
+## One-time Resend setup (do NOT share the API key with the assistant)
 
-This project's DNS lives on GoDaddy, **not** Cloudflare — so we deliberately
-stay off any "Authenticate Your Domain" flow that touches DNS. The
-recommended path is **Single Sender Verification**, ~2 minutes:
+> **Why Resend?** SendGrid trial expired 2026-01-19. Resend's free tier
+> covers 100 emails/day indefinitely, with no DNS work needed for
+> personal-email senders.
 
-1. <https://app.sendgrid.com> → Settings → Sender Authentication →
-   **Verify a Single Sender**.
-2. Fill in:
-   - From name:  `Nurses Inc.`
-   - From email: `cathamaoui@hotmail.com`
-   - Reply-to:   same
-   - Your name and address (any NB address).
-3. SendGrid emails a confirmation link to that address — click it.
-4. The address becomes a verified sender; the API accepts
-   `from: 'cathamaoui@hotmail.com'` for any outbound mail.
+1. Sign in / sign up at <https://resend.com>
+2. **Verify your sending address.** Settings → **Verified sender** →
+   click **Add sender** → enter `cathamaoui@hotmail.com` and your
+   `nursesinc.ca`/`shiftlock.ca` info → Resend emails a confirmation
+   link → click it.
+3. **Create an API key.** Settings → **API Keys** → **Create API Key**
+   → name it `nursesinc-booking` → permission: **Sending access** →
+   copy the value once (it never shows again).
 
-This avoids touching `shiftlock.ca` DNS, leaves Cloudflare Pages alone,
-and matches the project's actual operational identity.
+## Configure Cloudflare Pages
+
+1. Cloudflare dashboard → Workers & Pages → `nursesinc` → **Settings →
+   Environment variables**.
+2. Add each variable. **Mark each Encrypt** so they don't appear in the
+   dashboard for other team members:
+
+   | Variable                | Production                |
+   | ----------------------- | ------------------------- |
+   | `RESEND_API_KEY`        | *(paste here)*            |
+   | `RESEND_FROM_EMAIL`     | `cathamaoui@hotmail.com`  |
+   | `RESEND_NURSE_EMAIL`    | `cathamaoui@hotmail.com` (or omit to default) |
+   | `VITE_BOOKING_MODE`     | `live`                    |
+
+3. **Redeploy** — Deployments tab → three dots on latest deploy →
+   **Retry deployment**. Cloudflare rebuilds and inlines the new vars.
+
+## How to verify it's live
+
+1. Open `/services` and submit a test request with your own email as the
+   client address.
+2. Check the inbox of `cathamaoui@hotmail.com` — you should see
+   `[Nurses Inc. Booking Request] - New Consultation from …`.
+3. Check your (client) inbox — you should see
+   `Your Care Request with Nurses Inc. has been received!`.
+4. Visit `/services?admin=true` → unlock → **Mock inbox** tab → the
+   deliveries also appear there for audit.
+
+## Going back to mock
+
+Set `VITE_BOOKING_MODE=mock` (or remove it) and redeploy. Resend stops
+being called; the admin inbox still records everything.
+
+## Security notes
+
+- Never paste the API key in chat, commit history, or issue trackers.
+- `functions/api/booking/notify.ts` is the only place that touches the
+  key. Rotate immediately if exposed.
+- The Cloudflare Pages function does basic payload validation; for
+  production PHIPAA traffic, consider adding HMAC signing between client
+  and the function.
+
 
 ## One-time SendGrid setup (do NOT share these with the assistant)
 
