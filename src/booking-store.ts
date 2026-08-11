@@ -393,15 +393,59 @@ function billTagline() {
 }
 
 // ----------------------------------------------------------------------------
+// Mode flag
+// Set VITE_BOOKING_MODE=live in your env to enable real SendGrid delivery.
+// Default 'mock' keeps everything in-memory + the admin inbox tab.
+// ----------------------------------------------------------------------------
+
+export const BOOKING_MODE: 'mock' | 'live' =
+  (import.meta.env.VITE_BOOKING_MODE as 'mock' | 'live') || 'mock';
+
+const NOTIFY_ENDPOINT = '/api/booking/notify';
+
+async function dispatchToEndpoint(payload: {
+  kind: 'request' | 'confirm';
+  request: BookingRequest;
+}): Promise<{ ok: boolean; status: number; body?: string }> {
+  try {
+    const res = await fetch(NOTIFY_ENDPOINT, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ kind: payload.kind, request: payload.request }),
+    });
+    return { ok: res.ok, status: res.status, body: await res.text() };
+  } catch (err) {
+    return {
+      ok: false,
+      status: 0,
+      body: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
+// ----------------------------------------------------------------------------
 // Convenience: send the full Stage 1 pair of emails for a new request.
 // ----------------------------------------------------------------------------
 
-export function sendStage1Emails(request: BookingRequest) {
+export async function sendStage1Emails(request: BookingRequest) {
+  // Always record to the in-memory inbox so admins can audit.
   bookingStore.recordEmail(buildNurseNotifyEmail({ request }));
   bookingStore.recordEmail(buildClientAckEmail(request));
+
+  if (BOOKING_MODE === 'live') {
+    const r = await dispatchToEndpoint({ kind: 'request', request });
+    // eslint-disable-next-line no-console
+    console.info('[booking] live dispatch', r);
+  }
 }
 
-export function sendStage3Confirmation(request: BookingRequest) {
+export async function sendStage3Confirmation(request: BookingRequest) {
   bookingStore.recordEmail(buildInvoiceEmail(request));
   bookingStore.setStatus(request.id, 'confirmed');
+
+  if (BOOKING_MODE === 'live') {
+    const r = await dispatchToEndpoint({ kind: 'confirm', request });
+    // eslint-disable-next-line no-console
+    console.info('[booking] live confirm', r);
+  }
 }
