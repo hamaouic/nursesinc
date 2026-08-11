@@ -267,7 +267,22 @@ export const woundStages: WoundStage[] = [
 export type WoundMed = {
   id: string;
   name: string;
-  type: 'cleanser' | 'topical' | 'dressing-class' | 'systemic' | 'analgesic';
+  /**
+   * Category. Top-level buckets rendered on the Wound Care tab:
+   *   classification → handled separately by `woundStages`
+   *   dressing-class → "Dressings Class" section
+   *   cleanser       → "Medications · Cleansers" subsection
+   *   topical        → "Medications · Topicals" subsection
+   *   systemic       → "Medications · Systemic Medication" subsection
+   *   analgesic      → "Medications · Analgesic" subsection
+   */
+  type:
+    | 'classification'
+    | 'dressing-class'
+    | 'cleanser'
+    | 'topical'
+    | 'systemic'
+    | 'analgesic';
   description: string;
   whenToUse: string;
   adrs: string[];
@@ -671,12 +686,120 @@ export const woundMeds: WoundMed[] = [
     ],
     notes: 'Tylenol or topical lidocaine preferred for older adults.',
   },
+
+  // ── Additional Dressings ─────────────────────────────────────────
+  {
+    id: 'med-thin-hydrocolloid',
+    name: 'Thin Hydrocolloid (e.g. Duoderm Extra Thin, Tegasorb Thin)',
+    type: 'dressing-class',
+    description:
+      'Lower-profile version of standard hydrocolloid. Provides moist healing environment with less bulk — better visibility of the wound and better conformity on joints, heels, and shallow abrasions.',
+    whenToUse:
+      'Stage I–II pressure injuries, superficial burns, donor sites, post-op incisions, friction blisters. Suitable for ambulatory patients who want discreet coverage.',
+    adrs: [
+      'Maceration of peri-wound skin if left on too long.',
+      'Not for infected wounds or wounds with heavy exudate.',
+      'May roll at edges on high-friction sites.',
+    ],
+    notes: 'Wear time 3–5 days. Change if leakage or odor develops.',
+  },
+  {
+    id: 'med-transparent-film',
+    name: 'Transparent Film Dressing (e.g. Tegaderm, Opsite)',
+    type: 'dressing-class',
+    description:
+      'Thin, semi-permeable polyurethane film. Allows oxygen and moisture vapor exchange but blocks water and bacteria. Transparent for wound monitoring without removal.',
+    whenToUse:
+      'Stage I pressure injuries, superficial abrasions, IV site securement, post-op incisions (closed). Secondary dressing over hydrogel or hydrocolloid. Protection of intact skin at risk.',
+    adrs: [
+      'Not for infected wounds.',
+      'Not for moderate-to-heavy exudate (will macerate).',
+      'Skin stripping on removal in fragile elderly skin — use adhesive remover.',
+    ],
+    notes: 'Wear time up to 7 days. Best for low-exudate, superficial wounds.',
+  },
+  {
+    id: 'med-hypertonic-saline',
+    name: 'Hypertonic Saline 20% Gauze (Curasalt, Mesalt)',
+    type: 'dressing-class',
+    description:
+      'Hypertonic saline-impregnated gauze. Osmotic gradient draws exudate, bacteria, and debris out of the wound bed. Useful for infected or heavily contaminated wounds.',
+    whenToUse:
+      'Infected or critically colonized wounds. Wounds with heavy exudate and slough. Red or yellow wounds that need mechanical + osmotic debridement.',
+    adrs: [
+      'Stinging on application (patient counseling required).',
+      'NOT for dry wounds — will dehydrate granulation tissue.',
+      'Short-term use only (≤ 3 days) to avoid over-dehydration.',
+    ],
+    notes: 'Change every 24–48 h. Discontinue when infection cleared and granulation present.',
+  },
+  {
+    id: 'med-cavilon',
+    name: 'Cavilon No-Sting Barrier Film (3M)',
+    type: 'topical',
+    description:
+      'Alcohol-free, cyanoacrylate-based skin barrier. Forms a protective layer over intact or at-risk skin without stinging. Lasts up to 72 hours.',
+    whenToUse:
+      'Prevention of incontinence-associated dermatitis (IAD) and medical adhesive-related skin injury (MARSI). Peri-wound skin protection under adhesives, ostomies, and drains.',
+    adrs: [
+      'Allow 30 seconds to dry before applying adhesive dressing.',
+      'Do NOT apply to infected or broken skin — barrier will trap bacteria.',
+    ],
+    notes: 'Reapply every 48–72 h or after each cleaning. Compatible with most adhesives.',
+  },
+  {
+    id: 'med-sensi-care',
+    name: 'Sensi-Care Skin Protectant (ConvaTec)',
+    type: 'topical',
+    description:
+      'Dimethicone-based skin protectant cream. Gentle, fragrance-free barrier that helps maintain skin integrity and prevent breakdown.',
+    whenToUse:
+      'Incontinence care, peri-wound protection, general skin protection in frail elderly. Daily use in at-risk patients.',
+    adrs: [
+      'Rare sensitivity to dimethicone.',
+      'Do not apply to deep wounds — barrier will impair granulation.',
+    ],
+    notes: 'Apply after each incontinence episode or every 12 h. Compatible with adhesives.',
+  },
+
+  // ── Santyl brand note (added to existing collagenase) ────────────
+  {
+    id: 'med-santyl',
+    name: 'Santyl (Collagenase Santyl® Ointment 250 u/g)',
+    type: 'topical',
+    description:
+      'Brand-name enzymatic debriding ointment. Collagenase derived from Clostridium histolyticum. Selectively digests native collagen in necrotic tissue while sparing healthy granulation tissue. Same active as generic collagenase but supplied sterile in single-use tubes.',
+    whenToUse:
+      'Enzymatic debridement of black eschar (necrotic) and yellow slough in pressure injuries, diabetic foot ulcers, venous ulcers, and burns. Apply once daily, cover with moist gauze.',
+    adrs: [
+      'Mild transient burning on application (10–15% of patients).',
+      'NOT compatible with silver, iodine, or honey dressings — metals inactivate the enzyme.',
+      'Avoid acidic or heavy-metal cleansers (H₂O₂, povidone-iodine) — denature collagenase.',
+    ],
+    notes: 'Same drug class as generic collagenase (med-collagenase). Use saline to cleanse before and after.',
+  },
+
+  // ── Povidone-iodine paint (separate from soak) ───────────────────
+  {
+    id: 'med-povidone-paint',
+    name: 'Povidone-Iodine Paint 1% (e.g. Betadine Paint)',
+    type: 'topical',
+    description:
+      'Low-concentration (1%) povidone-iodine paint/solution. Faster-drying than the standard 10% scrub. Used as a peri-wound antiseptic or short-term eschar paint for dry heels.',
+    whenToUse:
+      'Heel eschar (paint + dry gauze, do not soften). Peri-wound antisepsis before sharp debridement. Short-term (≤ 7 days) for colonized wounds.',
+    adrs: [
+      'Cytotoxic at full strength — impairs granulation.',
+      'Iodine allergy: avoid.',
+      'Absorbed systemically — avoid in pregnancy, thyroid disease, renal failure.',
+    ],
+    notes: 'Different from Betadine scrub (which contains detergent). Paint formulation is non-detergent.',
+  },
 ];
 
 export const woundMedicationTypes: { id: WoundMed['type']; label: string }[] = [
   { id: 'cleanser', label: 'Cleansers' },
-  { id: 'topical', label: 'Topical antimicrobials' },
-  { id: 'dressing-class', label: 'Dressing classes' },
-  { id: 'systemic', label: 'Systemic antibiotics' },
-  { id: 'analgesic', label: 'Analgesics' },
+  { id: 'topical', label: 'Topicals' },
+  { id: 'systemic', label: 'Systemic Medication' },
+  { id: 'analgesic', label: 'Analgesic' },
 ];

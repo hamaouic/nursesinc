@@ -17,6 +17,7 @@ import {
   Sparkles,
   Microscope,
   Beaker,
+  Layers,
 } from 'lucide-react';
 import {
   clinicalReference,
@@ -24,7 +25,12 @@ import {
   type ClinicalRefEntry,
 } from '@/nurses-inc-clinical-reference';
 import { drugClasses, type DrugClassEntry } from '@/nurses-inc-drug-classes';
-import { woundStages, woundMeds, type WoundColor } from '@/nurses-inc-wound-care';
+import {
+  woundStages,
+  woundMeds,
+  woundMedicationTypes,
+  type WoundColor,
+} from '@/nurses-inc-wound-care';
 import { labReference, labSystems, type LabEntry } from '@/nurses-inc-labs';
 import { cn } from '@/lib/utils';
 
@@ -66,6 +72,29 @@ const woundColorClasses: Record<WoundColor, string> = {
   crimson: 'bg-red-200 text-red-900 ring-red-400',
   purple: 'bg-purple-100 text-purple-700 ring-purple-300',
   slate: 'bg-slate-200 text-slate-700 ring-slate-300',
+};
+
+// Brand-coloured palette for each wound-medication sub-category.
+const woundCategoryPalette: Record<
+  'cleanser' | 'topical' | 'systemic' | 'analgesic',
+  { icon: string; dot: string }
+> = {
+  cleanser: {
+    icon: 'bg-mint-50 text-mint-500',
+    dot: 'bg-mint-300',
+  },
+  topical: {
+    icon: 'bg-blush-50 text-blush-500',
+    dot: 'bg-blush-300',
+  },
+  systemic: {
+    icon: 'bg-purple-100 text-purple-700',
+    dot: 'bg-purple-300',
+  },
+  analgesic: {
+    icon: 'bg-cream-100 text-ink-700',
+    dot: 'bg-cream-300',
+  },
 };
 
 const labSystemIcons: Record<LabEntry['system'], React.FC<{ className?: string }>> = {
@@ -852,82 +881,168 @@ function WoundCareView() {
         ))}
       </div>
 
-      {/* Medications */}
-      <h4 className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-ink-500">
+      {/* Medications — grouped by category */}
+      <h4 className="mb-3 mt-8 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-ink-500">
         <span className="h-1.5 w-1.5 rounded-full bg-ink-500" />
         Medications & supplies
       </h4>
-      <div className="space-y-3">
-        {woundMeds.map((med) => (
-          <article
-            key={med.id}
-            className={cn(
-              'overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
-              expanded === med.id && 'ring-2 ring-ink-700/30',
-            )}
-          >
-            <button
-              type="button"
-              onClick={() =>
-                setExpanded(expanded === med.id ? null : med.id)
-              }
-              className="flex w-full items-center gap-3 px-4 py-3 text-left"
-              aria-expanded={expanded === med.id}
-            >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-ink-50 text-ink-500">
-                <Pill className="h-4 w-4" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-ink-300">
-                  {med.type}
-                </span>
-                <h4 className="font-display text-base font-semibold leading-tight text-ink-700">
-                  {med.name}
-                </h4>
-                <p className="text-[11px] text-ink-500">{med.description}</p>
-              </div>
-              <ChevronDown
-                className={cn(
-                  'h-4 w-4 shrink-0 text-ink-300 transition-transform duration-300',
-                  expanded === med.id && 'rotate-180 text-ink-700',
-                )}
-                aria-hidden="true"
-              />
-            </button>
-            <AnimatePresence initial={false}>
-              {expanded === med.id && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
-                  className="overflow-hidden"
+
+      {/* Dressings Class — grid of cards */}
+      {(() => {
+        const dressings = woundMeds.filter((m) => m.type === 'dressing-class');
+        if (dressings.length === 0) return null;
+        return (
+          <div className="mb-6">
+            <h5 className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-blush-500">
+              Dressings Class · {dressings.length}
+            </h5>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {dressings.map((med) => (
+                <article
+                  key={med.id}
+                  className={cn(
+                    'overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
+                    expanded === med.id && 'ring-2 ring-ink-700/30',
+                  )}
                 >
-                  <div className="border-t border-ink-100/60 px-4 py-3 text-[12px] leading-relaxed text-ink-500">
-                    <FieldLabel>When to use</FieldLabel>
-                    <p>{med.whenToUse}</p>
-                    <FieldLabel icon={<AlertTriangle className="h-3 w-3" />}>
-                      What to look out for (ADRs)
-                    </FieldLabel>
-                    <ul className="list-inside list-disc space-y-0.5">
-                      {med.adrs.map((line, i) => (
-                        <li key={i}>{line}</li>
-                      ))}
-                    </ul>
-                    {med.notes && (
-                      <>
-                        <FieldLabel>Notes</FieldLabel>
-                        <p>{med.notes}</p>
-                      </>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpanded(expanded === med.id ? null : med.id)
+                    }
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                    aria-expanded={expanded === med.id}
+                  >
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blush-50 text-blush-500">
+                      <Layers className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-display text-base font-semibold leading-tight text-ink-700">
+                        {med.name}
+                      </h4>
+                      <p className="line-clamp-2 text-[11px] text-ink-500">
+                        {med.description}
+                      </p>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        'h-4 w-4 shrink-0 text-ink-300 transition-transform duration-300',
+                        expanded === med.id && 'rotate-180 text-ink-700',
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {expanded === med.id && (
+                      <WoundMedDetail med={med} />
                     )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </article>
-        ))}
-      </div>
+                  </AnimatePresence>
+                </article>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Medication sub-categories — Cleansers / Topicals / Systemic / Analgesic */}
+      {woundMedicationTypes.map((cat) => {
+        const meds = woundMeds.filter((m) => m.type === cat.id);
+        if (meds.length === 0) return null;
+        const palette = woundCategoryPalette[cat.id as keyof typeof woundCategoryPalette];
+        return (
+          <div key={cat.id} className="mb-6">
+            <h5 className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-ink-500">
+              <span
+                className={cn(
+                  'h-1.5 w-1.5 rounded-full',
+                  palette.dot,
+                )}
+              />
+              Medications · {cat.label} · {meds.length}
+            </h5>
+            <div className="space-y-3">
+              {meds.map((med) => (
+                <article
+                  key={med.id}
+                  className={cn(
+                    'overflow-hidden rounded-2xl border border-white/70 bg-white/85 shadow-soft backdrop-blur transition-all',
+                    expanded === med.id && 'ring-2 ring-ink-700/30',
+                  )}
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpanded(expanded === med.id ? null : med.id)
+                    }
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                    aria-expanded={expanded === med.id}
+                  >
+                    <span
+                      className={cn(
+                        'grid h-9 w-9 shrink-0 place-items-center rounded-xl',
+                        palette.icon,
+                      )}
+                    >
+                      <Pill className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-display text-base font-semibold leading-tight text-ink-700">
+                        {med.name}
+                      </h4>
+                      <p className="text-[11px] text-ink-500">{med.description}</p>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        'h-4 w-4 shrink-0 text-ink-300 transition-transform duration-300',
+                        expanded === med.id && 'rotate-180 text-ink-700',
+                      )}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {expanded === med.id && (
+                      <WoundMedDetail med={med} />
+                    )}
+                  </AnimatePresence>
+                </article>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
+  );
+}
+
+// Inline detail block shared by every wound-med card.
+function WoundMedDetail({ med }: { med: (typeof woundMeds)[number] }) {
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 'auto', opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+      className="overflow-hidden"
+    >
+      <div className="border-t border-ink-100/60 px-4 py-3 text-[12px] leading-relaxed text-ink-500">
+        <FieldLabel>When to use</FieldLabel>
+        <p>{med.whenToUse}</p>
+        <FieldLabel icon={<AlertTriangle className="h-3 w-3" />}>
+          What to look out for (ADRs)
+        </FieldLabel>
+        <ul className="list-inside list-disc space-y-0.5">
+          {med.adrs.map((line, i) => (
+            <li key={i}>{line}</li>
+          ))}
+        </ul>
+        {med.notes && (
+          <>
+            <FieldLabel>Notes</FieldLabel>
+            <p>{med.notes}</p>
+          </>
+        )}
+      </div>
+    </motion.div>
   );
 }
 
