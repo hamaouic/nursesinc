@@ -11,6 +11,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import Section from '@/components/Section';
+import SectionDivider from '@/components/SectionDivider';
 import { cn } from '@/lib/utils';
 
 const careTypes = [
@@ -68,29 +69,41 @@ const services = [
 export default function Clients() {
   return (
     <>
-      <section className="relative mx-auto w-full max-w-6xl px-6 pb-8 pt-32 sm:pt-40">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-          className="max-w-3xl"
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-ink-400 shadow-soft backdrop-blur">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blush-300" />
-            For clients and families
-          </span>
-          <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight text-ink-700 sm:text-5xl md:text-6xl">
-            Care that shows up.{' '}
-            <span className="text-ink-400">Quietly, calmly, on time.</span>
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-ink-400">
-            Nurses Inc. is a small collaborative practice in New Brunswick. We
-            work with a small roster of older adults and their families — never
-            more clients than we can care for properly. Every visit is with the
-            same nurse, every plan is reviewed by the same physician.
-          </p>
-        </motion.div>
+      <section className="relative overflow-hidden">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -left-24 top-8 h-80 w-80 rounded-full bg-blush-200 opacity-50 blur-3xl"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 top-32 h-72 w-72 rounded-full bg-mint-200 opacity-50 blur-3xl"
+        />
+        <div className="relative mx-auto w-full max-w-6xl px-6 pb-8 pt-32 sm:pt-40">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            className="max-w-3xl"
+          >
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-ink-400 shadow-soft backdrop-blur">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-blush-300" />
+              For clients and families
+            </span>
+            <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight text-ink-700 sm:text-5xl md:text-6xl">
+              Care that shows up.{' '}
+              <span className="text-ink-400">Quietly, calmly, on time.</span>
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-ink-400">
+              Nurses Inc. is a small collaborative practice in New Brunswick. We
+              work with a small roster of older adults and their families — never
+              more clients than we can care for properly. Every visit is with the
+              same nurse, every plan is reviewed by the same physician.
+            </p>
+          </motion.div>
+        </div>
       </section>
+
+      <SectionDivider variant="cream" />
 
       <Section
         eyebrow="Who we care for"
@@ -131,6 +144,8 @@ export default function Clients() {
         </div>
       </Section>
 
+      <SectionDivider variant="mint" />
+
       <Section
         eyebrow="What's included"
         title={
@@ -165,14 +180,25 @@ export default function Clients() {
         </div>
       </Section>
 
-      <Section
-        eyebrow="A small roster on purpose"
-        title={
-          <>
-            We say no to growth —{' '}
-            <span className="text-ink-400">so we can say yes to quality.</span>
-          </>
-        }
+      <SectionDivider variant="pink" />
+
+      <div className="relative overflow-hidden">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-32 top-12 h-80 w-80 rounded-full bg-cream-200 opacity-60 blur-3xl"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -left-32 bottom-12 h-72 w-72 rounded-full bg-mint-200 opacity-50 blur-3xl"
+        />
+        <Section
+          eyebrow="A small roster on purpose"
+          title={
+            <>
+              We say no to growth —{' '}
+              <span className="text-ink-400">so we can say yes to quality.</span>
+            </>
+          }
         description="The math is simple: an LPN can carry a small caseload well, or a big one badly. We cap our roster so every visit is unhurried, every follow-up is real, and every family gets a direct number."
         align="center"
         className="text-center"
@@ -202,6 +228,9 @@ export default function Clients() {
           ))}
         </div>
       </Section>
+      </div>
+
+      <SectionDivider variant="cream" />
 
       <Section
         eyebrow="Ready to talk?"

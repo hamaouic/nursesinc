@@ -14,6 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import Section from '@/components/Section';
+import SectionDivider from '@/components/SectionDivider';
 import { cn } from '@/lib/utils';
 
 const facts = [
@@ -40,7 +41,7 @@ const pillars = [
     title: 'Small by design',
     description: 'A roster of ~30 active clients. Two staff. One physician partner. The clinic is small on purpose so the care stays personal — the alternative is a roster that grows until the nurse knows her clients by chart, not by name.',
     icon: Users,
-    color: 'bg-amber-100 text-amber-500 ring-amber-200',
+    color: 'bg-cream-200 text-ink-500 ring-cream-200',
   },
 ];
 
@@ -54,28 +55,40 @@ const hours = [
 export default function Clinic() {
   return (
     <>
-      <section className="relative mx-auto w-full max-w-6xl px-6 pb-8 pt-32 sm:pt-40">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-          className="max-w-3xl"
-        >
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-ink-400 shadow-soft backdrop-blur">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint-300" />
-            About the clinic
-          </span>
-          <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight text-ink-700 sm:text-5xl md:text-6xl">
-            Independent.{' '}
-            <span className="text-ink-400">Collaborative. Small on purpose.</span>
-          </h1>
-          <p className="mt-6 text-lg leading-relaxed text-ink-400">
-            Nurses Inc. is an independent collaborative nursing practice in New
-            Brunswick. Two people, one physician partner, one mission: dignified
-            care for older adults and the families who love them.
-          </p>
-        </motion.div>
+      <section className="relative overflow-hidden">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -left-24 top-8 h-80 w-80 rounded-full bg-mint-200 opacity-50 blur-3xl"
+        />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-24 top-32 h-72 w-72 rounded-full bg-cream-200 opacity-60 blur-3xl"
+        />
+        <div className="relative mx-auto w-full max-w-6xl px-6 pb-8 pt-32 sm:pt-40">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+            className="max-w-3xl"
+          >
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/60 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-ink-400 shadow-soft backdrop-blur">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-mint-300" />
+              About the clinic
+            </span>
+            <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight text-ink-700 sm:text-5xl md:text-6xl">
+              Independent.{' '}
+              <span className="text-ink-400">Collaborative. Small on purpose.</span>
+            </h1>
+            <p className="mt-6 text-lg leading-relaxed text-ink-400">
+              Nurses Inc. is an independent collaborative nursing practice in New
+              Brunswick. Two people, one physician partner, one mission: dignified
+              care for older adults and the families who love them.
+            </p>
+          </motion.div>
+        </div>
       </section>
+
+      <SectionDivider variant="pink" />
 
       <Section
         eyebrow="The practice at a glance"
@@ -103,6 +116,8 @@ export default function Clinic() {
           ))}
         </div>
       </Section>
+
+      <SectionDivider variant="cream" />
 
       <Section
         eyebrow="How the clinic works"
@@ -142,6 +157,8 @@ export default function Clinic() {
           ))}
         </div>
       </Section>
+
+      <SectionDivider variant="mint" />
 
       <Section
         eyebrow="Visit, call, or write"
@@ -254,7 +271,7 @@ export default function Clinic() {
             'Take a new client we cannot serve properly.',
             'Skip the physician review on a care plan.',
             'Use family emergencies as a sales opportunity.',
-            'Charge for services that are already covered by MSI.',
+            'Charge for services that are already covered by MSI (New Brunswick’s publicly funded Medicare plan).',
             'Share client information with third parties without consent.',
           ].map((line, i) => (
             <motion.div
