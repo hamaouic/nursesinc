@@ -57,7 +57,9 @@ class BookingStore {
   private listeners = new Set<Listener>();
   private inboxListeners = new Set<Listener>();
 
-  state: BookingState = {
+  // We expose a fresh STATE SNAPSHOT every change so React's
+  // useSyncExternalStore identity check picks it up.
+  private snapshot: BookingState = {
     selected: [],
     modalOpen: false,
     lastSubmittedId: null,
@@ -65,6 +67,10 @@ class BookingStore {
 
   requests: BookingRequest[] = [];
   emails: EmailMessage[] = [];
+
+  get state(): BookingState {
+    return this.snapshot;
+  }
 
   // ---- core listeners ----
   subscribe(l: Listener) {
@@ -76,41 +82,37 @@ class BookingStore {
     return () => this.inboxListeners.delete(l);
   }
 
-  private emit() {
+  private setState(patch: Partial<BookingState>) {
+    this.snapshot = { ...this.snapshot, ...patch };
     this.listeners.forEach((l) => l());
   }
-  private emitInbox() {
+  private notifyInbox() {
     this.inboxListeners.forEach((l) => l());
   }
 
   // ---- selection API ----
   toggle(svc: RequestedService) {
-    const exists = this.state.selected.find((s) => s.id === svc.id);
-    if (exists) {
-      this.state.selected = this.state.selected.filter((s) => s.id !== svc.id);
-    } else {
-      this.state.selected = [...this.state.selected, svc];
-    }
-    this.emit();
+    const exists = this.snapshot.selected.find((s) => s.id === svc.id);
+    const selected = exists
+      ? this.snapshot.selected.filter((s) => s.id !== svc.id)
+      : [...this.snapshot.selected, svc];
+    this.setState({ selected });
   }
 
   isSelected(id: string) {
-    return Boolean(this.state.selected.find((s) => s.id === id));
+    return Boolean(this.snapshot.selected.find((s) => s.id === id));
   }
 
   clear() {
-    this.state.selected = [];
-    this.emit();
+    this.setState({ selected: [] });
   }
 
   openModal() {
-    this.state.modalOpen = true;
-    this.emit();
+    this.setState({ modalOpen: true });
   }
 
   closeModal() {
-    this.state.modalOpen = false;
-    this.emit();
+    this.setState({ modalOpen: false });
   }
 
   // ---- request API ----
@@ -122,8 +124,7 @@ class BookingStore {
       status: 'pending',
     };
     this.requests = [full, ...this.requests];
-    this.state.lastSubmittedId = full.id;
-    this.emit();
+    this.setState({ lastSubmittedId: full.id });
     return full;
   }
 
@@ -131,7 +132,7 @@ class BookingStore {
     this.requests = this.requests.map((r) =>
       r.id === id ? { ...r, status } : r,
     );
-    this.emitInbox();
+    this.notifyInbox();
   }
 
   // ---- email API ----
@@ -144,7 +145,7 @@ class BookingStore {
       sentAt: new Date().toISOString(),
     };
     this.emails = [full, ...this.emails];
-    this.emitInbox();
+    this.notifyInbox();
     // eslint-disable-next-line no-console
     console.info(
       `[mockEmailEngine] → ${msg.to}\n  subject: ${msg.subject}\n  ${msg.body.slice(0, 220).replace(/\n/g, ' ')}…`,
