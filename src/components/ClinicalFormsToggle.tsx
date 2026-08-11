@@ -21,7 +21,7 @@ type View =
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'forms', label: 'Printable Forms', icon: FileText },
-  { id: 'drug-cards', label: 'Drug Cards', icon: Pill },
+  { id: 'drug-cards', label: 'Common Illness', icon: Pill },
   { id: 'wound-care', label: 'Wound Care', icon: Layers },
   { id: 'labs', label: 'Labs', icon: FlaskConical },
   { id: 'organs', label: 'Organs', icon: Heart },
