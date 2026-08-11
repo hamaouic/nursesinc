@@ -6,6 +6,7 @@ import {
   Pill,
   FlaskConical,
   Layers,
+  Stethoscope,
 } from 'lucide-react';
 import FormsCanvas from '@/components/FormsCanvas';
 import ClinicalReferenceList from '@/components/ClinicalReferenceList';
@@ -15,13 +16,15 @@ import { cn } from '@/lib/utils';
 type View =
   | 'forms'
   | 'drug-cards'
+  | 'common-illness'
   | 'wound-care'
   | 'labs'
   | 'organs';
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'forms', label: 'Printable Forms', icon: FileText },
-  { id: 'drug-cards', label: 'Common Illness', icon: Pill },
+  { id: 'drug-cards', label: 'Drug Cards', icon: Pill },
+  { id: 'common-illness', label: 'Common Illness', icon: Stethoscope },
   { id: 'wound-care', label: 'Wound Care', icon: Layers },
   { id: 'labs', label: 'Labs', icon: FlaskConical },
   { id: 'organs', label: 'Organs', icon: Heart },
@@ -95,6 +98,18 @@ export default function ClinicalFormsToggle() {
         {view === 'drug-cards' && (
           <motion.div
             key="drug-cards"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <ClinicalReferenceList initialTab="drugs" />
+          </motion.div>
+        )}
+
+        {view === 'common-illness' && (
+          <motion.div
+            key="common-illness"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
