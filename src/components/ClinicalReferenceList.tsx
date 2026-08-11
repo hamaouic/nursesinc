@@ -229,6 +229,7 @@ export default function ClinicalReferenceList() {
               filtered={filteredDrugs}
               expanded={expandedDrug}
               setExpanded={setExpandedDrug}
+              onJumpToWounds={() => setTab('wound-care')}
             />
           </motion.div>
         )}
@@ -278,6 +279,7 @@ function DrugCardsView({
   filtered,
   expanded,
   setExpanded,
+  onJumpToWounds,
 }: {
   query: string;
   setQuery: (v: string) => void;
@@ -286,6 +288,7 @@ function DrugCardsView({
   filtered: ClinicalRefEntry[];
   expanded: string | null;
   setExpanded: (id: string | null) => void;
+  onJumpToWounds: () => void;
 }) {
   const [showClassChart, setShowClassChart] = useState(true);
   const [expandedClass, setExpandedClass] = useState<string | null>(null);
@@ -454,6 +457,16 @@ function DrugCardsView({
               </button>
             );
           })}
+          <span className="mx-1 hidden h-4 w-px bg-ink-100 sm:inline-block" />
+          <button
+            type="button"
+            onClick={onJumpToWounds}
+            aria-label="Switch to Wound Care tab"
+            className="inline-flex items-center gap-1.5 rounded-full border border-blush-200 bg-blush-50 px-3 py-1 text-[11px] font-semibold text-blush-500 transition-all hover:border-blush-300 hover:bg-blush-100"
+          >
+            <Stethoscope className="h-3 w-3" />
+            Wounds
+          </button>
         </div>
       </div>
 
