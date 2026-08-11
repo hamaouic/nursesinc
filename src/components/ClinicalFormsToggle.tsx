@@ -103,7 +103,7 @@ export default function ClinicalFormsToggle() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <ClinicalReferenceList initialTab="drugs" />
+            <ClinicalReferenceList initialTab="drugs" mode="drugs" />
           </motion.div>
         )}
 
@@ -115,7 +115,7 @@ export default function ClinicalFormsToggle() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <ClinicalReferenceList initialTab="drugs" />
+            <ClinicalReferenceList initialTab="drugs" mode="illnesses" />
           </motion.div>
         )}
 

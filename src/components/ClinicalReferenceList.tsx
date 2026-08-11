@@ -145,8 +145,16 @@ const labSystemHeaderColors: Record<
 
 export default function ClinicalReferenceList({
   initialTab,
+  mode,
 }: {
   initialTab?: ClinicianTab;
+  /**
+   * `drugs` (default) shows the Drug Classification Chart + the clinical
+   * reference entries (used by the "Drug Cards" pill).
+   * `illnesses` shows only the clinical reference entries (used by the
+   * "Common Illness" pill).
+   */
+  mode?: 'drugs' | 'illnesses';
 } = {}) {
   const [tab, setTab] = useState<ClinicianTab>(initialTab ?? 'drugs');
   const [query, setQuery] = useState('');
@@ -343,7 +351,8 @@ function DrugCardsView({
 
   return (
     <div>
-      {/* Drug classification chart */}
+      {/* Drug classification chart — hidden on the Common Illness pill */}
+      {mode !== 'illnesses' && (
       <div className="mb-4 overflow-hidden rounded-3xl border border-white/70 bg-white/85 shadow-soft backdrop-blur">
         <button
           type="button"
@@ -430,6 +439,7 @@ function DrugCardsView({
           )}
         </AnimatePresence>
       </div>
+      )}
 
       {/* Search + filter */}
       <div className="mb-4 flex flex-col gap-3">
