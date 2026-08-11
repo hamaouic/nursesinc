@@ -143,8 +143,12 @@ const labSystemHeaderColors: Record<
   toxicology:   { bar: 'bg-slate-700',   tint: 'bg-slate-100',  label: 'text-slate-700',   icon: 'text-slate-500' },
 };
 
-export default function ClinicalReferenceList() {
-  const [tab, setTab] = useState<ClinicianTab>('drugs');
+export default function ClinicalReferenceList({
+  initialTab,
+}: {
+  initialTab?: ClinicianTab;
+} = {}) {
+  const [tab, setTab] = useState<ClinicianTab>(initialTab ?? 'drugs');
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState<'all' | ClinicalRefEntry['group']>('all');
   const [labSystem, setLabSystem] = useState<'all' | LabEntry['system']>('all');
@@ -190,56 +194,59 @@ export default function ClinicalReferenceList() {
 
   return (
     <div>
-      {/* Sub-tabs: Drug Cards / Wound Care / Labs */}
-      <div className="mb-4 flex justify-center">
-        <div
-          role="tablist"
-          aria-label="Clinician reference sub-sections"
-          className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
-        >
-          {[
-            { id: 'drugs' as const, label: 'Drug Cards', icon: Pill },
-            { id: 'wound-care' as const, label: 'Wound Care', icon: Wrench },
-            { id: 'labs' as const, label: 'Labs', icon: FlaskConical },
-          ].map((t) => {
-            const isActive = tab === t.id;
-            const Icon = t.icon;
-            return (
-              <button
-                key={t.id}
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => {
-                  setTab(t.id);
-                  setQuery('');
-                }}
-                className={cn(
-                  'relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
-                  isActive ? 'text-white' : 'text-ink-500 hover:text-ink-700',
-                )}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="clinician-sub-pill"
-                    className="absolute inset-0 rounded-full bg-ink-700 shadow-soft"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative inline-flex items-center gap-1.5">
-                  <Icon
-                    className={cn(
-                      'h-3.5 w-3.5',
-                      isActive ? 'text-white' : 'text-ink-300',
-                    )}
-                    aria-hidden="true"
-                  />
-                  <span>{t.label}</span>
-                </span>
-              </button>
-            );
-          })}
+      {/* Sub-tabs: Drug Cards / Wound Care / Labs — hidden when the parent
+          ClinicalFormsToggle is controlling the active tab via `initialTab`. */}
+      {!initialTab && (
+        <div className="mb-4 flex justify-center">
+          <div
+            role="tablist"
+            aria-label="Clinician reference sub-sections"
+            className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
+          >
+            {[
+              { id: 'drugs' as const, label: 'Drug Cards', icon: Pill },
+              { id: 'wound-care' as const, label: 'Wound Care', icon: Wrench },
+              { id: 'labs' as const, label: 'Labs', icon: FlaskConical },
+            ].map((t) => {
+              const isActive = tab === t.id;
+              const Icon = t.icon;
+              return (
+                <button
+                  key={t.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => {
+                    setTab(t.id);
+                    setQuery('');
+                  }}
+                  className={cn(
+                    'relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
+                    isActive ? 'text-white' : 'text-ink-500 hover:text-ink-700',
+                  )}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="clinician-sub-pill"
+                      className="absolute inset-0 rounded-full bg-ink-700 shadow-soft"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative inline-flex items-center gap-1.5">
+                    <Icon
+                      className={cn(
+                        'h-3.5 w-3.5',
+                        isActive ? 'text-white' : 'text-ink-300',
+                      )}
+                      aria-hidden="true"
+                    />
+                    <span>{t.label}</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       <AnimatePresence mode="wait">
         {tab === 'drugs' && (

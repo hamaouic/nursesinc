@@ -8,20 +8,30 @@ import {
   Sparkles,
   FileText,
   Wrench,
-  BookOpen,
   Heart,
+  Pill,
+  FlaskConical,
+  Layers,
 } from 'lucide-react';
 import FormsCanvas from '@/components/FormsCanvas';
 import ClinicalReferenceList from '@/components/ClinicalReferenceList';
 import OrgansList from '@/components/OrgansList';
 import { cn } from '@/lib/utils';
 
-type View = 'forms' | 'tools' | 'definitions' | 'organs';
+type View =
+  | 'forms'
+  | 'tools'
+  | 'drug-cards'
+  | 'wound-care'
+  | 'labs'
+  | 'organs';
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
   { id: 'forms', label: 'Printable Forms', icon: FileText },
   { id: 'tools', label: 'Interactive Tools', icon: Wrench },
-  { id: 'definitions', label: 'Definitions', icon: BookOpen },
+  { id: 'drug-cards', label: 'Drug Cards', icon: Pill },
+  { id: 'wound-care', label: 'Wound Care', icon: Layers },
+  { id: 'labs', label: 'Labs', icon: FlaskConical },
   { id: 'organs', label: 'Organs', icon: Heart },
 ];
 
@@ -30,12 +40,12 @@ export default function ClinicalFormsToggle() {
 
   return (
     <div>
-      {/* Segmented toggle — Tools / Forms */}
+      {/* Segmented toggle — one row of large pills */}
       <div className="mb-6 flex items-center justify-center">
         <div
           role="tablist"
-          aria-label="Toggle between printable forms, interactive tools, definitions, and organs"
-          className="inline-flex items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
+          aria-label="Toggle between printable forms, interactive tools, drug cards, wound care, labs, and organs"
+          className="inline-flex max-w-full flex-wrap items-center gap-1 rounded-full border border-white/70 bg-white/70 p-1 shadow-soft backdrop-blur"
         >
           {views.map((v) => {
             const isActive = view === v.id;
@@ -47,7 +57,7 @@ export default function ClinicalFormsToggle() {
                 aria-selected={isActive}
                 onClick={() => setView(v.id)}
                 className={cn(
-                  'relative inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
+                  'relative inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold transition-colors',
                   isActive
                     ? 'text-white'
                     : 'text-ink-500 hover:text-ink-700',
@@ -158,15 +168,39 @@ export default function ClinicalFormsToggle() {
           </motion.div>
         )}
 
-        {view === 'definitions' && (
+        {view === 'drug-cards' && (
           <motion.div
-            key="definitions"
+            key="drug-cards"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
-            <ClinicalReferenceList />
+            <ClinicalReferenceList initialTab="drugs" />
+          </motion.div>
+        )}
+
+        {view === 'wound-care' && (
+          <motion.div
+            key="wound-care"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <ClinicalReferenceList initialTab="wound-care" />
+          </motion.div>
+        )}
+
+        {view === 'labs' && (
+          <motion.div
+            key="labs"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <ClinicalReferenceList initialTab="labs" />
           </motion.div>
         )}
 
