@@ -45,22 +45,20 @@ export default function Knowledge() {
         />
         <Section
           eyebrow="Free downloads"
-          title={
-            <>
-              Meet-up tools —{' '}
-              <span className="text-ink-400">
-                Find Medication Audit, De-escalation Playbook, and the Family
-                Care Conference Kit under <strong>Printable Forms</strong> on
-                the <a href="/forms" className="underline underline-offset-4">Caregiver Forms</a> page.
-              </span>
-            </>
-          }
+          title={<>Find printable tools on the Caregiver Forms page.</>}
           description=""
         >
           <p className="mx-auto max-w-2xl text-center text-sm text-ink-400">
-            The three printable resource bundles previously shown here now live
-            alongside the printable clinical forms, so every tool you need is
-            in one place. They remain free to preview, print, and download.
+            Medication Audit Forms, the De-escalation Playbook, and the Family
+            Care Conference Kit now live alongside the printable clinical
+            forms on the{' '}
+            <a
+              href="/forms"
+              className="font-semibold text-ink-700 underline underline-offset-4 hover:text-blush-500"
+            >
+              Caregiver Forms
+            </a>{' '}
+            page, under <strong>Printable Forms</strong>.
           </p>
         </Section>
       </div>
