@@ -193,7 +193,7 @@ export function computeTotals(services: RequestedService[]): InvoiceTotals {
 // Email template builders
 // ----------------------------------------------------------------------------
 
-export const NURSE_NOTIFY_EMAIL = 'nurses@nursesinc.ca';
+export const NURSE_NOTIFY_EMAIL = 'cathamaoui@hotmail.com';
 export const BILLING_EMAIL = 'payments@nursesinc.ca';
 export const FROM_ADDRESS = 'admin@shiftlock.ca';
 
