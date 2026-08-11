@@ -287,7 +287,7 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-end justify-center bg-ink-700/30 p-3 backdrop-blur sm:items-center sm:p-6"
+            className="fixed inset-0 z-50 flex justify-center overflow-y-auto bg-ink-700/30 p-3 pt-16 backdrop-blur sm:items-start sm:pt-24 sm:p-6"
             onClick={() => bookingStore.closeModal()}
           >
             <motion.form
@@ -320,7 +320,7 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
                 </button>
               </div>
 
-              <div className="space-y-4 px-6 py-5 text-slate-dark text-ink-700">
+              <div className="max-h-[calc(100vh-14rem)] space-y-4 overflow-y-auto px-6 py-5 text-slate-dark text-ink-700">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Field
                     label="Full name"
