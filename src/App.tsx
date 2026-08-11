@@ -42,7 +42,7 @@ export default function App() {
           </Routes>
         </motion.main>
       </AnimatePresence>
-      <PhipeaBadge />
+      {location.pathname === '/' && <PhipeaBadge />}
       <Footer />
     </div>
   );
