@@ -1,8 +1,9 @@
 import { NavLink, Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, HeartPulse, Users, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { bookingStore } from '@/booking-store';
 
 type NavEntry =
   | { kind: 'link'; to: string; label: string }
@@ -36,6 +37,12 @@ const navEntries: NavEntry[] = [
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const bookingState = useSyncExternalStore(
+    (l) => bookingStore.subscribe(l),
+    () => bookingStore.state,
+    () => bookingStore.state,
+  );
+  const checkoutOpen = bookingState.modalOpen;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -44,11 +51,20 @@ export default function Nav() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Close mobile menu if checkout opens
+  useEffect(() => {
+    if (checkoutOpen) setOpen(false);
+  }, [checkoutOpen]);
+
   return (
     <header
+      aria-hidden={checkoutOpen}
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-all duration-500',
         scrolled ? 'translate-y-2' : 'translate-y-0',
+        checkoutOpen
+          ? 'pointer-events-none -translate-y-full opacity-0'
+          : 'pointer-events-auto translate-y-0 opacity-100',
       )}
     >
       <div
