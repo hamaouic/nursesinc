@@ -22,13 +22,13 @@ export default function SectionDivider({
       whileInView={{ opacity: 1 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.8 }}
-      className="relative my-8 h-32 w-full overflow-hidden"
+      className="relative my-4 h-20 w-full overflow-hidden"
     >
       <span
-        className={`blob absolute -left-12 top-1/2 h-40 w-40 -translate-y-1/2 animate-blob rounded-[42%_58%_70%_30%/45%_45%_55%_55%] ${colors[variant][0]}`}
+        className={`blob absolute -left-12 top-1/2 h-28 w-28 -translate-y-1/2 animate-blob rounded-[42%_58%_70%_30%/45%_45%_55%_55%] ${colors[variant][0]}`}
       />
       <span
-        className={`blob absolute -right-12 top-1/2 h-44 w-44 -translate-y-1/2 animate-blob rounded-[60%_40%_30%_70%/60%_30%_70%_40%] ${colors[variant][1]}`}
+        className={`blob absolute -right-12 top-1/2 h-32 w-32 -translate-y-1/2 animate-blob rounded-[60%_40%_30%_70%/60%_30%_70%_40%] ${colors[variant][1]}`}
         style={{ animationDelay: '3s' }}
       />
     </motion.div>

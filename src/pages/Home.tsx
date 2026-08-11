@@ -39,7 +39,7 @@ export default function Home() {
         description="From a free Discovery Call to in-depth facility audits — every service is delivered under physician oversight and PHIPAA-aligned record keeping."
       >
         <ServicesTeaser />
-        <div className="mt-10 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <Link
             to="/services"
             className="group inline-flex items-center gap-2 rounded-full bg-ink-500 px-6 py-3 text-sm font-medium text-white shadow-soft transition-transform duration-300 hover:-translate-y-0.5"

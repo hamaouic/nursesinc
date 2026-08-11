@@ -6,7 +6,7 @@ import { ArrowRight } from 'lucide-react';
 export default function Services() {
   return (
     <>
-      <div className="pt-28" />
+      <div className="pt-20" />
       <Section
         eyebrow="Services & Pricing"
         title={

@@ -22,7 +22,7 @@ function PanelFallback({ label }: { label: string }) {
 export default function Reconciliation() {
   return (
     <>
-      <div className="pt-28" />
+      <div className="pt-20" />
       <Section
         eyebrow="Internal Tools"
         eyebrowAction={<ToolSwitcher />}
@@ -33,11 +33,11 @@ export default function Reconciliation() {
           </>
         }
       >
-        <div className="mt-6">
+        <div className="mt-4">
           <HighAlertTriggers />
         </div>
 
-        <div className="mt-10">
+        <div className="mt-6">
           <Suspense fallback={<PanelFallback label="Loading worksheet…" />}>
             <ReconciliationDashboard />
           </Suspense>
@@ -49,7 +49,7 @@ export default function Reconciliation() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mt-10 flex items-center gap-4"
+          className="mt-8 flex items-center gap-4"
         >
           <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-ink-300">
             Part B
@@ -62,7 +62,7 @@ export default function Reconciliation() {
           </span>
         </motion.div>
 
-        <div className="mt-6">
+        <div className="mt-4">
           <Suspense fallback={<PanelFallback label="Loading SBAR escalation…" />}>
             <SbarEscalation />
           </Suspense>

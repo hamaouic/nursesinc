@@ -26,14 +26,14 @@ export default function Section({
     <section
       id={id}
       className={cn(
-        'relative mx-auto w-full max-w-6xl px-6 pt-4 pb-10 sm:pt-6 sm:pb-14',
+        'relative mx-auto w-full max-w-6xl px-6 pt-2 pb-6 sm:pt-3 sm:pb-10',
         className,
       )}
     >
       {(eyebrow || title || description) && (
         <header
           className={cn(
-            'mb-10 flex max-w-3xl flex-col gap-3',
+            'mb-6 flex max-w-3xl flex-col gap-2.5',
             align === 'center' && 'mx-auto items-center text-center',
           )}
         >

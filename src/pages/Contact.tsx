@@ -6,7 +6,7 @@ import { Mail, Phone, MapPin, ShieldCheck } from 'lucide-react';
 export default function Contact() {
   return (
     <>
-      <div className="pt-28" />
+      <div className="pt-20" />
       <Section
         eyebrow="Contact & Booking"
         title={

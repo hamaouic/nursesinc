@@ -78,7 +78,7 @@ export default function Clients() {
           aria-hidden
           className="pointer-events-none absolute -right-24 top-32 h-72 w-72 rounded-full bg-mint-200 opacity-50 blur-3xl"
         />
-        <div className="relative mx-auto w-full max-w-6xl px-6 pb-8 pt-32 sm:pt-40">
+        <div className="relative mx-auto w-full max-w-6xl px-6 pb-6 pt-20 sm:pt-24">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

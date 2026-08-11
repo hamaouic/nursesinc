@@ -17,16 +17,16 @@ function PanelFallback({ label }: { label: string }) {
 export default function Forms() {
   return (
     <>
-      <div className="pt-16" />
+      <div className="pt-10" />
 
       {/* High-Alert Immediate Intervention Triggers — first thing on the page */}
-      <div className="mx-auto w-full max-w-6xl px-6 pt-16 sm:pt-20">
+      <div className="mx-auto w-full max-w-6xl px-6 pt-8 sm:pt-10">
         <HighAlertTriggers />
       </div>
 
       {/* Clinical Forms & Tools — toggle */}
       <Section
-        className="!pt-12"
+        className="!pt-6"
         eyebrow="Nurse Reference"
         title={
           <>

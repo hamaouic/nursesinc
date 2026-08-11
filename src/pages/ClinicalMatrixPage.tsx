@@ -20,7 +20,7 @@ function PanelFallback() {
 export default function ClinicalMatrixPage() {
   return (
     <>
-      <div className="pt-28" />
+      <div className="pt-20" />
       <Section
         eyebrow="Internal Tools · Geriatric Clinical Guide"
         eyebrowAction={<ToolSwitcher />}
