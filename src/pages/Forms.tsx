@@ -35,7 +35,7 @@ export default function Forms() {
             <span className="text-ink-400">Forms &amp; Tools.</span>
           </>
         }
-        description="Single-page reference sheets and interactive tools for nursing visits — Beers, STOPP/START, polypharmacy, deprescribing algorithms and more."
+        description=""
       >
         <Suspense fallback={<PanelFallback label="Loading clinical reference…" />}>
           <ClinicalFormsToggle />
