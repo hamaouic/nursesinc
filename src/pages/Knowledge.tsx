@@ -19,7 +19,7 @@ export default function Knowledge() {
         eyebrow="Knowledge Hub"
         title={
           <>
-            Pick a path —{' '}
+            Pick a topic —{' '}
             <span className="text-ink-400">
               Grounded in Canadian best-practice guidelines.
             </span>
