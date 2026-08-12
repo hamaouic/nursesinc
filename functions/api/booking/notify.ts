@@ -10,7 +10,8 @@
  * Configure as Cloudflare Pages secrets (Settings → Environment variables,
  * mark Encrypt):
  *   RESEND_API_KEY      — API key from https://resend.com/api-keys
- *   RESEND_FROM_EMAIL   — Verified sender, default cathamaoui@hotmail.com
+ *   RESEND_FROM_EMAIL   — Verified sender (e.g. noreply@nursesinc.com),
+ *                          domain must be verified in Resend
  *   RESEND_NURSE_EMAIL  — Optional override; defaults to cathamaoui@hotmail.com
  *
  * Why Resend? SendGrid trial expired 2026-01-19; Resend free tier is 100
@@ -200,7 +201,15 @@ export async function onRequestPost(
     sendViaResend(payload.client.email, ack.subject, ack.text, ack.html, env),
   ]);
 
-  return json({ ok: nurseRes.ok && ackRes.ok, nurse: nurseRes, client: ackRes });
+  return json({
+    ok: nurseRes.ok && ackRes.ok,
+    nurse: nurseRes,
+    client: ackRes,
+    mode: 'live-resend',
+    note: !env.RESEND_FROM_EMAIL
+      ? 'RESEND_FROM_EMAIL not configured; Resend will reject until set'
+      : undefined,
+  });
 }
 
 export async function onRequestOptions(): Promise<Response> {

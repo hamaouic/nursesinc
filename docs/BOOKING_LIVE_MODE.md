@@ -18,23 +18,35 @@ Three secrets are required:
 | Secret                | Purpose                                                    |
 | --------------------- | ---------------------------------------------------------- |
 | `RESEND_API_KEY`      | API key from <https://resend.com/api-keys>                 |
-| `RESEND_FROM_EMAIL`   | Verified sender (default: `cathamaoui@hotmail.com`)        |
+| `RESEND_FROM_EMAIL`   | Verified sender (e.g. `noreply@nursesinc.com`). The **domain** must be verified in Resend. |
 | `RESEND_NURSE_EMAIL`  | Optional override; defaults to `cathamaoui@hotmail.com`   |
 
 ## One-time Resend setup (do NOT share the API key with the assistant)
 
 > **Why Resend?** SendGrid trial expired 2026-01-19. Resend's free tier
 > covers 100 emails/day indefinitely, with no DNS work needed for
-> personal-email senders.
+> personal-email senders. **Resend requires domain verification —
+> you cannot send from `cathamaoui@hotmail.com` directly.**
 
-1. Sign in / sign up at <https://resend.com>
-2. **Verify your sending address.** Settings → **Verified sender** →
-   click **Add sender** → enter `cathamaoui@hotmail.com` and your
-   `nursesinc.ca`/`shiftlock.ca` info → Resend emails a confirmation
-   link → click it.
-3. **Create an API key.** Settings → **API Keys** → **Create API Key**
-   → name it `nursesinc-booking` → permission: **Sending access** →
-   copy the value once (it never shows again).
+### Verify `nursesinc.com` (your existing Google Domains-owned domain)
+
+`nursesinc.com` already has DNS on Google Domains
+(`ns-cloud-a1.googledomains.com`). You can verify it in Resend by
+adding 2 DNS records — no domain transfer, no service interruption.
+
+1. Resend → **Domains** → **Add Domain** → enter `nursesinc.com`.
+2. Resend shows 2 DNS records to add (typically SPF TXT and DKIM CNAME).
+3. <https://domains.google.com/registrar/> → click `nursesinc.com` →
+   **DNS** tab → add both records (subdomain host + values as shown).
+4. Back in Resend → click **Verify**. DNS propagation: 5–60 min.
+5. Once green, you can send from any address at `nursesinc.com`
+   (e.g. `noreply@nursesinc.com`).
+
+### Create the API key
+
+6. Resend → **API Keys** → **Create API Key** →
+   name: `nursesinc-booking` → permission: **Full access** → copy the
+   `re_abc...` value once into your password vault.
 
 ## Configure Cloudflare Pages
 
@@ -46,7 +58,7 @@ Three secrets are required:
    | Variable                | Production                |
    | ----------------------- | ------------------------- |
    | `RESEND_API_KEY`        | *(paste here)*            |
-   | `RESEND_FROM_EMAIL`     | `cathamaoui@hotmail.com`  |
+   | `RESEND_FROM_EMAIL`     | `noreply@nursesinc.com`  |
    | `RESEND_NURSE_EMAIL`    | `cathamaoui@hotmail.com` (or omit to default) |
    | `VITE_BOOKING_MODE`     | `live`                    |
 
