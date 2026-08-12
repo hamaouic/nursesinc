@@ -1,6 +1,6 @@
-# Booking live mode — Resend
+# Booking email modes — Web3Forms (default live), Resend (advanced)
 
-The `/services` booking system has two delivery modes:
+The `/services` booking system has three delivery modes:
 
 ## Mode `mock` (default)
 
@@ -10,43 +10,72 @@ The `/services` booking system has two delivery modes:
 - Nothing is delivered to a real inbox
 - Safe for staging, demos, and offline development
 
-## Mode `live`
+## Mode `web3forms` (recommended for live without a domain)
 
-Set `VITE_BOOKING_MODE=live` to switch on real Resend delivery.
-Three secrets are required:
+Set `VITE_BOOKING_MODE=web3forms` to deliver booking notifications via
+the same Web3Forms access key used by the /contact form.
+
+- No DNS work
+- Sends to whatever inbox the access key is tied to (typically the one
+  you signed up with — for this project, `cathamaoui@hotmail.com`)
+- Free tier ~250 emails/month
+- From address will be `Nurses Inc. Booking <forms@web3forms.com>` —
+  Replies go directly to the client's submitted address (because we
+  pass `replyto: client.email`)
+
+### Setup (~2 min)
+
+1. Sign up at <https://web3forms.com/> (free, no credit card).
+2. Create an **access key** tied to `cathamaoui@hotmail.com`.
+3. Cloudflare Pages → `nursesinc` → **Settings → Environment variables** →
+   add (each one marked **Encrypt**):
+   - `VITE_WEB3FORMS_KEY` = the access key you just created
+   - `VITE_BOOKING_MODE` = `web3forms`
+4. **Deployments** → three dots on latest → **Retry deployment**.
+
+### Verify it works
+
+1. Open `/services` and submit a test booking with your own email as
+   the client address.
+2. Within ~30 s, your `cathamaoui@hotmail.com` inbox should receive:
+   - **Nurse summary email** with the requested services, client info,
+     and a deep-link to the admin dashboard.
+3. The client acknowledgement to the *other* inbox is not separately
+   delivered by Web3Forms — only the nurse summary is sent (Web3Forms
+   fires one email per submission). The client-facing note is still
+   shown inside the modal's success card and the admin inbox tab.
+
+## Mode `live` (advanced — requires a Resend-verified domain)
+
+Same API path but routes through a Cloudflare Pages Function that
+calls Resend. Required for full client + nurse acknowledgement emails.
+
+Use this path **only after** you own a domain (e.g. `nursesinc.ca`)
+that can be verified in Resend via SPF + DKIM DNS records.
+
+Three secrets required in Cloudflare Pages:
 
 | Secret                | Purpose                                                    |
 | --------------------- | ---------------------------------------------------------- |
 | `RESEND_API_KEY`      | API key from <https://resend.com/api-keys>                 |
-| `RESEND_FROM_EMAIL`   | Verified sender (e.g. `noreply@nursesinc.com`). The **domain** must be verified in Resend. |
+| `RESEND_FROM_EMAIL`   | Verified sender (e.g. `noreply@nursesinc.com`). Domain must be verified in Resend. |
 | `RESEND_NURSE_EMAIL`  | Optional override; defaults to `cathamaoui@hotmail.com`   |
 
-## One-time Resend setup (do NOT share the API key with the assistant)
+## Going back to mock
 
-> **Why Resend?** SendGrid trial expired 2026-01-19. Resend's free tier
-> covers 100 emails/day indefinitely, with no DNS work needed for
-> personal-email senders. **Resend requires domain verification —
-> you cannot send from `cathamaoui@hotmail.com` directly.**
+Set `VITE_BOOKING_MODE=mock` and redeploy. Outbound email stops; the
+admin inbox still records everything.
 
-### Verify `nursesinc.com` (your existing Google Domains-owned domain)
+## Security notes
 
-`nursesinc.com` already has DNS on Google Domains
-(`ns-cloud-a1.googledomains.com`). You can verify it in Resend by
-adding 2 DNS records — no domain transfer, no service interruption.
-
-1. Resend → **Domains** → **Add Domain** → enter `nursesinc.com`.
-2. Resend shows 2 DNS records to add (typically SPF TXT and DKIM CNAME).
-3. <https://domains.google.com/registrar/> → click `nursesinc.com` →
-   **DNS** tab → add both records (subdomain host + values as shown).
-4. Back in Resend → click **Verify**. DNS propagation: 5–60 min.
-5. Once green, you can send from any address at `nursesinc.com`
-   (e.g. `noreply@nursesinc.com`).
-
-### Create the API key
-
-6. Resend → **API Keys** → **Create API Key** →
-   name: `nursesinc-booking` → permission: **Full access** → copy the
-   `re_abc...` value once into your password vault.
+- Never paste the Web3Forms access key (or Resend API key) in chat,
+  commit history, or issue trackers.
+- `VITE_*` variables are inlined into the public bundle, so anyone
+  viewing-source your site could see them. Web3Forms access keys are
+  intentionally tied to a single destination address, so disclosure
+  cannot be used to send to *other* addresses — still rotate quarterly.
+- `functions/api/booking/notify.ts` is the only place Resend secrets
+  live (encrypted at rest in Cloudflare).
 
 ## Configure Cloudflare Pages
 

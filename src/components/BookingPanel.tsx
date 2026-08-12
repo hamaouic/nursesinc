@@ -463,8 +463,8 @@ export default function BookingPanel({ services, eyebrow = 'Booking' }: Props) {
                       </li>
                     </ul>
                     <div className="mt-3 rounded-xl border border-mint-200 bg-white/70 px-3 py-2 text-[11px] text-ink-500">
-                      Real production: both emails route through SendGrid from{' '}
-                      <code className="rounded bg-white px-1 py-0.5">admin@shiftlock.ca</code>.
+                      Real production: nurse summary routes via Web3Forms to{' '}
+                      <code className="rounded bg-white px-1 py-0.5">cathamaoui@hotmail.com</code>.
                     </div>
                     <button
                       type="button"

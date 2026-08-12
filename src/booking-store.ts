@@ -394,12 +394,19 @@ function billTagline() {
 
 // ----------------------------------------------------------------------------
 // Mode flag
-// Set VITE_BOOKING_MODE=live in your env to enable real SendGrid delivery.
-// Default 'mock' keeps everything in-memory + the admin inbox tab.
+// `mock`     — everything in-memory + the admin inbox tab
+// `live`     — POSTs to /api/booking/notify (Resend route — requires a
+//               verified domain in Resend)
+// `web3forms` — POSTs to https://api.web3forms.com/submit with the
+//               VITE_WEB3FORMS_KEY. Web3Forms forwards the email to
+//               cathamaoui@hotmail.com (the address tied to that access
+//               key). No domain verification required. Free tier ~250
+//               emails/mo.
 // ----------------------------------------------------------------------------
 
-export const BOOKING_MODE: 'mock' | 'live' =
-  (import.meta.env.VITE_BOOKING_MODE as 'mock' | 'live') || 'mock';
+export const BOOKING_MODE: 'mock' | 'live' | 'web3forms' =
+  ((import.meta.env.VITE_BOOKING_MODE as 'mock' | 'live' | 'web3forms') ||
+    'mock');
 
 const NOTIFY_ENDPOINT = '/api/booking/notify';
 
@@ -423,6 +430,56 @@ async function dispatchToEndpoint(payload: {
   }
 }
 
+async function dispatchViaWeb3Forms(
+  request: BookingRequest,
+  subject: string,
+  bodyText: string,
+): Promise<{ ok: boolean; status: number; body?: string }> {
+  const accessKey = import.meta.env.VITE_WEB3FORMS_KEY as string | undefined;
+  if (!accessKey || accessKey === 'your-access-key-here') {
+    return {
+      ok: false,
+      status: 503,
+      body: 'Web3Forms not configured (VITE_WEB3FORMS_KEY missing)',
+    };
+  }
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        accept: 'application/json',
+      },
+      body: JSON.stringify({
+        access_key: accessKey,
+        subject,
+        from_name: 'Nurses Inc. Booking',
+        name: request.client.name,
+        email: request.client.email,
+        replyto: request.client.email,
+        message: bodyText,
+        // metadata for the Web3Forms dashboard
+        'Booking ID': request.id,
+        'Requested date': new Date(request.requestedDate).toISOString(),
+        'Classification': request.client.classification,
+        'Service count': request.services.length,
+        'Phone': request.client.phone,
+      }),
+    });
+    const data = (await res.json().catch(() => ({}))) as {
+      success?: boolean;
+      message?: string;
+    };
+    return { ok: res.ok && data.success !== false, status: res.status, body: data.message ?? '' };
+  } catch (err) {
+    return {
+      ok: false,
+      status: 0,
+      body: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
 // ----------------------------------------------------------------------------
 // Convenience: send the full Stage 1 pair of emails for a new request.
 // ----------------------------------------------------------------------------
@@ -436,6 +493,20 @@ export async function sendStage1Emails(request: BookingRequest) {
     const r = await dispatchToEndpoint({ kind: 'request', request });
     // eslint-disable-next-line no-console
     console.info('[booking] live dispatch', r);
+  } else if (BOOKING_MODE === 'web3forms') {
+    // Send the nurse summary to cathamaoui@hotmail.com via Web3Forms.
+    // (Web3Forms delivers to whatever address was registered with the
+    // access key — typically the inbox of whoever created the key.)
+    const email = buildNurseNotifyEmail({ request });
+    const r = await dispatchViaWeb3Forms(
+      request,
+      email.subject,
+      [email.body, `---`, `Auto-recorded to admin inbox for audit.`].join(
+        '\n',
+      ),
+    );
+    // eslint-disable-next-line no-console
+    console.info('[booking] web3forms dispatch', r);
   }
 }
 
