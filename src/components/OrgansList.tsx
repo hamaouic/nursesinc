@@ -237,9 +237,11 @@ function OrganCard({
               {entry.system}
             </span>
           </div>
-          <p className="mt-0.5 line-clamp-2 text-[11px] text-ink-500">
-            {entry.explanation}
-          </p>
+          {!isOpen && (
+            <p className="mt-0.5 line-clamp-2 text-[11px] text-ink-500">
+              {entry.explanation}
+            </p>
+          )}
         </div>
         <ChevronDown
           className={cn(
