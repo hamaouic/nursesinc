@@ -19,7 +19,6 @@ const navEntries: NavEntry[] = [
     items: [
       { to: '/clients', label: 'Overview' },
       { to: '/services', label: 'Services' },
-      { to: '/knowledge', label: 'The Hub' },
     ],
   },
   {
