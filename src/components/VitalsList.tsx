@@ -14,6 +14,8 @@ import {
   Brain,
   Stethoscope,
   AlertTriangle,
+  Ruler,
+  Calculator,
 } from 'lucide-react';
 import {
   vitals,
@@ -25,6 +27,383 @@ import {
   type PediatricRanges,
 } from '@/nurses-inc-vitals';
 import { cn } from '@/lib/utils';
+
+/* ──────────────────────────────────────────────────────────────────────────── */
+/*  BMI calculator — adult (WHO/CDC) + pediatric (CDC/WHO percentile)          */
+/* ──────────────────────────────────────────────────────────────────────────── */
+
+type BmiClass = {
+  label: string;
+  tone: string;
+  short: string;
+  escalate: string;
+};
+
+const ADULT_BMI_BANDS: Array<{ upTo: number; cls: BmiClass }> = [
+  {
+    upTo: 16.5,
+    cls: {
+      label: 'Severely underweight',
+      tone: 'bg-blush-200 text-blush-500 ring-blush-300',
+      short: 'Severe malnutrition risk',
+      escalate:
+        'Notify physician and dietitian. Screen for eating disorder, malabsorption, malignancy.',
+    },
+  },
+  {
+    upTo: 18.5,
+    cls: {
+      label: 'Underweight',
+      tone: 'bg-blush-100 text-blush-500 ring-blush-200',
+      short: 'Below healthy range',
+      escalate:
+        'Consider nutrition consult. Recheck weight trajectory over 2–4 weeks.',
+    },
+  },
+  {
+    upTo: 25,
+    cls: {
+      label: 'Normal weight',
+      tone: 'bg-mint-100 text-mint-500 ring-mint-200',
+      short: 'Healthy range',
+      escalate: 'Continue current plan. Routine reassessment.',
+    },
+  },
+  {
+    upTo: 30,
+    cls: {
+      label: 'Overweight',
+      tone: 'bg-cream-200 text-ink-700 ring-cream-100',
+      short: 'Above healthy range',
+      escalate:
+        'Discuss lifestyle factors. Screen for HTN, dyslipidemia, prediabetes.',
+    },
+  },
+  {
+    upTo: 35,
+    cls: {
+      label: 'Obesity — Class I',
+      tone: 'bg-blush-50 text-blush-500 ring-blush-100',
+      short: 'BMI 30 – 34.9',
+      escalate:
+        'Screen for metabolic syndrome. Discuss weight-management per protocol.',
+    },
+  },
+  {
+    upTo: 40,
+    cls: {
+      label: 'Obesity — Class II',
+      tone: 'bg-blush-100 text-blush-500 ring-blush-200',
+      short: 'BMI 35 – 39.9',
+      escalate:
+        'Higher cardiovascular risk. Refer to physician for management plan.',
+    },
+  },
+  {
+    upTo: Infinity,
+    cls: {
+      label: 'Obesity — Class III',
+      tone: 'bg-blush-200 text-blush-500 ring-blush-300',
+      short: 'BMI ≥ 40',
+      escalate:
+        'Severe obesity. Multi-disciplinary approach. Equipment / mobility risk for staff.',
+    },
+  },
+];
+
+function classifyAdultBmi(bmi: number): BmiClass {
+  for (const row of ADULT_BMI_BANDS) {
+    if (bmi < row.upTo) return row.cls;
+  }
+  return ADULT_BMI_BANDS[ADULT_BMI_BANDS.length - 1].cls;
+}
+
+const PEDIATRIC_PERCENTILE_BANDS = [
+  {
+    label: 'Underweight',
+    short: '< 5th percentile',
+    tone: 'bg-blush-100 text-blush-500 ring-blush-200',
+    detail:
+      'Growth-faltering concern. Check height velocity, dietary intake, and chronic disease screen.',
+  },
+  {
+    label: 'Healthy weight',
+    short: '5th – < 85th percentile',
+    tone: 'bg-mint-100 text-mint-500 ring-mint-200',
+    detail: 'Within normal range. Continue routine growth monitoring at well-child visits.',
+  },
+  {
+    label: 'Overweight',
+    short: '85th – < 95th percentile',
+    tone: 'bg-cream-200 text-ink-700 ring-cream-100',
+    detail:
+      'Above healthy weight. Lifestyle counselling. Recheck at 2–3 month intervals.',
+  },
+  {
+    label: 'Obese',
+    short: '≥ 95th percentile',
+    tone: 'bg-blush-100 text-blush-500 ring-blush-200',
+    detail:
+      'Higher long-term risk for HTN, dyslipidemia, T2DM, NAFLD. Refer per facility protocol.',
+  },
+  {
+    label: 'Severely obese',
+    short: '≥ 99th percentile',
+    tone: 'bg-blush-200 text-blush-500 ring-blush-300',
+    detail:
+      'Multi-disciplinary management. Order lipid panel, A1C, ALT, BP screening if not already done.',
+  },
+];
+
+type BmiUnit = 'metric' | 'imperial';
+
+function BmiCalculator() {
+  const [unit, setUnit] = useState<BmiUnit>('metric');
+  const [weight, setWeight] = useState('');
+  const [heightCm, setHeightCm] = useState('');
+  const [heightFt, setHeightFt] = useState('');
+  const [heightIn, setHeightIn] = useState('');
+
+  const bmi = useMemo(() => {
+    const w = parseFloat(weight);
+    if (!w) return null;
+
+    if (unit === 'metric') {
+      const cm = parseFloat(heightCm);
+      if (!cm) return null;
+      const m = cm / 100;
+      if (m <= 0) return null;
+      return w / (m * m);
+    }
+
+    const ft = parseFloat(heightFt) || 0;
+    const inch = parseFloat(heightIn) || 0;
+    const totalInches = ft * 12 + inch;
+    if (totalInches <= 0) return null;
+    // BMI (imperial) = 703 × lbs / in²
+    return (703 * w) / (totalInches * totalInches);
+  }, [unit, weight, heightCm, heightFt, heightIn]);
+
+  const result = bmi !== null ? classifyAdultBmi(bmi) : null;
+
+  const reset = () => {
+    setWeight('');
+    setHeightCm('');
+    setHeightFt('');
+    setHeightIn('');
+  };
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-white/70 bg-white/70 p-3">
+      <div className="flex items-center justify-between">
+        <p className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-ink-500">
+          <Calculator className="h-3 w-3" />
+          Adult BMI Calculator
+        </p>
+        <div className="inline-flex rounded-full border border-white/70 bg-white/70 p-0.5 shadow-soft">
+          {(['metric', 'imperial'] as BmiUnit[]).map((u) => (
+            <button
+              key={u}
+              type="button"
+              onClick={() => setUnit(u)}
+              aria-pressed={unit === u}
+              className={cn(
+                'rounded-full px-2.5 py-1 text-[10px] font-semibold transition',
+                unit === u
+                  ? 'bg-ink-700 text-white'
+                  : 'text-ink-500 hover:text-ink-700',
+              )}
+            >
+              {u === 'metric' ? 'Metric' : 'Imperial'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Field
+          label={unit === 'metric' ? 'Weight (kg)' : 'Weight (lb)'}
+          value={weight}
+          onChange={setWeight}
+          placeholder={unit === 'metric' ? '70' : '154'}
+          step="0.1"
+        />
+        {unit === 'metric' ? (
+          <Field
+            label="Height (cm)"
+            value={heightCm}
+            onChange={setHeightCm}
+            placeholder="170"
+            step="0.1"
+            icon={<Ruler className="h-3 w-3" />}
+          />
+        ) : (
+          <div className="grid grid-cols-2 gap-1.5">
+            <Field
+              label="ft"
+              value={heightFt}
+              onChange={setHeightFt}
+              placeholder="5"
+              step="1"
+            />
+            <Field
+              label="in"
+              value={heightIn}
+              onChange={setHeightIn}
+              placeholder="7"
+              step="0.1"
+            />
+          </div>
+        )}
+      </div>
+
+      <button
+        type="button"
+        onClick={reset}
+        className="text-[10px] font-semibold uppercase tracking-widest text-ink-400 underline-offset-2 hover:text-ink-700 hover:underline"
+      >
+        Clear
+      </button>
+
+      <ResultBox bmi={bmi} result={result} />
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+  step = '1',
+  icon,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  step?: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest text-ink-400">
+        {icon}
+        {label}
+      </span>
+      <input
+        type="number"
+        inputMode="decimal"
+        step={step}
+        min="0"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="block w-full rounded-xl border border-white/70 bg-white/80 px-3 py-2 text-[13px] font-display font-semibold text-ink-700 shadow-soft focus:border-ink-300 focus:outline-none focus:ring-2 focus:ring-mint-200"
+      />
+    </label>
+  );
+}
+
+function ResultBox({
+  bmi,
+  result,
+}: {
+  bmi: number | null;
+  result: BmiClass | null;
+}) {
+  if (bmi === null || !result) {
+    return (
+      <div className="grid place-items-center rounded-xl border border-dashed border-white/70 bg-white/60 py-4 text-center">
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-ink-400">
+          Enter weight + height to calculate
+        </p>
+      </div>
+    );
+  }
+  const rounded = Math.round(bmi * 10) / 10;
+  return (
+    <motion.div
+      key={result.label + rounded}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="space-y-2"
+    >
+      <div
+        className={cn(
+          'flex items-baseline gap-2 rounded-xl px-3 py-2 ring-1',
+          result.tone,
+        )}
+      >
+        <span className="font-display text-2xl font-semibold tracking-tight">
+          {rounded}
+        </span>
+        <span className="text-[10px] font-bold uppercase tracking-widest opacity-70">
+          kg/m²
+        </span>
+        <span className="ml-auto text-[10px] font-bold uppercase tracking-widest">
+          {result.label}
+        </span>
+      </div>
+      <p className="text-[11.5px] text-ink-500">{result.short}</p>
+      <p className="flex items-start gap-2 rounded-xl bg-amber-50/70 px-3 py-2 text-[11px] text-amber-700 ring-1 ring-amber-200">
+        <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+        <span>{result.escalate}</span>
+      </p>
+    </motion.div>
+  );
+}
+
+function PediatricBmiCard() {
+  return (
+    <div className="space-y-2 rounded-2xl border border-white/70 bg-white/70 p-3">
+      <p className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-ink-500">
+        <Baby className="h-3 w-3" />
+        Paediatric BMI (CDC / WHO Percentiles)
+      </p>
+      <p className="text-[11.5px] text-ink-500">
+        Paediatric BMI is interpreted by plotting BMI against age- and sex-specific
+        growth curves. Calculate BMI above, then read off the percentile at
+        <a
+          href="https://www.cdc.gov/bmi/child-teen-calculator.html"
+          target="_blank"
+          rel="noreferrer noopener"
+          className="ml-1 font-semibold text-ink-700 underline underline-offset-2 hover:text-blush-500"
+        >
+          CDC BMI Percentile Calculator →
+        </a>
+      </p>
+
+      <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+        {PEDIATRIC_PERCENTILE_BANDS.map((b) => (
+          <div
+            key={b.label}
+            className={cn(
+              'rounded-xl px-3 py-2 ring-1',
+              b.tone,
+            )}
+          >
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-[11px] font-bold uppercase tracking-widest">
+                {b.label}
+              </p>
+              <p className="text-[10px] font-semibold opacity-80">{b.short}</p>
+            </div>
+            <p className="mt-1 text-[10.5px] leading-snug text-ink-700">
+              {b.detail}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <p className="rounded-xl bg-cream-100/60 px-3 py-2 text-[10.5px] italic text-ink-500 ring-1 ring-cream-200">
+        Age 2 – 20 uses CDC 2000 growth charts. Children under 2 use WHO weight-for-length,
+        not BMI. Always confirm growth-curve interpretation with the prescriber.
+      </p>
+    </div>
+  );
+}
 
 const systemIcons: Record<VitalEntry['system'], React.FC<{ className?: string }>> = {
   cardiovascular: HeartPulse,
@@ -412,6 +791,14 @@ function VitalCard({
                     );
                   })}
               </div>
+
+              {/* BMI calculator + pediatric card — only when this is the BMI entry */}
+              {entry.id === 'bmi' && (
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                  <BmiCalculator />
+                  <PediatricBmiCard />
+                </div>
+              )}
 
               {/* LOW band */}
               <div
