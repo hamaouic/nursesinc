@@ -790,6 +790,416 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
     });
   }
 
+  else if (id === 'pain-score') {
+    drawIntro(
+      'Two validated 0–10 pain scales. Numeric Rating Scale (NRS) for self-reporting adults; Wong-Baker FACES® for non-verbal or paediatric patients. Reassess after every intervention and on routine rounds. Pain is whatever the patient says it is.',
+    );
+
+    // Section 1 — Patient + context
+    if (drawSectionTitle('1. Patient & Pain Context')) {
+      [
+        'Patient name',
+        'Date of assessment',
+        'Time of assessment',
+        'Location of pain (mark all that apply)',
+        'Onset (sudden / gradual)',
+        'Aggravating factors',
+        'Relieving factors',
+      ].forEach((label) => drawField(label, 14));
+      y += 4;
+
+      // Quality checkboxes
+      if (safeSpace(30)) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(100, 117, 138);
+        doc.text('QUALITY OF PAIN', marginX, y + 8);
+        y += 10;
+        const qualities = [
+          'Sharp',
+          'Dull',
+          'Burning',
+          'Aching',
+          'Throbbing',
+          'Stabbing',
+          'Cramping',
+          'Tingling',
+        ];
+        let cx = marginX;
+        qualities.forEach((q) => {
+          doc.setDrawColor(141, 207, 168);
+          doc.setLineWidth(0.5);
+          doc.rect(cx, y, 7, 7);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7);
+          doc.setTextColor(60, 72, 84);
+          doc.text(q, cx + 10, y + 6);
+          cx += 60;
+        });
+        y += 14;
+      }
+    }
+
+    // Section 2 — NRS scale 0-10
+    if (drawSectionTitle('2. Numeric Rating Scale (NRS) — Adults')) {
+      if (safeSpace(80)) {
+        // Bar of 11 numbered cells
+        const cellW = contentW / 11;
+        const barY = y;
+        const barH = 18;
+        const gradients: Array<[number, number, number]> = [
+          [255, 209, 220],
+          [255, 209, 220],
+          [255, 222, 184],
+          [255, 222, 184],
+          [253, 244, 191],
+          [253, 244, 191],
+          [220, 245, 215],
+          [220, 245, 215],
+          [200, 232, 222],
+          [200, 232, 222],
+          [181, 222, 192],
+        ];
+        for (let i = 0; i <= 10; i++) {
+          const [r, g, b] = gradients[i];
+          doc.setFillColor(r, g, b);
+          doc.setDrawColor(180, 188, 200);
+          doc.setLineWidth(0.3);
+          doc.rect(marginX + i * cellW, barY, cellW, barH, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          doc.setTextColor(44, 62, 80);
+          doc.text(String(i), marginX + i * cellW + cellW / 2, barY + 12, {
+            align: 'center',
+          });
+        }
+        y += barH + 2;
+
+        // Scale labels under bar
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(100, 117, 138);
+        doc.text('No pain', marginX, y + 8);
+        doc.text('Mild', marginX + contentW * 0.35, y + 8, { align: 'center' });
+        doc.text('Moderate', marginX + contentW * 0.6, y + 8, {
+          align: 'center',
+        });
+        doc.text('Severe', marginX + contentW * 0.85, y + 8, { align: 'center' });
+        doc.text('Worst possible', marginX + contentW, y + 8, { align: 'right' });
+        y += 14;
+
+        // Severity legend
+        const legend: Array<[string, string]> = [
+          ['0', 'No pain'],
+          ['1–3', 'Mild — score again in 1 h'],
+          ['4–6', 'Moderate — notify physician'],
+          ['7–10', 'Severe — urgent reassessment'],
+        ];
+        legend.forEach(([score, label]) => {
+          if (!safeSpace(9)) return;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7);
+          doc.setTextColor(60, 72, 84);
+          doc.text(`•  ${score}  →  ${label}`, marginX + 4, y + 6);
+          y += 8;
+        });
+        y += 4;
+
+        // NRS score field
+        drawField('Patient\'s NRS score (0–10)', 16);
+      }
+    }
+
+    // Section 3 — Wong-Baker FACES (illustrative squares, 6 faces)
+    if (drawSectionTitle('3. Wong-Baker FACES® — Non-verbal / Paediatric')) {
+      if (safeSpace(60)) {
+        const faceLabels = ['No hurt', 'Hurts little bit', 'Hurts little more', 'Hurts even more', 'Hurts whole lot', 'Hurts worst'];
+        const faceScores = ['0', '2', '4', '6', '8', '10'];
+        const faceW = contentW / 6;
+        const faceH = 38;
+        // Faces drawn as labeled colored cells — schematic, not actual face glyphs
+        const faceGradients: Array<[number, number, number]> = [
+          [181, 222, 192],
+          [220, 245, 215],
+          [253, 244, 191],
+          [255, 222, 184],
+          [255, 209, 220],
+          [255, 170, 188],
+        ];
+        for (let i = 0; i < 6; i++) {
+          const [r, g, b] = faceGradients[i];
+          doc.setFillColor(r, g, b);
+          doc.setDrawColor(180, 188, 200);
+          doc.setLineWidth(0.3);
+          doc.rect(marginX + i * faceW, y, faceW - 2, faceH, 'FD');
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.setTextColor(44, 62, 80);
+          doc.text(faceScores[i], marginX + i * faceW + faceW / 2 - 1, y + 14, {
+            align: 'center',
+          });
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.5);
+          doc.setTextColor(60, 72, 84);
+          const lbl = doc.splitTextToSize(faceLabels[i], faceW - 4);
+          doc.text(lbl, marginX + i * faceW + faceW / 2 - 1, y + 24, {
+            align: 'center',
+          });
+        }
+        y += faceH + 4;
+        drawField('Patient\'s FACES® score', 14);
+      }
+    }
+
+    // Section 4 — Reassessments
+    if (drawSectionTitle('4. Reassessments (after intervention / routine rounds)')) {
+      const weights = [1.0, 1.2, 1.0, 1.0, 2.4, 1.2, 1.2];
+      const totalW = weights.reduce((a, b) => a + b, 0);
+      const colW = weights.map((w) => (w / totalW) * contentW);
+      const headerH = 22;
+      const rowH = 24;
+      const headers = [
+        'Date',
+        'Time',
+        'NRS',
+        'FACES',
+        'Intervention given',
+        'Response',
+        'Nurse sig.',
+      ];
+      if (safeSpace(headerH + rowH * 4 + 10)) {
+        doc.setFillColor(232, 245, 233);
+        doc.setDrawColor(180, 188, 200);
+        doc.rect(marginX, y, contentW, headerH, 'FD');
+        let xc = marginX;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(44, 62, 80);
+        headers.forEach((label, i) => {
+          const w = colW[i];
+          if (i > 0) doc.line(xc, y, xc, y + headerH);
+          const wrapped = doc.splitTextToSize(label, w - 4);
+          doc.text(wrapped, xc + 2, y + 9);
+          xc += w;
+        });
+        y += headerH;
+        doc.setDrawColor(200, 208, 218);
+        doc.setLineWidth(0.3);
+        for (let i = 0; i < 4; i++) {
+          doc.rect(marginX, y, contentW, rowH);
+          xc = marginX;
+          for (let j = 0; j < colW.length; j++) {
+            if (j > 0) doc.line(xc, y, xc, y + rowH);
+            xc += colW[j];
+          }
+          y += rowH;
+        }
+        y += 4;
+      }
+    }
+
+    // Section 5 — Signature
+    drawField('Nurse signature & designation', 14);
+    drawField('Date', 14);
+  }
+
+  else if (id === 'glasgow-coma-scale') {
+    drawIntro(
+      'Quick bedside assessment of consciousness level. Total = Eye (E) + Verbal (V) + Motor (M). Maximum 15. Reassess at least hourly for any patient with a GCS < 13. A drop of 2 or more points is a medical emergency — call rapid response.',
+    );
+
+    // Scoring table — 3 components
+    if (drawSectionTitle('Component Scores')) {
+      if (safeSpace(120)) {
+        const weights = [1.6, 0.7, 1.0, 0.7, 0.6];
+        const totalW = weights.reduce((a, b) => a + b, 0);
+        const colW = weights.map((w) => (w / totalW) * contentW);
+        const headerH = 20;
+        const rowH = 18;
+
+        // Header
+        doc.setFillColor(232, 245, 233);
+        doc.setDrawColor(180, 188, 200);
+        doc.rect(marginX, y, contentW, headerH, 'FD');
+        const headers = ['Component', 'Score', 'Criterion', 'Patient response', 'Init.'];
+        let xc = marginX;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.setTextColor(44, 62, 80);
+        headers.forEach((label, i) => {
+          const w = colW[i];
+          if (i > 0) doc.line(xc, y, xc, y + headerH);
+          const wrapped = doc.splitTextToSize(label, w - 4);
+          doc.text(wrapped, xc + 2, y + 9);
+          xc += w;
+        });
+        y += headerH;
+
+        // Rows
+        const rows: Array<[string, string, string, string]> = [
+          [
+            'Eye opening (E)',
+            '4',
+            'Spontaneous',
+            'Opens eyes on own',
+          ],
+          ['', '3', 'To speech', 'Opens eyes to verbal stimulation'],
+          ['', '2', 'To pain', 'Opens eyes to painful stimulus'],
+          ['', '1', 'None', 'No eye opening'],
+          [
+            'Verbal response (V)',
+            '5',
+            'Oriented',
+            'Knows name, date, location',
+          ],
+          ['', '4', 'Confused', 'Converses but disoriented'],
+          ['', '3', 'Inappropriate', 'Random or incomprehensible words'],
+          ['', '2', 'Incomprehensible', 'Moaning, no words'],
+          ['', '1', 'None', 'No verbal response'],
+          [
+            'Motor response (M)',
+            '6',
+            'Obeys commands',
+            'Follows simple motor commands',
+          ],
+          ['', '5', 'Localises pain', 'Purposeful movement to pain'],
+          ['', '4', 'Withdraws from pain', 'Pulls limb away from pain'],
+          ['', '3', 'Abnormal flexion', 'Decorticate posturing'],
+          ['', '2', 'Abnormal extension', 'Decerebrate posturing'],
+          ['', '1', 'None', 'Flaccid / no movement'],
+        ];
+
+        doc.setDrawColor(200, 208, 218);
+        doc.setLineWidth(0.3);
+        rows.forEach((r, idx) => {
+          // Alt row tint for the 3 component groups
+          if (idx === 0 || idx === 5 || idx === 10) {
+            doc.setFillColor(244, 251, 246);
+            doc.rect(marginX, y, contentW, rowH, 'F');
+            doc.rect(marginX, y, contentW, rowH);
+          } else {
+            doc.rect(marginX, y, contentW, rowH);
+          }
+          xc = marginX;
+          // Component (col 0)
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.5);
+          doc.setTextColor(44, 62, 80);
+          doc.text(r[0], xc + 2, y + 12);
+          xc += colW[0];
+          if (idx !== 0 && idx !== 5 && idx !== 10) doc.line(xc, y, xc, y + rowH);
+          // Score (col 1)
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9);
+          doc.setTextColor(141, 207, 168);
+          doc.text(r[1], xc + colW[1] / 2, y + 13, { align: 'center' });
+          xc += colW[1];
+          doc.line(xc, y, xc, y + rowH);
+          // Criterion (col 2)
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(6.5);
+          doc.setTextColor(44, 62, 80);
+          doc.text(r[2], xc + 2, y + 12);
+          xc += colW[2];
+          doc.line(xc, y, xc, y + rowH);
+          // Patient response (col 3)
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.5);
+          doc.setTextColor(60, 72, 84);
+          doc.text(r[3], xc + 2, y + 12);
+          xc += colW[3];
+          doc.line(xc, y, xc, y + rowH);
+          // Init (col 4) — empty
+          doc.line(xc, y, xc, y + rowH);
+          y += rowH;
+        });
+        y += 4;
+      }
+    }
+
+    // Total + severity bands
+    if (drawSectionTitle('Total Score & Severity')) {
+      drawField('Eye (E) total', 14);
+      drawField('Verbal (V) total', 14);
+      drawField('Motor (M) total', 14);
+      drawField('GCS total (E + V + M)  /  15', 16);
+
+      // Severity bands
+      if (safeSpace(40)) {
+        doc.setFillColor(244, 251, 246);
+        doc.setDrawColor(141, 207, 168);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(marginX, y, contentW, 36, 3, 3, 'FD');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(44, 62, 80);
+        doc.text('SEVERITY BANDS', marginX + 6, y + 10);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(60, 72, 84);
+        const sevLines = doc.splitTextToSize(
+          '13–15  Mild brain injury · routine reassessment every 4 h\n9–12   Moderate brain injury · hourly reassessment · notify physician\n3–8    Severe brain injury · ICU / airway management · call rapid response',
+          contentW - 12,
+        );
+        doc.text(sevLines, marginX + 6, y + 20);
+        y += 44;
+      }
+    }
+
+    // Pupil check
+    if (drawSectionTitle('Pupillary Response (always assess with GCS)')) {
+      const pupils = [
+        ['Right pupil size (mm)', '14'],
+        ['Right pupil reaction', '14'],
+        ['Left pupil size (mm)', '14'],
+        ['Left pupil reaction', '14'],
+      ];
+      pupils.forEach(([label, h]) => drawField(label, 14));
+    }
+
+    // Trending table
+    if (drawSectionTitle('GCS Trend — last 6 readings')) {
+      const weights = [0.9, 0.6, 0.5, 0.5, 0.5, 0.6, 2.0, 1.0];
+      const totalW = weights.reduce((a, b) => a + b, 0);
+      const colW = weights.map((w) => (w / totalW) * contentW);
+      const headerH = 22;
+      const rowH = 18;
+      const headers = ['Date', 'Time', 'E', 'V', 'M', 'Total', 'Notes / intervention', 'Nurse'];
+      if (safeSpace(headerH + rowH * 6 + 8)) {
+        doc.setFillColor(232, 245, 233);
+        doc.setDrawColor(180, 188, 200);
+        doc.rect(marginX, y, contentW, headerH, 'FD');
+        let xc = marginX;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(6.5);
+        doc.setTextColor(44, 62, 80);
+        headers.forEach((label, i) => {
+          const w = colW[i];
+          if (i > 0) doc.line(xc, y, xc, y + headerH);
+          const wrapped = doc.splitTextToSize(label, w - 4);
+          doc.text(wrapped, xc + 2, y + 9);
+          xc += w;
+        });
+        y += headerH;
+        doc.setDrawColor(200, 208, 218);
+        doc.setLineWidth(0.3);
+        for (let i = 0; i < 6; i++) {
+          doc.rect(marginX, y, contentW, rowH);
+          xc = marginX;
+          for (let j = 0; j < colW.length; j++) {
+            if (j > 0) doc.line(xc, y, xc, y + rowH);
+            xc += colW[j];
+          }
+          y += rowH;
+        }
+        y += 4;
+      }
+    }
+
+    drawField('Nurse signature & designation', 14);
+    drawField('Date / time of assessment', 14);
+  }
+
   // ===== References (condensed APA) =====
   // Always at the bottom; trim if no space
   if (y + 50 > bottomLimit) {

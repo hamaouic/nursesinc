@@ -40,7 +40,10 @@ export type MedFormId =
   | 'cam'
   // Falls risk
   | 'morse-fall-scale'
-  | 'tinetti-poma';
+  | 'tinetti-poma'
+  // Pain & consciousness assessment
+  | 'pain-score'
+  | 'glasgow-coma-scale';
 
 export type MedFormMeta = {
   id: MedFormId;
@@ -451,6 +454,36 @@ export const medForms: Record<MedFormId, MedFormMeta> = {
       'Score < 19 = high fall risk',
     ],
   },
+  'pain-score': {
+    id: 'pain-score',
+    number: '19',
+    title: 'Pain Score Assessment',
+    shortTitle: 'Numeric (NRS) + Wong-Baker FACES® scales',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-26-Pain-Score.pdf',
+    icon: 'Activity',
+    accent: 'blush',
+    category: 'clinical',
+    summary: [
+      'Numeric 0–10 + Faces 0–10 · 4 reassessment rows',
+      'Location, quality, onset, aggravators, interventions',
+    ],
+  },
+  'glasgow-coma-scale': {
+    id: 'glasgow-coma-scale',
+    number: '20',
+    title: 'Glasgow Coma Scale (GCS)',
+    shortTitle: 'Eye + Verbal + Motor · /15',
+    audience: 'Assessment · Nurses',
+    filename: 'Nurses-Inc-Form-27-Glasgow-Coma-Scale.pdf',
+    icon: 'Brain',
+    accent: 'mint',
+    category: 'clinical',
+    summary: [
+      'Eye (1–4) + Verbal (1–5) + Motor (1–6)',
+      'Mild 13–15 · Moderate 9–12 · Severe 3–8',
+    ],
+  },
 };
 
 export const medFormList: MedFormMeta[] = [
@@ -477,6 +510,9 @@ export const medFormList: MedFormMeta[] = [
   // Falls risk
   medForms['morse-fall-scale'],
   medForms['tinetti-poma'],
+  // Pain & consciousness assessment
+  medForms['pain-score'],
+  medForms['glasgow-coma-scale'],
   // Printable Forms (8) — used in the Printable Forms section
   medForms['welcome-prep'],
   medForms.inventory,

@@ -8,11 +8,13 @@ import {
   Layers,
   Stethoscope,
   Activity,
+  Droplets,
 } from 'lucide-react';
 import FormsCanvas from '@/components/FormsCanvas';
 import ClinicalReferenceList from '@/components/ClinicalReferenceList';
 import OrgansList from '@/components/OrgansList';
 import VitalsList from '@/components/VitalsList';
+import DiabetesList from '@/components/DiabetesList';
 import ResourceTiles from '@/components/ResourceTiles';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +25,7 @@ type View =
   | 'wound-care'
   | 'labs'
   | 'vitals'
+  | 'diabetes'
   | 'organs';
 
 const views: { id: View; label: string; icon: React.FC<{ className?: string }> }[] = [
@@ -32,6 +35,7 @@ const views: { id: View; label: string; icon: React.FC<{ className?: string }> }
   { id: 'wound-care', label: 'Wound Care', icon: Layers },
   { id: 'labs', label: 'Labs', icon: FlaskConical },
   { id: 'vitals', label: 'Vitals', icon: Activity },
+  { id: 'diabetes', label: 'Diabetes', icon: Droplets },
   { id: 'organs', label: 'Organs', icon: Heart },
 ];
 
@@ -158,6 +162,18 @@ export default function ClinicalFormsToggle() {
             transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
           >
             <VitalsList />
+          </motion.div>
+        )}
+
+        {view === 'diabetes' && (
+          <motion.div
+            key="diabetes"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            <DiabetesList />
           </motion.div>
         )}
 
