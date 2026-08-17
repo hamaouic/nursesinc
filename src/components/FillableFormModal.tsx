@@ -69,7 +69,16 @@ export default function FillableFormModal({
 
   const handleDownload = () => {
     if (!schema) return;
-    downloadMedForm(schema.formId, values);
+    try {
+      // eslint-disable-next-line no-console
+      console.log('[FillableFormModal] downloading', schema.formId, 'with', Object.keys(values).length, 'fields');
+      downloadMedForm(schema.formId, values);
+      // eslint-disable-next-line no-console
+      console.log('[FillableFormModal] download triggered');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[FillableFormModal] download failed', err);
+    }
   };
 
   const handleReset = () => {
