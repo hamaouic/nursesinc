@@ -16,6 +16,7 @@ import {
   type FillableField,
 } from '@/fillable-form-schema';
 import { downloadMedForm } from '@/lib/med-form-pdf';
+import { NrsBar, WongBakerFaces } from '@/components/PainScaleGraphic';
 import { cn } from '@/lib/utils';
 
 /**
@@ -188,7 +189,35 @@ export default function FillableFormModal({
                         )}
                       </header>
                     )}
-                    <div className="space-y-2.5 p-4">
+                    <div className="space-y-3 p-4">
+                      {section.graphic === 'nrs' && (
+                        <div className="rounded-2xl border border-white/70 bg-white/70 p-3 print:border-ink-200 print:bg-white">
+                          <NrsBar
+                            value={
+                              typeof values['nrs_score'] === 'string'
+                                ? values['nrs_score']
+                                : ''
+                            }
+                            onChange={(n) =>
+                              setField('nrs_score', String(n))
+                            }
+                          />
+                        </div>
+                      )}
+                      {section.graphic === 'faces' && (
+                        <div className="rounded-2xl border border-white/70 bg-white/70 p-3 print:border-ink-200 print:bg-white">
+                          <WongBakerFaces
+                            value={
+                              typeof values['faces_score'] === 'string'
+                                ? values['faces_score']
+                                : ''
+                            }
+                            onChange={(n) =>
+                              setField('faces_score', String(n))
+                            }
+                          />
+                        </div>
+                      )}
                       {section.fields.map((field) => (
                         <FieldRenderer
                           key={field.id}

@@ -44,6 +44,8 @@ export type FillableSection = {
   heading?: string;
   /** Optional intro paragraph shown above the fields. */
   intro?: string;
+  /** Optional inline graphic rendered between intro and fields (e.g. NRS bar). */
+  graphic?: 'nrs' | 'faces';
   fields: FillableField[];
 };
 
@@ -117,7 +119,8 @@ export const fillableForms: Record<
       {
         heading: '2. Numeric Rating Scale (NRS) — Adults',
         intro:
-          '0 = no pain · 1–3 mild · 4–6 moderate · 7–10 severe. Reassess after every intervention.',
+          '0 = no pain · 1–3 mild · 4–6 moderate · 7–10 severe. Tap a number on the scale below, or type it in the field.',
+        graphic: 'nrs',
         fields: [
           {
             id: 'nrs_score',
@@ -131,7 +134,8 @@ export const fillableForms: Record<
       {
         heading: '3. Wong-Baker FACES® — Non-verbal / Paediatric',
         intro:
-          'Point to the face that best matches how the patient is feeling.',
+          'Point to the face that best matches how the patient is feeling. Tap a face to record the score.',
+        graphic: 'faces',
         fields: [
           {
             id: 'faces_score',
