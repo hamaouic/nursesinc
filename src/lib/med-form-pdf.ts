@@ -41,6 +41,7 @@ import {
   medFormReferences,
   type MedFormId,
 } from '@/med-form-forms';
+import type { FillableFormValues } from '@/fillable-form-schema';
 
 /**
  * Build a single-page PDF for one of the 10 Medication Audit forms.
@@ -48,7 +49,10 @@ import {
  * if any block would push past the bottom margin, content is truncated to
  * fit. The References block is always included but in condensed APA form.
  */
-export function generateMedFormPdf(id: MedFormId): jsPDF {
+export function generateMedFormPdf(
+  id: MedFormId,
+  values?: FillableFormValues,
+): jsPDF {
   const meta = medForms[id];
   const doc = new jsPDF({ unit: 'pt', format: 'letter' });
 
@@ -140,7 +144,7 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
     y += need;
   };
 
-  const drawField = (label: string, height: number) => {
+  const drawField = (label: string, height: number, fieldName?: string) => {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(7);
     doc.setTextColor(100, 117, 138);
@@ -150,6 +154,21 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
     doc.setDrawColor(180, 188, 200);
     doc.setLineWidth(0.4);
     doc.line(marginX, y + 10 + height - 1, marginX + contentW, y + 10 + height - 1);
+    // If a captured value is provided, register an AcroForm text field over the
+    // underline so the saved PDF can be edited in any PDF reader.
+    if (fieldName && values) {
+      const v = values[fieldName];
+      const tf = doc.AcroForm.TextField(); tf.fieldName = fieldName;
+      tf.value = typeof v === 'string' ? v : '';
+      tf.x = marginX;
+      tf.y = y + 10;
+      tf.width = contentW;
+      tf.height = height;
+      tf.fontSize = 9;
+      tf.maxFontSize = 9;
+      tf.color = '#1B2733';
+      doc.addField(tf);
+    }
     y += need;
   };
 
@@ -798,14 +817,16 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
     // Section 1 — Patient + context
     if (drawSectionTitle('1. Patient & Pain Context')) {
       [
-        'Patient name',
-        'Date of assessment',
-        'Time of assessment',
-        'Location of pain (mark all that apply)',
-        'Onset (sudden / gradual)',
-        'Aggravating factors',
-        'Relieving factors',
-      ].forEach((label) => drawField(label, 14));
+        ['Patient name', 'patient_name'],
+        ['Date of assessment', 'date'],
+        ['Time of assessment', 'time'],
+        ['Location of pain (mark all that apply)', 'location'],
+        ['Onset (sudden / gradual)', 'onset'],
+        ['Aggravating factors', 'aggravating'],
+        ['Relieving factors', 'relieving'],
+      ].forEach(([label, name]) =>
+        drawField(label, 14, name),
+      );
       y += 4;
 
       // Quality checkboxes
@@ -906,7 +927,7 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
         y += 4;
 
         // NRS score field
-        drawField('Patient\'s NRS score (0–10)', 16);
+        drawField("Patient's NRS score (0–10)", 16, 'nrs_score');
       }
     }
 
@@ -947,7 +968,7 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
           });
         }
         y += faceH + 4;
-        drawField('Patient\'s FACES® score', 14);
+        drawField("Patient's FACES® score", 14, 'faces_score');
       }
     }
 
@@ -985,11 +1006,36 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
         y += headerH;
         doc.setDrawColor(200, 208, 218);
         doc.setLineWidth(0.3);
+        const reassessmentRowIds = ['one', 'two', 'three', 'four'] as const;
+        const reassessmentFieldNames = [
+          'date',
+          'time',
+          'nrs',
+          'faces',
+          'intervention',
+          'response',
+          'sig',
+        ] as const;
         for (let i = 0; i < 4; i++) {
           doc.rect(marginX, y, contentW, rowH);
           xc = marginX;
           for (let j = 0; j < colW.length; j++) {
             if (j > 0) doc.line(xc, y, xc, y + rowH);
+            // Register an AcroForm text field inside each cell so the saved
+            // PDF stays editable.
+            if (values) {
+              const fieldName = `r_${reassessmentRowIds[i]}_${reassessmentFieldNames[j]}`;
+              const tf = doc.AcroForm.TextField(); tf.fieldName = fieldName;
+              tf.value = String(values[fieldName] ?? '');
+              tf.x = xc + 2;
+              tf.y = y + 2;
+              tf.width = colW[j] - 4;
+              tf.height = rowH - 4;
+              tf.fontSize = 8;
+              tf.maxFontSize = 8;
+              tf.color = '#1B2733';
+              doc.addField(tf);
+            }
             xc += colW[j];
           }
           y += rowH;
@@ -999,8 +1045,8 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
     }
 
     // Section 5 — Signature
-    drawField('Nurse signature & designation', 14);
-    drawField('Date', 14);
+    drawField('Nurse signature & designation', 14, 'nurse_sig');
+    drawField('Date', 14, 'sig_date');
   }
 
   else if (id === 'glasgow-coma-scale') {
@@ -1119,10 +1165,11 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
 
     // Total + severity bands
     if (drawSectionTitle('Total Score & Severity')) {
-      drawField('Eye (E) total', 14);
-      drawField('Verbal (V) total', 14);
-      drawField('Motor (M) total', 14);
-      drawField('GCS total (E + V + M)  /  15', 16);
+      drawField('Eye (E) score (1–4)', 14, 'eye_score');
+      drawField('Verbal (V) score (1–5)', 14, 'verbal_score');
+      drawField('Motor (M) score (1–6)', 14, 'motor_score');
+      drawField('GCS total (E + V + M)  /  15', 16, 'total_score');
+      drawField('Severity band', 14, 'severity_band');
 
       // Severity bands
       if (safeSpace(40)) {
@@ -1148,13 +1195,10 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
 
     // Pupil check
     if (drawSectionTitle('Pupillary Response (always assess with GCS)')) {
-      const pupils = [
-        ['Right pupil size (mm)', '14'],
-        ['Right pupil reaction', '14'],
-        ['Left pupil size (mm)', '14'],
-        ['Left pupil reaction', '14'],
-      ];
-      pupils.forEach(([label, h]) => drawField(label, 14));
+      drawField('Right pupil size (mm)', 14, 'pupil_r_size');
+      drawField('Right pupil reaction', 14, 'pupil_r_reaction');
+      drawField('Left pupil size (mm)', 14, 'pupil_l_size');
+      drawField('Left pupil reaction', 14, 'pupil_l_reaction');
     }
 
     // Trending table
@@ -1183,11 +1227,35 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
         y += headerH;
         doc.setDrawColor(200, 208, 218);
         doc.setLineWidth(0.3);
+        const trendRowIds = ['one', 'two', 'three', 'four', 'five', 'six'] as const;
+        const trendFieldNames = [
+          'date',
+          'time',
+          'e',
+          'v',
+          'm',
+          'total',
+          'notes',
+          'nurse',
+        ] as const;
         for (let i = 0; i < 6; i++) {
           doc.rect(marginX, y, contentW, rowH);
           xc = marginX;
           for (let j = 0; j < colW.length; j++) {
             if (j > 0) doc.line(xc, y, xc, y + rowH);
+            if (values) {
+              const fieldName = `t_${trendRowIds[i]}_${trendFieldNames[j]}`;
+              const tf = doc.AcroForm.TextField(); tf.fieldName = fieldName;
+              tf.value = String(values[fieldName] ?? '');
+              tf.x = xc + 2;
+              tf.y = y + 2;
+              tf.width = colW[j] - 4;
+              tf.height = rowH - 4;
+              tf.fontSize = 8;
+              tf.maxFontSize = 8;
+              tf.color = '#1B2733';
+              doc.addField(tf);
+            }
             xc += colW[j];
           }
           y += rowH;
@@ -1196,8 +1264,8 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
       }
     }
 
-    drawField('Nurse signature & designation', 14);
-    drawField('Date / time of assessment', 14);
+    drawField('Nurse signature & designation', 14, 'nurse_sig');
+    drawField('Date / time of assessment', 14, 'sig_date');
   }
 
   // ===== References (condensed APA) =====
@@ -1242,15 +1310,21 @@ export function generateMedFormPdf(id: MedFormId): jsPDF {
   return doc;
 }
 
-/** Download helper used by the UI. */
-export function downloadMedForm(id: MedFormId) {
-  const doc = generateMedFormPdf(id);
+/** Download helper used by the UI. Accepts optional captured values. */
+export function downloadMedForm(
+  id: MedFormId,
+  values?: FillableFormValues,
+) {
+  const doc = generateMedFormPdf(id, values);
   doc.save(medForms[id].filename);
 }
 
 /** Preview helper — returns an object URL for the iframe. */
-export function previewMedForm(id: MedFormId): string {
-  const doc = generateMedFormPdf(id);
+export function previewMedForm(
+  id: MedFormId,
+  values?: FillableFormValues,
+): string {
+  const doc = generateMedFormPdf(id, values);
   const blob = doc.output('blob');
   return URL.createObjectURL(blob);
 }

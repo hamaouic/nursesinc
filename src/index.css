@@ -154,6 +154,23 @@ body {
   .flip-card:hover .flip-card-inner { transform: none; }
 }
 
+/* Fillable form print styles. Hides chrome and stacks the form into a
+   single US-Letter-sized print page. */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+  html,
+  body {
+    background: white !important;
+  }
+  /* Hide everything that isn't the active print surface. */
+  body > *:not([data-print-surface]) {
+    display: none !important;
+  }
+}
+
 /* When a drawer / modal is open, yield pointer events from the
    fixed navbar so the drawer's close button (top-right) stays
    clickable. The drawer is z-[100]; the navbar is z-50 + a

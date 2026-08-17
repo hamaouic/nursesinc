@@ -19,6 +19,7 @@ import {
   type MedFormId,
 } from '@/med-form-forms';
 import { downloadMedForm, previewMedForm } from '@/lib/med-form-pdf';
+import FillableFormModal from '@/components/FillableFormModal';
 import { cn } from '@/lib/utils';
 
 type Filter = 'all' | 'family' | 'clinical';
@@ -71,6 +72,9 @@ export default function FormsCanvas({
   const [filter, setFilter] = useState<Filter>(category ?? 'all');
   const [query, setQuery] = useState('');
   const [preview, setPreview] = useState<PreviewState | null>(null);
+  const [fillableFormId, setFillableFormId] = useState<
+    'pain-score' | 'glasgow-coma-scale' | null
+  >(null);
 
   // ESC closes the drawer
   useEffect(() => {
@@ -108,6 +112,12 @@ export default function FormsCanvas({
   };
 
   const openPreview = async (id: MedFormId) => {
+    // First-pass fillable forms: Pain Score + Glasgow Coma Scale.
+    // These get the live HTML modal instead of the static PDF preview.
+    if (id === 'pain-score' || id === 'glasgow-coma-scale') {
+      setFillableFormId(id);
+      return;
+    }
     setPreview({ id, url: null, loading: true, error: null });
     try {
       const url = previewMedForm(id);
@@ -336,10 +346,17 @@ export default function FormsCanvas({
                   <span className="text-ink-300 transition-colors group-hover:text-ink-500">
                     {f.filename.replace(/^Nurses-Inc-Form-/, '').replace(/\.pdf$/, '')}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-blush-400 transition-colors group-hover:text-blush-500">
-                    Preview
-                    <FileText className="h-3 w-3" />
-                  </span>
+                  {f.id === 'pain-score' || f.id === 'glasgow-coma-scale' ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-mint-200 px-2 py-0.5 text-[9px] text-mint-700 transition-colors group-hover:bg-mint-300">
+                      Fill online
+                      <FileText className="h-3 w-3" />
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-blush-400 transition-colors group-hover:text-blush-500">
+                      Preview
+                      <FileText className="h-3 w-3" />
+                    </span>
+                  )}
                 </div>
               </motion.button>
             );
@@ -356,6 +373,13 @@ export default function FormsCanvas({
           />
         )}
       </AnimatePresence>
+
+      {/* Live fillable form (first-pass: Pain + GCS) */}
+      <FillableFormModal
+        formId={fillableFormId}
+        open={fillableFormId !== null}
+        onClose={() => setFillableFormId(null)}
+      />
     </div>
   );
 }
