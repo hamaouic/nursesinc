@@ -158,7 +158,8 @@ export function generateMedFormPdf(
     // underline so the saved PDF can be edited in any PDF reader.
     if (fieldName && values) {
       const v = values[fieldName];
-      const tf = doc.AcroForm.TextField(); tf.fieldName = fieldName;
+      const tf = new (doc as any).AcroFormTextField();
+      tf.fieldName = fieldName;
       tf.value = typeof v === 'string' ? v : '';
       tf.x = marginX;
       tf.y = y + 10;
@@ -1025,7 +1026,8 @@ export function generateMedFormPdf(
             // PDF stays editable.
             if (values) {
               const fieldName = `r_${reassessmentRowIds[i]}_${reassessmentFieldNames[j]}`;
-              const tf = doc.AcroForm.TextField(); tf.fieldName = fieldName;
+              const tf = new (doc as any).AcroFormTextField();
+              tf.fieldName = fieldName;
               tf.value = String(values[fieldName] ?? '');
               tf.x = xc + 2;
               tf.y = y + 2;
@@ -1245,7 +1247,8 @@ export function generateMedFormPdf(
             if (j > 0) doc.line(xc, y, xc, y + rowH);
             if (values) {
               const fieldName = `t_${trendRowIds[i]}_${trendFieldNames[j]}`;
-              const tf = doc.AcroForm.TextField(); tf.fieldName = fieldName;
+              const tf = new (doc as any).AcroFormTextField();
+              tf.fieldName = fieldName;
               tf.value = String(values[fieldName] ?? '');
               tf.x = xc + 2;
               tf.y = y + 2;
