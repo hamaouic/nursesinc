@@ -120,8 +120,9 @@ export default function FillableFormModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition hover:bg-ink-100 hover:text-ink-700"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink-200/70 bg-white text-ink-700 shadow-soft transition hover:-translate-y-0.5 hover:border-ink-300 hover:bg-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-500 focus-visible:ring-offset-2"
                   aria-label="Back to forms"
+                  title="Back to forms"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -138,8 +139,9 @@ export default function FillableFormModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="grid h-9 w-9 place-items-center rounded-full text-ink-500 transition hover:bg-ink-100 hover:text-ink-700"
                 aria-label="Close form"
+                title="Close form"
+                className="group grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink-700 text-white shadow-soft transition-all duration-200 hover:scale-105 hover:bg-ink-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-500 focus-visible:ring-offset-2"
               >
                 <X className="h-4 w-4" />
               </button>

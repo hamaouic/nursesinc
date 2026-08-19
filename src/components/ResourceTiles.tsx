@@ -240,10 +240,11 @@ export default function ResourceTiles() {
                 <button
                   type="button"
                   onClick={closeAll}
-                  className="grid h-7 w-7 place-items-center rounded-full text-ink-300 transition hover:bg-ink-100 hover:text-ink-700"
                   aria-label="Close preview"
+                  title="Close preview"
+                  className="grid h-8 w-8 place-items-center rounded-full border border-ink-200/70 bg-white text-ink-700 shadow-soft transition hover:-translate-y-0.5 hover:border-ink-300 hover:bg-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink-500 focus-visible:ring-offset-2"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             </div>
