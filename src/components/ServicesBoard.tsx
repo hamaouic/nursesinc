@@ -5,6 +5,7 @@ import { Heart, Building2, Sparkles } from 'lucide-react';
 import { services, type Service } from '@/nurses-inc-config';
 import { cn } from '@/lib/utils';
 import MouseCard from './MouseCard';
+import StartBuildingCallout from './StartBuildingCallout';
 
 type Tab = 'b2c' | 'b2b';
 
@@ -73,6 +74,13 @@ export default function ServicesBoard() {
             {services[active].map((s, i) => (
               <ServiceCard key={s.id} service={s} index={i} />
             ))}
+            {/* Inline CTA — fills the empty cell on the last row of the
+                family-care grid (7 services ÷ 3 cols = 2 empty slots).
+                Sits next to the Cognitive & Environmental Safety Audits card
+                and scrolls the user to the multi-select booking cart. */}
+            {active === 'b2c' && (
+              <StartBuildingCallout />
+            )}
           </div>
         </motion.div>
       </AnimatePresence>
